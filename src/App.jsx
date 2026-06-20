@@ -1,14 +1,14 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 
-import { seededShuffle } from './utils/helpers';
-import { searchChannels } from './api/channels';
 import { createNoiseController } from './components/NoiseCanvasController';
 import { useWakeLock } from './hooks/useWakeLock';
 import PlayerStage from './components/PlayerStage';
 import HUD from './components/HUD';
-import SearchModal from './components/SearchModal';
+import ChannelModal from './components/ChannelModal';
 import Overlays from './components/Overlays';
 
+import { CHANNELS } from './constants/channels';
+import { fetchChannelContent } from './api/channels';
 
 /* ─────────────────────────────────────────────────────
    MAIN APP COMPONENT
@@ -17,7 +17,6 @@ export default function App() {
   /* ── Refs ── */
   const canvasRef = useRef(null);
   const glitchRef = useRef(null);
-  const searchInputRef = useRef(null);
   const hudTimerRef = useRef(null);
   const toastTimerRef = useRef(null);
   const playerRef = useRef(null);
@@ -26,29 +25,24 @@ export default function App() {
 
   /* ── Mutable state (not triggering re-render) via ref ── */
   const S = useRef({
-    query: '',
-    sessionSeed: '',
-    activeIndex: null,
-    pool: [],
-    poolPointer: 0,
+    activeChannelIndex: 0,
+    channelStates: {}, // { [ch.id]: { playlist: [], startedAt: timestamp } }
     switchToken: 0,
-    reqId: 0,
     failChainCount: 0,
-    channelHistory: {},
   });
 
   /* ── React state (triggers re-render) ── */
-  const [statusText, setStatusText] = useState('NO SIGNAL');
+  const [statusText, setStatusText] = useState('SCANNING');
   const [statusVisible, setStatusVisible] = useState(true);
   const [hudFadeOut, setHudFadeOut] = useState(false);
   const [networkFadeOut, setNetworkFadeOut] = useState(false);
   const [networkActive, setNetworkActive] = useState(false);
-  const [networkName, setNetworkName] = useState('-');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
-  const [channelLabel, setChannelLabel] = useState('CH 00');
-  const [volume, setVolume] = useState(70);
+  
+  const [currentTitle, setCurrentTitle] = useState('');
+  const [playbackTimeStr, setPlaybackTimeStr] = useState('');
+  
+  const [channelModalOpen, setChannelModalOpen] = useState(false);
+  const [channelLabel, setChannelLabel] = useState('CH 1');
   const [toastMsg, setToastMsg] = useState('');
   const [toastShow, setToastShow] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
@@ -57,20 +51,7 @@ export default function App() {
   const [overlayEnabled, setOverlayEnabled] = useState(true);
   const [hasUnmuted, setHasUnmuted] = useState(false);
   const hasUnmutedRef = useRef(false);
-  const [history, setHistory] = useState(() =>
-    JSON.parse(localStorage.getItem('ytTV_history') || '[]').slice(0, 5)
-  );
-  const [subscriptions, setSubscriptions] = useState(() =>
-    JSON.parse(localStorage.getItem('ytTV_subs') || '[]')
-  );
-  const [helpVisible, setHelpVisible] = useState(false);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState('');
-
-  /* Keep latest subscriptions in ref for non-render callbacks */
-  const subsRef = useRef(subscriptions);
-  useEffect(() => { subsRef.current = subscriptions; }, [subscriptions]);
-
-
 
   /* ── Screen Wake Lock ── */
   useWakeLock();
@@ -98,29 +79,16 @@ export default function App() {
   /* ── Channel label sync ── */
   const syncLabels = useCallback(() => {
     const s = S.current;
-    const ch = s.activeIndex == null ? '00' : String(s.activeIndex + 1).padStart(2, '0');
-    setChannelLabel(`CH ${ch}`);
-  }, []);
-
-  /* ── Subscription UI sync ── */
-  const syncSubscriptionUI = useCallback(() => {
-    const s = S.current;
-    if (!s.query) {
-      setNetworkActive(false);
-      return;
+    const channel = CHANNELS[s.activeChannelIndex];
+    if (channel) {
+      setChannelLabel(channel.name.replace(' (24/7)', '').toUpperCase());
+      setNetworkActive(true);
     }
-    setNetworkName(s.query.toUpperCase());
-    setNetworkActive(true);
-    const isSub = subsRef.current.some(
-      (x) => x.toLowerCase() === s.query.trim().toLowerCase()
-    );
-    setIsSubscribed(isSub);
   }, []);
 
   /* ── Glitch flash ── */
   const flashGlitch = useCallback(() => {
     setGlitchActive(false);
-    // Force reflow via ref
     if (glitchRef.current) void glitchRef.current.offsetWidth;
     setGlitchBg(
       `repeating-linear-gradient(0deg,rgba(255,255,255,0.85) 0 1px,rgba(0,0,0,0.9) 1px ${2 + Math.random() * 3}px)`
@@ -153,8 +121,6 @@ export default function App() {
     };
   }, []);
 
-
-
   /* ── HUD idle listeners ── */
   useEffect(() => {
     const handler = () => resetHudIdle();
@@ -171,117 +137,144 @@ export default function App() {
     };
   }, [resetHudIdle]);
 
-  /* ── Generate random offset for video playback ── */
-  function generateRandomOffset(item) {
-    const duration = item.dur || 300;
-    return duration > 60 ? Math.floor(Math.random() * (duration * 0.7)) : 0;
-  }
-
   /* ── Switch channel ── */
-  const switchTo = useCallback(
-    async (index, dir = 'forward', isVideoEnd = false) => {
-      const s = S.current;
-      void dir;
-      if (!s.pool.length) {
-        setStatus('NO SIGNAL');
-        return;
+  const switchTo = useCallback(async (index) => {
+    const s = S.current;
+    
+    // Wrap around index for infinite scrolling
+    if (index < 0) index = (CHANNELS.length + (index % CHANNELS.length)) % CHANNELS.length;
+    else index = index % CHANNELS.length;
+
+    s.switchToken++;
+    const tok = s.switchToken;
+
+    flashGlitch();
+    setStatus('TUNING');
+
+    const delayTime = s.failChainCount > 2 ? 800 : 250;
+    await new Promise((r) => setTimeout(r, delayTime));
+    if (tok !== s.switchToken) return;
+
+    const channel = CHANNELS[index];
+    s.activeChannelIndex = index;
+    syncLabels();
+
+    // Save to local storage for persistent session
+    localStorage.setItem('ytTV_lastChannel', index);
+
+    // Initialize continuous timeline state for this channel if missing
+    if (!s.channelStates[channel.id]) {
+      s.channelStates[channel.id] = {
+        playlist: [],
+        // Will be dynamically offset based on the first fetched item
+        startedAt: Date.now()
+      };
+    }
+
+    const state = s.channelStates[channel.id];
+    let elapsed = (Date.now() - state.startedAt) / 1000;
+    let currentItem = null;
+    let resumeAt = 0;
+    let exhausted = false;
+
+    // Traverse the timeline
+    while (true) {
+      let accumulatedTime = 0;
+      let foundIndex = -1;
+
+      for (let i = 0; i < state.playlist.length; i++) {
+        const item = state.playlist[i];
+        if (elapsed < accumulatedTime + item.dur) {
+          foundIndex = i;
+          resumeAt = elapsed - accumulatedTime;
+          break;
+        }
+        accumulatedTime += item.dur;
       }
 
-      // Save current position
-      if (
-        playerRef.current &&
-        playerRef.current.tagName === 'VIDEO' &&
-        s.activeIndex !== null &&
-        s.pool[s.activeIndex]
-      ) {
-        try {
-          const isPlaying = !playerRef.current.paused && !playerRef.current.ended;
-          if (isPlaying) {
-            const currentVideo = s.pool[s.activeIndex];
-            s.channelHistory[currentVideo.id] = {
-              savedTime: playerRef.current.currentTime || 0,
-              leftAt: Date.now(),
-            };
-          }
-        } catch (err) {
-          console.warn('[TV] Safely bypassed history tracking allocation:', err);
-        }
-      }
-
-      if (index < 0)
-        index = (s.pool.length + (index % s.pool.length)) % s.pool.length;
-      else index = index % s.pool.length;
-
-      s.switchToken++;
-      const tok = s.switchToken;
-
-      flashGlitch();
-      setStatus('TUNING');
-
-      const delayTime = s.failChainCount > 2 ? 800 : 250;
-      await new Promise((r) => setTimeout(r, delayTime));
-      if (tok !== s.switchToken) return;
-
-      const item = s.pool[index];
-
-      let startTime = 0;
-      if (!isVideoEnd) {
-        if (s.channelHistory[item.id]) {
-          const hist = s.channelHistory[item.id];
-          const elapsedSeconds = (Date.now() - hist.leftAt) / 1000;
-          startTime = Math.floor(hist.savedTime + elapsedSeconds);
-          if (item.dur && startTime >= item.dur) {
-            startTime = startTime % item.dur;
-          }
-        } else {
-          startTime = generateRandomOffset(item);
-        }
-      }
-
-      s.activeIndex = index;
-      syncLabels();
-
-      if (item.embedUrl) {
-        // For VidAPI iframe player
-        let finalEmbedUrl = item.embedUrl;
-        if (startTime > 0) {
-          try {
-            const urlObj = new URL(finalEmbedUrl);
-            urlObj.searchParams.set('resumeAt', startTime);
-            finalEmbedUrl = urlObj.toString();
-          } catch (e) {
-            console.warn('[TV] Failed to parse embed URL for resume time:', e);
-          }
-        }
-        setCurrentEmbedUrl(finalEmbedUrl);
-
-        // Auto-clear static noise/tuning after a short delay for iframe embeds,
-        // so that even if the postMessage event is missed or blocked by the sandbox,
-        // the screen still clears and reveals the video player!
-        setTimeout(() => {
-          if (s.switchToken === tok) {
-            clearStatusFn();
-          }
-        }, 1800);
+      if (foundIndex !== -1) {
+        currentItem = state.playlist[foundIndex];
+        break;
       } else {
-        setCurrentEmbedUrl('');
-        if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
-          playerRef.current.src = item.url;
-          playerRef.current.currentTime = startTime;
-          playerRef.current.volume = volume / 100;
-          playerRef.current.play().catch((err) => {
-            console.warn('[TV] Auto-play block/interruption:', err);
-          });
+        // The playlist is empty or exhausted, fetch a new dynamic batch!
+        setStatus('SCANNING');
+        const newItems = await fetchChannelContent(channel);
+        if (tok !== s.switchToken) return;
+
+        if (newItems && newItems.length > 0) {
+          if (state.playlist.length === 0) {
+            const firstItem = newItems[0];
+            let randomOffset;
+            if (firstItem.dur >= 5400) {
+              // Movie: 15 to 25 mins (900s to 1500s)
+              randomOffset = Math.floor(Math.random() * (1500 - 900 + 1) + 900);
+            } else {
+              // TV Show: 3 to 10 mins (180s to 600s)
+              randomOffset = Math.floor(Math.random() * (600 - 180 + 1) + 180);
+            }
+            state.startedAt = Date.now() - (randomOffset * 1000);
+            elapsed = (Date.now() - state.startedAt) / 1000;
+          }
+          state.playlist.push(...newItems);
+          // Loop again to find the item in the newly appended items
+        } else {
+          exhausted = true;
+          break;
         }
       }
-    },
-    [flashGlitch, setStatus, syncLabels, volume, clearStatusFn]
-  );
+    }
+
+    if (exhausted || !currentItem) {
+      s.failChainCount++;
+      setStatus('NO SIGNAL');
+      return;
+    }
+
+    s.failChainCount = 0;
+
+    if (currentItem.embedUrl) {
+      let finalEmbedUrl = currentItem.embedUrl;
+      if (resumeAt > 0) {
+        try {
+          const urlObj = new URL(finalEmbedUrl);
+          urlObj.searchParams.set('resumeAt', Math.floor(resumeAt));
+          finalEmbedUrl = urlObj.toString();
+        } catch (e) {
+          console.warn('[TV] Failed to parse embed URL for resume time:', e);
+        }
+      }
+      setCurrentEmbedUrl(finalEmbedUrl);
+
+      setTimeout(() => {
+        if (s.switchToken === tok) clearStatusFn();
+      }, 1800);
+    }
+  }, [flashGlitch, setStatus, syncLabels, clearStatusFn]);
+
+  /* ── Initial Load Logic ── */
+  useEffect(() => {
+    const saved = localStorage.getItem('ytTV_lastChannel');
+    let startIndex = 0;
+    if (saved !== null && !isNaN(saved)) {
+      startIndex = parseInt(saved, 10);
+    } else {
+      // First time visitor gets a random channel
+      startIndex = Math.floor(Math.random() * CHANNELS.length);
+    }
+    
+    // Ensure index is within bounds
+    startIndex = Math.max(0, Math.min(startIndex, CHANNELS.length - 1));
+    
+    // Slight delay to let noise canvas initialize
+    setTimeout(() => {
+      switchTo(startIndex, 'forward');
+    }, 100);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ── Unmute Detection ── */
   useEffect(() => {
     const handleBlur = () => {
-      // Small timeout to allow document.activeElement to update to the iframe
       setTimeout(() => {
         if (document.activeElement === playerRef.current) {
           if (!hasUnmutedRef.current) {
@@ -299,20 +292,13 @@ export default function App() {
   /* ── Handle channel failure ── */
   const handleChannelFailure = useCallback(() => {
     const s = S.current;
-    if (s.activeIndex == null || !s.pool.length) return;
-    s.failChainCount++;
-
-    if (s.failChainCount > s.pool.length) {
-      showToast('SIGNAL LOSS DETECTED - SEARCH AGAIN');
+    if (s.failChainCount > 10) {
+      showToast('SIGNAL LOSS DETECTED');
       s.failChainCount = 0;
       setStatus('NO SIGNAL');
       return;
     }
-
-    console.warn(
-      `[TV] Restricted video bypass. Auto-tuning past index: ${s.activeIndex}`
-    );
-    switchTo(s.activeIndex + 1, 'forward');
+    switchTo(s.activeChannelIndex + 1);
   }, [showToast, setStatus, switchTo]);
 
   // HTML5 Video Handlers
@@ -321,28 +307,40 @@ export default function App() {
     clearStatusFn();
   }, [clearStatusFn]);
 
-  const handleEnded = useCallback(() => {
+  const skipCurrentVideo = useCallback(() => {
     const s = S.current;
-    if (s.activeIndex == null) return;
-    switchTo(s.activeIndex + 1, 'forward', true);
+    const channel = CHANNELS[s.activeChannelIndex];
+    if (!channel) return;
+    const state = s.channelStates[channel.id];
+    if (!state || !state.playlist.length) return;
+
+    let elapsed = (Date.now() - state.startedAt) / 1000;
+    let accumulatedTime = 0;
+    let currentItem = null;
+
+    for (let i = 0; i < state.playlist.length; i++) {
+      const item = state.playlist[i];
+      if (elapsed < accumulatedTime + item.dur) {
+        currentItem = item;
+        break;
+      }
+      accumulatedTime += item.dur;
+    }
+
+    if (currentItem) {
+      state.startedAt -= (currentItem.dur * 1000);
+    }
+
+    switchTo(s.activeChannelIndex);
   }, [switchTo]);
+
+  const handleEnded = useCallback(() => {
+    skipCurrentVideo();
+  }, [skipCurrentVideo]);
 
   const handleError = useCallback(() => {
     handleChannelFailure();
   }, [handleChannelFailure]);
-
-  // Handle local video playback if currentEmbedUrl is empty
-  useEffect(() => {
-    const s = S.current;
-    if (!currentEmbedUrl && s.pool[s.activeIndex] && playerRef.current && playerRef.current.tagName === 'VIDEO') {
-      const item = s.pool[s.activeIndex];
-      playerRef.current.src = item.url;
-      playerRef.current.volume = volume / 100;
-      playerRef.current.play().catch((err) => {
-        console.warn('[TV] Local video autoplay block:', err);
-      });
-    }
-  }, [currentEmbedUrl, volume]);
 
   // Listen for iframe player events via postMessage
   useEffect(() => {
@@ -357,20 +355,11 @@ export default function App() {
         } else if (player_status === 'completed') {
           handleEnded();
         } else if (player_status === 'paused' && hasUnmutedRef.current) {
-          // The user paused the video (e.g. using spacebar)
-          // Force it to resume by reloading the iframe at the current timestamp!
+          // If paused manually, forcefully resume it immediately
           const s = S.current;
-          if (s.activeIndex != null && s.pool[s.activeIndex]) {
-            if (currentProgressRef.current) {
-              s.channelHistory[s.pool[s.activeIndex].id] = {
-                savedTime: currentProgressRef.current,
-                leftAt: Date.now()
-              };
-            }
-            setTimeout(() => {
-              switchTo(s.activeIndex, 'forward');
-            }, 100);
-          }
+          setTimeout(() => {
+            switchTo(s.activeChannelIndex, 'forward');
+          }, 100);
         }
       }
     }
@@ -379,178 +368,25 @@ export default function App() {
   }, [handlePlay, handleEnded, switchTo]);
 
 
-
-  /* ── Build session from search results ── */
-  const buildSession = useCallback(
-    (query, pool) => {
-      const s = S.current;
-      s.query = query;
-      s.sessionSeed = `${query}::${Date.now()}`;
-      s.activeIndex = 0;
-      s.pool = seededShuffle(pool, s.sessionSeed);
-      s.poolPointer = 0;
-      s.failChainCount = 0;
-      s.channelHistory = {};
-      syncLabels();
-      syncSubscriptionUI();
-    },
-    [syncLabels, syncSubscriptionUI]
-  );
-
-  /* ── Save search to history ── */
-  const saveHistory = useCallback((q) => {
-    if (!q || !q.trim()) return;
-    setHistory((prev) => {
-      const updated = [q, ...prev.filter((x) => x.toLowerCase() !== q.toLowerCase())].slice(0, 5);
-      localStorage.setItem('ytTV_history', JSON.stringify(updated));
-      return updated;
-    });
+  /* ── Open / Close Channel Modal ── */
+  const openChannelModal = useCallback(() => {
+    setChannelModalOpen(true);
+    setHudFadeOut(false);
+    setNetworkFadeOut(false);
+    clearTimeout(hudTimerRef.current);
   }, []);
-
-  const handleSearchRef = useRef(null);
-
-  /* ── Handle search ── */
-  const handleSearch = useCallback(
-    async (q, isRetry = false) => {
-      const query = q.trim().replace(/\s+/g, ' ');
-
-      // Close search
-      setSearchOpen(false);
-      resetHudIdle();
-      setStatus(isRetry ? 'RETRYING' : 'SCANNING');
-
-      const s = S.current;
-      s.switchToken++;
-      if (playerRef.current) {
-        playerRef.current.pause();
-        playerRef.current.src = '';
-      }
-
-      s.reqId++;
-      const reqId = s.reqId;
-
-      try {
-        const pool = await searchChannels(query);
-        if (reqId !== s.reqId) return;
-
-        if (!pool || pool.length === 0) {
-          if (!isRetry) {
-            showToast('CONNECTION FAILED - RETRYING...');
-            setTimeout(() => handleSearchRef.current?.(q, true), 1500);
-          } else {
-            setStatus('NO SIGNAL');
-            showToast('SIGNAL LOST. TRY ANOTHER SEARCH.');
-          }
-          return;
-        }
-
-        buildSession(query, pool);
-        saveHistory(query);
-        showToast(`${pool.length} CHANNELS ONLINE`);
-        switchTo(0, 'forward');
-      } catch {
-        if (reqId !== s.reqId) return;
-        if (!isRetry) {
-          showToast('CONNECTION FAILED - RETRYING...');
-          setTimeout(() => handleSearchRef.current?.(q, true), 1500);
-        } else {
-          setStatus('NO SIGNAL');
-          showToast('TRANS-LINK TIMED OUT');
-        }
-      }
-    },
-    [setStatus, showToast, buildSession, saveHistory, switchTo, resetHudIdle]
-  );
-
-  useEffect(() => {
-    handleSearchRef.current = handleSearch;
-  }, [handleSearch]);
-
-  // Load the initial comedy channel on mount
-  useEffect(() => {
-    handleSearch("");
-  }, [handleSearch]);
-
-  /* ── Volume change handler ── */
-  const handleVolumeChange = useCallback((e) => {
-    const v = Number(e.target.value);
-    setVolume(v);
-    if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
-      playerRef.current.volume = v / 100;
-      playerRef.current.muted = (v === 0);
-    }
-  }, []);
-
-  /* ── Open / Close search ── */
-  const openSearchFn = useCallback(
-    (q = '') => {
-      setSearchOpen(true);
-      setHudFadeOut(false);
-      setNetworkFadeOut(false);
-      clearTimeout(hudTimerRef.current);
-      if (q) setSearchValue(q);
-      setTimeout(() => searchInputRef.current?.focus(), 50);
-    },
-    []
-  );
-  const closeSearchFn = useCallback(() => {
-    setSearchOpen(false);
+  const closeChannelModal = useCallback(() => {
+    setChannelModalOpen(false);
     resetHudIdle();
   }, [resetHudIdle]);
 
-  /* ── Toggle subscription ── */
-  const toggleSubscription = useCallback(() => {
-    const s = S.current;
-    if (!s.query) return;
-    const normalized = s.query.trim();
-
-    setSubscriptions((prev) => {
-      const idx = prev.findIndex(
-        (x) => x.toLowerCase() === normalized.toLowerCase()
-      );
-      let updated;
-      if (idx > -1) {
-        updated = prev.filter((_, i) => i !== idx);
-        showToast('REMOVED FROM SAVED NETWORKS');
-      } else {
-        updated = [normalized, ...prev];
-        showToast('ADDED TO SAVED NETWORKS');
-      }
-      localStorage.setItem('ytTV_subs', JSON.stringify(updated));
-      const isSub = updated.some(
-        (x) => x.toLowerCase() === s.query.trim().toLowerCase()
-      );
-      setIsSubscribed(isSub);
-      return updated;
-    });
-  }, [showToast]);
-
-  /* ── Delete subscription ── */
-  const deleteSubscription = useCallback(
-    (q) => {
-      setSubscriptions((prev) => {
-        const updated = prev.filter((x) => x !== q);
-        localStorage.setItem('ytTV_subs', JSON.stringify(updated));
-        if (S.current.query.toLowerCase() === q.toLowerCase()) {
-          const isSub = updated.some(
-            (x) => x.toLowerCase() === S.current.query.trim().toLowerCase()
-          );
-          setIsSubscribed(isSub);
-        }
-        return updated;
-      });
-    },
-    []
-  );
-
-  /* ── Search form submit ── */
-  const handleSearchSubmit = useCallback(
-    (e) => {
-      e.preventDefault();
-      handleSearch(searchValue);
-    },
-    [searchValue, handleSearch]
-  );
+  const handleSelectChannel = useCallback((id) => {
+    const index = CHANNELS.findIndex(ch => ch.id === id);
+    if (index !== -1) {
+      closeChannelModal();
+      switchTo(index, 'forward');
+    }
+  }, [closeChannelModal, switchTo]);
 
   /* ── Fullscreen toggle ── */
   const toggleFullscreen = useCallback(async () => {
@@ -562,7 +398,7 @@ export default function App() {
   }, []);
 
   /* ── Theme cycling ── */
-  const themes = useRef(['', 'theme-green', 'theme-amber', 'theme-bw']);
+  const themes = useRef(['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan']);
   const themeIdx = useRef(0);
   const cycleTheme = useCallback(() => {
     themeIdx.current = (themeIdx.current + 1) % themes.current.length;
@@ -580,7 +416,6 @@ export default function App() {
         if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
           playerRef.current.play().catch(err => console.warn('[TV] Play blocked:', err));
         }
-        // If status layer is visible, restart noise
         if (document.querySelector('.status-layer.visible')) {
           if (noiseRef.current) noiseRef.current.start();
         }
@@ -592,8 +427,8 @@ export default function App() {
   /* ── Keyboard shortcuts ── */
   useEffect(() => {
     function onKeyDown(e) {
-      if (searchOpen) {
-        if (e.key === 'Escape') closeSearchFn();
+      if (channelModalOpen) {
+        if (e.key === 'Escape') closeChannelModal();
         return;
       }
       if (
@@ -607,14 +442,15 @@ export default function App() {
       if (e.key === ' ') {
         e.preventDefault();
         if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
-          if (playerRef.current.muted) {
-            playerRef.current.muted = false;
-            setVolume(Math.round(playerRef.current.volume * 100));
-          } else {
-            playerRef.current.muted = true;
-            setVolume(0);
-          }
+          playerRef.current.muted = !playerRef.current.muted;
+        } else if (playerRef.current && playerRef.current.tagName === 'IFRAME') {
+          // Send generic mute command via postMessage for cross-origin iframe
+          playerRef.current.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+          playerRef.current.contentWindow.postMessage(JSON.stringify({ type: 'PLAYER_EVENT', data: { action: 'mute' } }), '*');
         }
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullscreen();
       } else if (e.key.toLowerCase() === 'c') {
         e.preventDefault();
         cycleTheme();
@@ -623,30 +459,61 @@ export default function App() {
         setOverlayEnabled((prev) => !prev);
       } else if (e.key === '/' || e.key.toLowerCase() === 's') {
         e.preventDefault();
-        openSearchFn(s.query);
+        openChannelModal();
       } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
         e.preventDefault();
-        if (!s.query) return openSearchFn();
-        switchTo((s.activeIndex ?? -1) + 1, 'forward');
+        switchTo(s.activeChannelIndex + 1, 'forward');
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
         e.preventDefault();
-        if (!s.query) return openSearchFn();
-        switchTo((s.activeIndex ?? 0) - 1, 'back');
-      } else if (/^[1-9]$/.test(e.key)) {
-        e.preventDefault();
-        if (s.query) switchTo(Number(e.key) - 1, 'forward');
-      } else if (e.key === '0') {
-        e.preventDefault();
-        if (s.query) switchTo(9, 'forward');
+        switchTo(s.activeChannelIndex - 1, 'back');
       }
     }
 
     document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [searchOpen, closeSearchFn, openSearchFn, switchTo, cycleTheme]);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [channelModalOpen, closeChannelModal, openChannelModal, switchTo, cycleTheme, toggleFullscreen]);
 
-  /* ── Derived values ── */
-  const hasBothSections = history.length > 0 && subscriptions.length > 0;
+  /* ── Time & Title Tracker ── */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const s = S.current;
+      const channel = CHANNELS[s.activeChannelIndex];
+      if (!channel) return;
+      const state = s.channelStates[channel.id];
+      if (!state || !state.playlist.length) return;
+
+      let elapsed = (Date.now() - state.startedAt) / 1000;
+      let accumulatedTime = 0;
+      let currentItem = null;
+
+      for (let i = 0; i < state.playlist.length; i++) {
+        const item = state.playlist[i];
+        if (elapsed < accumulatedTime + item.dur) {
+          currentItem = item;
+          break;
+        }
+        accumulatedTime += item.dur;
+      }
+
+      if (currentItem) {
+        const currentSeconds = Math.max(0, elapsed - accumulatedTime);
+        const remainingSeconds = Math.max(0, currentItem.dur - currentSeconds);
+
+        const formatTime = (secs) => {
+          const s = Math.floor(secs);
+          const h = Math.floor(s / 3600);
+          const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+          const sec = Math.floor(s % 60).toString().padStart(2, '0');
+          if (h > 0) return `${h}:${m}:${sec}`;
+          return `${m}:${sec}`;
+        };
+
+        setPlaybackTimeStr(`${formatTime(currentSeconds)} / -${formatTime(remainingSeconds)}`);
+        setCurrentTitle(currentItem.title);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   /* ── JSX ── */
   return (
@@ -670,9 +537,8 @@ export default function App() {
         statusText={statusText}
         networkActive={networkActive}
         networkFadeOut={networkFadeOut}
-        networkName={networkName}
-        isSubscribed={isSubscribed}
-        toggleSubscription={toggleSubscription}
+        currentTitle={currentTitle}
+        playbackTimeStr={playbackTimeStr}
         toastShow={toastShow}
         toastMsg={toastMsg}
         togglePower={togglePower}
@@ -680,30 +546,19 @@ export default function App() {
 
       <HUD
         hudFadeOut={hudFadeOut}
-        volume={volume}
         channelLabel={channelLabel}
-        openSearchFn={openSearchFn}
-        handleVolumeChange={handleVolumeChange}
-        switchTo={switchTo}
+        openChannelModal={openChannelModal}
+        switchToNext={() => switchTo(S.current.activeChannelIndex + 1)}
+        switchToPrev={() => switchTo(S.current.activeChannelIndex - 1)}
         toggleFullscreen={toggleFullscreen}
-        query={S.current.query}
-        activeIndex={S.current.activeIndex}
+        refreshVideo={skipCurrentVideo}
       />
 
-      <SearchModal
-        searchOpen={searchOpen}
-        closeSearchFn={closeSearchFn}
-        searchInputRef={searchInputRef}
-        searchValue={searchValue}
-        setSearchValue={setSearchValue}
-        handleSearchSubmit={handleSearchSubmit}
-        history={history}
-        handleSearch={handleSearch}
-        subscriptions={subscriptions}
-        deleteSubscription={deleteSubscription}
-        helpVisible={helpVisible}
-        setHelpVisible={setHelpVisible}
-        hasBothSections={hasBothSections}
+      <ChannelModal
+        isOpen={channelModalOpen}
+        onClose={closeChannelModal}
+        onSelect={handleSelectChannel}
+        channels={CHANNELS}
       />
     </div>
   );

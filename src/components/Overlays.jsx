@@ -8,9 +8,8 @@ export default function Overlays({
   statusText,
   networkActive,
   networkFadeOut,
-  networkName,
-  isSubscribed,
-  toggleSubscription,
+  currentTitle,
+  playbackTimeStr,
   toastShow,
   toastMsg,
   togglePower,
@@ -42,13 +41,10 @@ export default function Overlays({
       <div
         className={`network-overlay${networkActive ? ' active' : ''}${networkFadeOut ? ' fade-out' : ''}`}
       >
-        <div className="network-name">{networkName}</div>
-        <button
-          className={`network-btn${isSubscribed ? ' subscribed' : ''}`}
-          onClick={toggleSubscription}
-        >
-          {isSubscribed ? '✓ SAVED' : '+ SAVE NETWORK'}
-        </button>
+        <div className="network-name" style={{ fontSize: '11px', letterSpacing: '1px' }}>{currentTitle}</div>
+        <div className="network-time" style={{ fontSize: '10px', opacity: 0.8, marginTop: '4px' }}>
+          {playbackTimeStr}
+        </div>
       </div>
 
       {/* Toast */}
