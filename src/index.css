@@ -65,7 +65,6 @@ input {
 #player {
   width: 100% !important;
   height: 100% !important;
-  pointer-events: none;
 }
 
 .player-shield {
@@ -73,7 +72,7 @@ input {
   inset: 0;
   z-index: 1;
   background: transparent;
-  cursor: default;
+  pointer-events: none;
 }
 
 /* ── NOISE / STATIC CANVAS ── */
@@ -862,3 +861,4 @@ body.theme-amber {
 body.theme-bw {
   filter: grayscale(1) contrast(1.3);
 }
+

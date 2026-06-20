@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 
 import { seededShuffle } from './utils/helpers';
-import { searchYouTube } from './api/youtube';
+import { searchChannels } from './api/channels';
 import { createNoiseController } from './components/NoiseCanvasController';
 import { useWakeLock } from './hooks/useWakeLock';
 import PlayerStage from './components/PlayerStage';
@@ -21,8 +21,8 @@ export default function App() {
   const hudTimerRef = useRef(null);
   const toastTimerRef = useRef(null);
   const playerRef = useRef(null);
-  const playerInitRef = useRef(false);
   const noiseRef = useRef(null);
+  const currentProgressRef = useRef(0);
 
   /* ── Mutable state (not triggering re-render) via ref ── */
   const S = useRef({
@@ -55,6 +55,8 @@ export default function App() {
   const [glitchBg, setGlitchBg] = useState('');
   const [isPoweredOff, setIsPoweredOff] = useState(false);
   const [overlayEnabled, setOverlayEnabled] = useState(true);
+  const [hasUnmuted, setHasUnmuted] = useState(false);
+  const hasUnmutedRef = useRef(false);
   const [history, setHistory] = useState(() =>
     JSON.parse(localStorage.getItem('ytTV_history') || '[]').slice(0, 5)
   );
@@ -62,17 +64,13 @@ export default function App() {
     JSON.parse(localStorage.getItem('ytTV_subs') || '[]')
   );
   const [helpVisible, setHelpVisible] = useState(false);
+  const [currentEmbedUrl, setCurrentEmbedUrl] = useState('');
 
   /* Keep latest subscriptions in ref for non-render callbacks */
   const subsRef = useRef(subscriptions);
   useEffect(() => { subsRef.current = subscriptions; }, [subscriptions]);
 
-  /* ── Callback refs for YouTube event handlers ──
-     These refs always point to the latest function,
-     so YouTube events never call stale closures. */
-  const switchToRef = useRef(null);
-  const handleChannelFailureRef = useRef(null);
-  const clearStatusRef = useRef(null);
+
 
   /* ── Screen Wake Lock ── */
   useWakeLock();
@@ -192,16 +190,16 @@ export default function App() {
       // Save current position
       if (
         playerRef.current &&
-        typeof playerRef.current.getCurrentTime === 'function' &&
+        playerRef.current.tagName === 'VIDEO' &&
         s.activeIndex !== null &&
         s.pool[s.activeIndex]
       ) {
         try {
-          const playerState = playerRef.current.getPlayerState?.();
-          if (playerState === 1 || playerState === 2 || playerState === 3) {
+          const isPlaying = !playerRef.current.paused && !playerRef.current.ended;
+          if (isPlaying) {
             const currentVideo = s.pool[s.activeIndex];
             s.channelHistory[currentVideo.id] = {
-              savedTime: playerRef.current.getCurrentTime() || 0,
+              savedTime: playerRef.current.currentTime || 0,
               leftAt: Date.now(),
             };
           }
@@ -243,15 +241,60 @@ export default function App() {
       s.activeIndex = index;
       syncLabels();
 
-      if (playerRef.current && playerRef.current.loadVideoById) {
-        playerRef.current.loadVideoById({
-          videoId: item.id,
-          startSeconds: startTime,
-        });
+      if (item.embedUrl) {
+        // For VidAPI iframe player
+        let finalEmbedUrl = item.embedUrl;
+        if (startTime > 0) {
+          try {
+            const urlObj = new URL(finalEmbedUrl);
+            urlObj.searchParams.set('resumeAt', startTime);
+            finalEmbedUrl = urlObj.toString();
+          } catch (e) {
+            console.warn('[TV] Failed to parse embed URL for resume time:', e);
+          }
+        }
+        setCurrentEmbedUrl(finalEmbedUrl);
+
+        // Auto-clear static noise/tuning after a short delay for iframe embeds,
+        // so that even if the postMessage event is missed or blocked by the sandbox,
+        // the screen still clears and reveals the video player!
+        setTimeout(() => {
+          if (s.switchToken === tok) {
+            clearStatusFn();
+          }
+        }, 1800);
+      } else {
+        setCurrentEmbedUrl('');
+        if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
+          playerRef.current.src = item.url;
+          playerRef.current.currentTime = startTime;
+          playerRef.current.volume = volume / 100;
+          playerRef.current.play().catch((err) => {
+            console.warn('[TV] Auto-play block/interruption:', err);
+          });
+        }
       }
     },
-    [flashGlitch, setStatus, syncLabels]
+    [flashGlitch, setStatus, syncLabels, volume, clearStatusFn]
   );
+
+  /* ── Unmute Detection ── */
+  useEffect(() => {
+    const handleBlur = () => {
+      // Small timeout to allow document.activeElement to update to the iframe
+      setTimeout(() => {
+        if (document.activeElement === playerRef.current) {
+          if (!hasUnmutedRef.current) {
+            setHasUnmuted(true);
+            hasUnmutedRef.current = true;
+            showToast('AUDIO ENABLED');
+          }
+        }
+      }, 0);
+    };
+    window.addEventListener('blur', handleBlur);
+    return () => window.removeEventListener('blur', handleBlur);
+  }, [hasUnmuted, showToast]);
 
   /* ── Handle channel failure ── */
   const handleChannelFailure = useCallback(() => {
@@ -272,10 +315,70 @@ export default function App() {
     switchTo(s.activeIndex + 1, 'forward');
   }, [showToast, setStatus, switchTo]);
 
-  /* ── Keep callback refs updated for YouTube events ── */
-  useEffect(() => { switchToRef.current = switchTo; }, [switchTo]);
-  useEffect(() => { handleChannelFailureRef.current = handleChannelFailure; }, [handleChannelFailure]);
-  useEffect(() => { clearStatusRef.current = clearStatusFn; }, [clearStatusFn]);
+  // HTML5 Video Handlers
+  const handlePlay = useCallback(() => {
+    S.current.failChainCount = 0;
+    clearStatusFn();
+  }, [clearStatusFn]);
+
+  const handleEnded = useCallback(() => {
+    const s = S.current;
+    if (s.activeIndex == null) return;
+    switchTo(s.activeIndex + 1, 'forward', true);
+  }, [switchTo]);
+
+  const handleError = useCallback(() => {
+    handleChannelFailure();
+  }, [handleChannelFailure]);
+
+  // Handle local video playback if currentEmbedUrl is empty
+  useEffect(() => {
+    const s = S.current;
+    if (!currentEmbedUrl && s.pool[s.activeIndex] && playerRef.current && playerRef.current.tagName === 'VIDEO') {
+      const item = s.pool[s.activeIndex];
+      playerRef.current.src = item.url;
+      playerRef.current.volume = volume / 100;
+      playerRef.current.play().catch((err) => {
+        console.warn('[TV] Local video autoplay block:', err);
+      });
+    }
+  }, [currentEmbedUrl, volume]);
+
+  // Listen for iframe player events via postMessage
+  useEffect(() => {
+    function handleMessage(e) {
+      if (e.data && e.data.type === 'PLAYER_EVENT') {
+        const { player_status, player_progress } = e.data.data;
+        if (player_progress) {
+          currentProgressRef.current = player_progress;
+        }
+        if (player_status === 'playing') {
+          handlePlay();
+        } else if (player_status === 'completed') {
+          handleEnded();
+        } else if (player_status === 'paused' && hasUnmutedRef.current) {
+          // The user paused the video (e.g. using spacebar)
+          // Force it to resume by reloading the iframe at the current timestamp!
+          const s = S.current;
+          if (s.activeIndex != null && s.pool[s.activeIndex]) {
+            if (currentProgressRef.current) {
+              s.channelHistory[s.pool[s.activeIndex].id] = {
+                savedTime: currentProgressRef.current,
+                leftAt: Date.now()
+              };
+            }
+            setTimeout(() => {
+              switchTo(s.activeIndex, 'forward');
+            }, 100);
+          }
+        }
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [handlePlay, handleEnded, switchTo]);
+
+
 
   /* ── Build session from search results ── */
   const buildSession = useCallback(
@@ -296,6 +399,7 @@ export default function App() {
 
   /* ── Save search to history ── */
   const saveHistory = useCallback((q) => {
+    if (!q || !q.trim()) return;
     setHistory((prev) => {
       const updated = [q, ...prev.filter((x) => x.toLowerCase() !== q.toLowerCase())].slice(0, 5);
       localStorage.setItem('ytTV_history', JSON.stringify(updated));
@@ -309,7 +413,6 @@ export default function App() {
   const handleSearch = useCallback(
     async (q, isRetry = false) => {
       const query = q.trim().replace(/\s+/g, ' ');
-      if (!query) return;
 
       // Close search
       setSearchOpen(false);
@@ -318,25 +421,16 @@ export default function App() {
 
       const s = S.current;
       s.switchToken++;
-      if (playerRef.current && playerRef.current.stopVideo)
-        playerRef.current.stopVideo();
+      if (playerRef.current) {
+        playerRef.current.pause();
+        playerRef.current.src = '';
+      }
 
       s.reqId++;
       const reqId = s.reqId;
 
-      let enrichedQuery = query;
-      const lowerQ = query.toLowerCase();
-      if (
-        !lowerQ.includes('mix') &&
-        !lowerQ.includes('compilation') &&
-        !lowerQ.includes('album') &&
-        !lowerQ.includes('playlist')
-      ) {
-        enrichedQuery += ' compilation mix';
-      }
-
       try {
-        const pool = await searchYouTube(enrichedQuery);
+        const pool = await searchChannels(query);
         if (reqId !== s.reqId) return;
 
         if (!pool || pool.length === 0) {
@@ -372,78 +466,19 @@ export default function App() {
     handleSearchRef.current = handleSearch;
   }, [handleSearch]);
 
-  /* ── YouTube IFrame API ──
-     Uses a guard ref to prevent double-initialization (React StrictMode),
-     and callback refs so event handlers always call latest functions. */
+  // Load the initial comedy channel on mount
   useEffect(() => {
-    if (playerInitRef.current) return;
-
-    const currentOrigin =
-      window.location.protocol === 'file:' ||
-        !window.location.origin ||
-        window.location.origin === 'null'
-        ? 'http://localhost'
-        : window.location.origin;
-
-    function initPlayer() {
-      if (playerInitRef.current) return;
-      playerInitRef.current = true;
-
-      playerRef.current = new window.YT.Player('player', {
-        width: '100%',
-        height: '100%',
-        playerVars: {
-          autoplay: 1,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          rel: 0,
-          modestbranding: 1,
-          iv_load_policy: 3,
-          playsinline: 1,
-          enablejsapi: 1,
-          origin: currentOrigin,
-        },
-        events: {
-          onReady(e) {
-            playerRef.current = e.target;
-            playerRef.current.setVolume(70);
-          },
-          onStateChange(e) {
-            if (!window.YT) return;
-            playerRef.current = e.target;
-            if (e.data === window.YT.PlayerState.PLAYING) {
-              S.current.failChainCount = 0;
-              clearStatusRef.current?.();
-            }
-            if (e.data === window.YT.PlayerState.ENDED) {
-              if (S.current.activeIndex == null) return;
-              switchToRef.current?.(S.current.activeIndex + 1, 'forward', true);
-            }
-          },
-          onError(e) {
-            playerRef.current = e.target;
-            handleChannelFailureRef.current?.();
-          },
-        },
-      });
-    }
-
-    // YT API may already be loaded or we need to wait
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    } else {
-      window.onYouTubeIframeAPIReady = initPlayer;
-    }
-  }, []);
+    handleSearch("");
+  }, [handleSearch]);
 
   /* ── Volume change handler ── */
   const handleVolumeChange = useCallback((e) => {
     const v = Number(e.target.value);
     setVolume(v);
-    if (playerRef.current?.setVolume) playerRef.current.setVolume(v);
-    if (playerRef.current?.unMute && playerRef.current.isMuted())
-      playerRef.current.unMute();
+    if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
+      playerRef.current.volume = v / 100;
+      playerRef.current.muted = (v === 0);
+    }
   }, []);
 
   /* ── Open / Close search ── */
@@ -539,10 +574,12 @@ export default function App() {
     setIsPoweredOff((prev) => {
       const next = !prev;
       if (next) {
-        if (playerRef.current?.pauseVideo) playerRef.current.pauseVideo();
+        if (playerRef.current && playerRef.current.tagName === 'VIDEO') playerRef.current.pause();
         if (noiseRef.current) noiseRef.current.stop();
       } else {
-        if (playerRef.current?.playVideo) playerRef.current.playVideo();
+        if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
+          playerRef.current.play().catch(err => console.warn('[TV] Play blocked:', err));
+        }
         // If status layer is visible, restart noise
         if (document.querySelector('.status-layer.visible')) {
           if (noiseRef.current) noiseRef.current.start();
@@ -569,12 +606,12 @@ export default function App() {
 
       if (e.key === ' ') {
         e.preventDefault();
-        if (playerRef.current?.isMuted) {
-          if (playerRef.current.isMuted()) {
-            playerRef.current.unMute();
-            setVolume(playerRef.current.getVolume());
+        if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
+          if (playerRef.current.muted) {
+            playerRef.current.muted = false;
+            setVolume(Math.round(playerRef.current.volume * 100));
           } else {
-            playerRef.current.mute();
+            playerRef.current.muted = true;
             setVolume(0);
           }
         }
@@ -614,7 +651,14 @@ export default function App() {
   /* ── JSX ── */
   return (
     <div className={`app${isPoweredOff ? ' power-off' : ''}`}>
-      <PlayerStage />
+      <PlayerStage
+        playerRef={playerRef}
+        onPlay={handlePlay}
+        onEnded={handleEnded}
+        onError={handleError}
+        embedUrl={isPoweredOff ? '' : currentEmbedUrl}
+        hasUnmuted={hasUnmuted}
+      />
 
       <Overlays
         canvasRef={canvasRef}
