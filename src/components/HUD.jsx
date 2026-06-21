@@ -29,7 +29,11 @@ export default function HUD({
       </button>
 
       <div className="hud-spacer"></div>
-      <span className="hud-ch">{channelLabel}</span>
+      <div className="hud-ch-container" style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '200px', display: 'flex', alignItems: 'center' }}>
+        <span className={`hud-ch ${channelLabel.length > 20 ? 'marquee' : ''}`}>
+          {channelLabel}
+        </span>
+      </div>
       <div className="hud-spacer"></div>
       <button className="hud-btn" style={{ marginLeft: '12px' }} aria-label="Refresh Video" onClick={refreshVideo}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>

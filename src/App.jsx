@@ -37,10 +37,10 @@ export default function App() {
   const [hudFadeOut, setHudFadeOut] = useState(false);
   const [networkFadeOut, setNetworkFadeOut] = useState(false);
   const [networkActive, setNetworkActive] = useState(false);
-  
+
   const [currentTitle, setCurrentTitle] = useState('');
   const [playbackTimeStr, setPlaybackTimeStr] = useState('');
-  
+
   const [channelModalOpen, setChannelModalOpen] = useState(false);
   const [channelLabel, setChannelLabel] = useState('CH 1');
   const [toastMsg, setToastMsg] = useState('');
@@ -140,7 +140,7 @@ export default function App() {
   /* ── Switch channel ── */
   const switchTo = useCallback(async (index) => {
     const s = S.current;
-    
+
     // Wrap around index for infinite scrolling
     if (index < 0) index = (CHANNELS.length + (index % CHANNELS.length)) % CHANNELS.length;
     else index = index % CHANNELS.length;
@@ -261,15 +261,15 @@ export default function App() {
       // First time visitor gets a random channel
       startIndex = Math.floor(Math.random() * CHANNELS.length);
     }
-    
+
     // Ensure index is within bounds
     startIndex = Math.max(0, Math.min(startIndex, CHANNELS.length - 1));
-    
+
     // Slight delay to let noise canvas initialize
     setTimeout(() => {
       switchTo(startIndex, 'forward');
     }, 100);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ── Unmute Detection ── */

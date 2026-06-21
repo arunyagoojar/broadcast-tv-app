@@ -6,19 +6,8 @@ export default function ChannelModal({
   onSelect,
   channels
 }) {
-  // Group channels by category
-  const groupedChannels = useMemo(() => {
-    return channels.reduce((acc, ch) => {
-      if (!acc[ch.group]) acc[ch.group] = [];
-      acc[ch.group].push(ch);
-      return acc;
-    }, {});
-  }, [channels]);
-
-  if (!isOpen) return null;
-
   return (
-    <div className={`search-modal open`} onClick={onClose}>
+    <div className={`search-modal ${isOpen ? 'open' : ''}`} onClick={onClose}>
       <div
         className="search-panel"
         onClick={(e) => e.stopPropagation()}
@@ -47,31 +36,32 @@ export default function ChannelModal({
 
         <div className="search-divider" style={{ marginBottom: '16px' }}></div>
 
-        {Object.entries(groupedChannels).map(([groupName, groupChannels]) => (
-          <div key={groupName} style={{ marginBottom: '24px' }}>
-            <div className="section-label">{groupName}</div>
-            <div className="history-row">
-              {groupChannels.map((ch) => (
-                <button
-                  key={ch.id}
-                  className="history-btn"
-                  onClick={() => onSelect(ch.id)}
-                  style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '4px' }}
-                >
-                  <span style={{ color: '#fff', fontSize: '10px' }}>{ch.name.replace(' (24/7)', '')}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
+        <div className="history-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+          {channels.map((ch) => {
+            const isStream = ch.type === 'stream';
+            // Only remove " (24/7)" if it's NOT a stream, to preserve names if needed, 
+            // but per user request earlier: "remove the (24/7)" we can just do it.
+            const displayName = isStream ? ch.name : ch.name.replace(' (24/7)', '');
+
+            return (
+              <button
+                key={ch.id}
+                className="history-btn"
+                onClick={() => onSelect(ch.id)}
+                style={{ textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px' }}
+              >
+                <span style={{ color: '#fff', fontSize: '10px' }}>
+                  {displayName}
+                  {isStream && <span style={{ color: '#0f0', marginLeft: '4px' }}>[LIVE]</span>}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
         <div className="help-section" style={{ marginTop: '20px' }}>
-          <div className="help-text">
-            Use <b>Arrow Keys</b> to flip through channels. <br />
-            Press <b>Space</b> to mute/unmute. <br />
-            Press <b>C</b> to cycle color themes. <br />
-            Press <b>O</b> to toggle screen overlays. <br />
-            Press <b>F</b> or the corner icon for fullscreen.
+          <div className="help-text" style={{ fontSize: '10px', lineHeight: '1.6', textAlign: 'center' }}>
+            <b>Arrows</b> to switch channels &nbsp;|&nbsp; <b>C</b> for themes &nbsp;|&nbsp; <b>O</b> to toggle scanlines/vignette &nbsp;|&nbsp; <b>F</b> for fullscreen
           </div>
         </div>
       </div>

@@ -347,7 +347,7 @@ input {
 }
 
 .search-panel {
-  width: min(90vw, 520px);
+  width: min(90vw, 580px);
   display: grid;
   gap: 20px;
   padding: 24px 28px;
@@ -486,8 +486,8 @@ input {
 }
 
 .history-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 
@@ -876,4 +876,28 @@ body.theme-red {
 
 body.theme-cyan {
   filter: sepia(0.8) hue-rotate(140deg) saturate(2) contrast(1.1);
+}
+
+@keyframes scrollText {
+  0%, 10% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(-100%);
+  }
+  50.01% {
+    transform: translateX(100%);
+  }
+  90%, 100% {
+    transform: translateX(0);
+  }
+}
+
+.hud-ch.marquee {
+  display: inline-block;
+  animation: scrollText 12s linear infinite;
+  will-change: transform;
 }
