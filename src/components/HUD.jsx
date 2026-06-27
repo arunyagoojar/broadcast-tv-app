@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+
 export default function HUD({
   hudFadeOut,
   channelLabel,
@@ -7,6 +9,37 @@ export default function HUD({
   toggleFullscreen,
   refreshVideo,
 }) {
+  const channelWrapRef = useRef(null);
+  const channelTextRef = useRef(null);
+  const [marquee, setMarquee] = useState({
+    active: false,
+    exit: '0px',
+    enter: '0px',
+  });
+
+  useEffect(() => {
+    const wrap = channelWrapRef.current;
+    const text = channelTextRef.current;
+    if (!wrap || !text) return undefined;
+
+    const measure = () => {
+      const wrapWidth = wrap.clientWidth;
+      const textWidth = text.scrollWidth;
+      const active = textWidth > wrapWidth + 2;
+      setMarquee({
+        active,
+        exit: `${textWidth}px`,
+        enter: `${wrapWidth}px`,
+      });
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(wrap);
+    observer.observe(text);
+    return () => observer.disconnect();
+  }, [channelLabel]);
+
   return (
     <div className={`hud${hudFadeOut ? ' fade-out' : ''}`}>
       <button
@@ -29,8 +62,15 @@ export default function HUD({
       </button>
 
       <div className="hud-spacer"></div>
-      <div className="hud-ch-container" style={{ overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '200px', display: 'flex', alignItems: 'center' }}>
-        <span className={`hud-ch ${channelLabel.length > 20 ? 'marquee' : ''}`}>
+      <div className="hud-ch-container" ref={channelWrapRef}>
+        <span
+          ref={channelTextRef}
+          className={`hud-ch${marquee.active ? ' marquee' : ''}`}
+          style={{
+            '--marquee-exit': marquee.exit,
+            '--marquee-enter': marquee.enter,
+          }}
+        >
           {channelLabel}
         </span>
       </div>

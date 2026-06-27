@@ -1,6 +1,8 @@
 export default function Overlays({
   canvasRef,
   overlayEnabled,
+  scanlinesEnabled,
+  vignetteEnabled,
   glitchRef,
   glitchActive,
   glitchBg,
@@ -13,6 +15,7 @@ export default function Overlays({
   toastShow,
   toastMsg,
   togglePower,
+  audioUnlocked,
 }) {
   return (
     <>
@@ -20,12 +23,8 @@ export default function Overlays({
       <canvas ref={canvasRef} className="noise-canvas" />
 
       {/* Overlay layers */}
-      {overlayEnabled && (
-        <>
-          <div className="scanlines"></div>
-          <div className="vignette"></div>
-        </>
-      )}
+      {scanlinesEnabled && <div className="scanlines"></div>}
+      {vignetteEnabled && <div className="vignette"></div>}
       <div
         ref={glitchRef}
         className={`glitch${glitchActive ? ' active' : ''}`}
@@ -39,7 +38,7 @@ export default function Overlays({
 
       {/* Network Overlay */}
       <div
-        className={`network-overlay${networkActive ? ' active' : ''}${networkFadeOut ? ' fade-out' : ''}`}
+        className={`network-overlay${overlayEnabled && networkActive ? ' active' : ''}${networkFadeOut ? ' fade-out' : ''}`}
       >
         <div className="network-name" style={{ fontSize: '11px', letterSpacing: '1px' }}>{currentTitle}</div>
         <div className="network-time" style={{ fontSize: '10px', opacity: 0.8, marginTop: '4px' }}>
@@ -49,6 +48,12 @@ export default function Overlays({
 
       {/* Toast */}
       <div className={`toast${toastShow ? ' show' : ''}`}>{toastMsg}</div>
+
+      {!audioUnlocked && (
+        <div className="unmute-hint">
+          CLICK VIDEO TO UNMUTE
+        </div>
+      )}
 
       {/* Landscape enforcer */}
       <div className="landscape-enforcer">

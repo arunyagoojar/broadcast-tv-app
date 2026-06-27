@@ -17,7 +17,7 @@ async function fetchImdbId(title, isTv) {
         }
       }
     }
-  } catch (e) {
+  } catch {
     console.error(`Failed to fetch ${title}`);
   }
   return null;

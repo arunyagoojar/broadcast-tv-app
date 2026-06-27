@@ -10,6 +10,159 @@ import Overlays from './components/Overlays';
 import { CHANNELS } from './constants/channels';
 import { fetchChannelContent } from './api/channels';
 
+const SETTINGS_KEY = 'broadcastTV_settings';
+const CHANNEL_STATES_KEY = 'broadcastTV_channelStates';
+const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan'];
+const DEFAULT_SETTINGS = {
+  overlayOpacity: 0.88,
+  scanlines: true,
+  vignette: true,
+  theme: '',
+  muted: true,
+};
+
+function loadSettingsSnapshot() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return { settings: DEFAULT_SETTINGS, hasSavedSettings: false };
+    return {
+      settings: { ...DEFAULT_SETTINGS, ...JSON.parse(raw) },
+      hasSavedSettings: true,
+    };
+  } catch {
+    return { settings: DEFAULT_SETTINGS, hasSavedSettings: false };
+  }
+}
+
+function getRandomStartOffset(item) {
+  if (item.dur >= 5400) {
+    return Math.floor(Math.random() * (1500 - 900 + 1) + 900);
+  }
+  return Math.floor(Math.random() * (600 - 180 + 1) + 180);
+}
+
+function loadChannelStatesSnapshot() {
+  try {
+    const raw = localStorage.getItem(CHANNEL_STATES_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return Object.fromEntries(
+      Object.entries(parsed)
+        .map(([id, state]) => {
+          const playlist = Array.isArray(state.playlist)
+            ? state.playlist
+            : state.lockedItem
+              ? [state.lockedItem]
+              : [];
+          if (!playlist.length) return null;
+          return [id, {
+            playlist,
+            startedAt: Number.isFinite(Number(state.startedAt)) ? Number(state.startedAt) : Date.now(),
+          }];
+        })
+        .filter(Boolean)
+    );
+  } catch {
+    return {};
+  }
+}
+
+function persistChannelStatesSnapshot(channelStates) {
+  try {
+    const serializable = Object.fromEntries(
+      Object.entries(channelStates).map(([id, state]) => [
+        id,
+        {
+          startedAt: state.startedAt,
+          playlist: Array.isArray(state.playlist) ? state.playlist.slice(0, 40) : [],
+        },
+      ])
+    );
+    localStorage.setItem(CHANNEL_STATES_KEY, JSON.stringify(serializable));
+  } catch (error) {
+    console.warn('[TV] Channel timeline save failed:', error);
+  }
+}
+
+function getTimelineSnapshot(state) {
+  if (!state?.playlist?.length) {
+    return {
+      currentItem: null,
+      resumeAt: 0,
+      elapsed: 0,
+      accumulatedBefore: 0,
+      totalDuration: 0,
+    };
+  }
+
+  const elapsed = Math.max(0, (Date.now() - state.startedAt) / 1000);
+  let accumulated = 0;
+
+  for (let i = 0; i < state.playlist.length; i++) {
+    const item = state.playlist[i];
+    const dur = Number(item.dur) || 0;
+    if (dur <= 0) continue;
+    if (elapsed < accumulated + dur) {
+      return {
+        currentItem: item,
+        resumeAt: elapsed - accumulated,
+        elapsed,
+        accumulatedBefore: accumulated,
+        itemIndex: i,
+        totalDuration: accumulated + dur,
+      };
+    }
+    accumulated += dur;
+  }
+
+  return {
+    currentItem: null,
+    resumeAt: Math.max(0, elapsed - accumulated),
+    elapsed,
+    accumulatedBefore: accumulated,
+    itemIndex: -1,
+    totalDuration: accumulated,
+  };
+}
+
+function readProgressSeconds(progress) {
+  if (typeof progress === 'number') return Number.isFinite(progress) ? progress : null;
+  if (typeof progress === 'string') {
+    const parsed = Number(progress);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  if (!progress || typeof progress !== 'object') return null;
+  if (
+    Number.isFinite(Number(progress.played)) &&
+    Number(progress.played) > 0 &&
+    Number(progress.played) <= 1 &&
+    Number.isFinite(Number(progress.duration))
+  ) {
+    return Number(progress.played) * Number(progress.duration);
+  }
+
+  const candidates = [
+    progress.currentTime,
+    progress.current_time,
+    progress.current,
+    progress.position,
+    progress.seconds,
+    progress.time,
+    progress.played,
+  ];
+  const found = candidates.find((value) => Number.isFinite(Number(value)));
+  return found === undefined ? null : Number(found);
+}
+
+function formatTime(secs) {
+  const s = Math.floor(Math.max(0, secs));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+  const sec = Math.floor(s % 60).toString().padStart(2, '0');
+  if (h > 0) return `${h}:${m}:${sec}`;
+  return `${m}:${sec}`;
+}
+
 /* ─────────────────────────────────────────────────────
    MAIN APP COMPONENT
 ───────────────────────────────────────────────────── */
@@ -19,14 +172,23 @@ export default function App() {
   const glitchRef = useRef(null);
   const hudTimerRef = useRef(null);
   const toastTimerRef = useRef(null);
+  const promptTimerRef = useRef(null);
+  const initialTimerRef = useRef(null);
+  const lastPersistRef = useRef(0);
   const playerRef = useRef(null);
   const noiseRef = useRef(null);
-  const currentProgressRef = useRef(0);
+  const currentProgressRef = useRef(null);
+  const [settingsSeed] = useState(loadSettingsSnapshot);
+  const [channelStatesSeed] = useState(loadChannelStatesSnapshot);
+  const settingsRef = useRef(settingsSeed.settings);
+  const hasSavedSettingsRef = useRef(settingsSeed.hasSavedSettings);
+  const audioUnlockedRef = useRef(false);
+  const touchStartRef = useRef(null);
 
   /* ── Mutable state (not triggering re-render) via ref ── */
   const S = useRef({
     activeChannelIndex: 0,
-    channelStates: {}, // { [ch.id]: { playlist: [], startedAt: timestamp } }
+    channelStates: channelStatesSeed, // { [ch.id]: { playlist, startedAt } }
     switchToken: 0,
     failChainCount: 0,
   });
@@ -49,12 +211,89 @@ export default function App() {
   const [glitchBg, setGlitchBg] = useState('');
   const [isPoweredOff, setIsPoweredOff] = useState(false);
   const [overlayEnabled, setOverlayEnabled] = useState(true);
-  const [hasUnmuted, setHasUnmuted] = useState(false);
-  const hasUnmutedRef = useRef(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [settings, setSettings] = useState(settingsSeed.settings);
+  const [playPromptVisible, setPlayPromptVisible] = useState(false);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState('');
 
   /* ── Screen Wake Lock ── */
   useWakeLock();
+
+  useEffect(() => {
+    settingsRef.current = settings;
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch (error) {
+      console.warn('[TV] Settings save failed:', error);
+    }
+  }, [settings]);
+
+  useEffect(() => {
+    document.body.className = settings.theme;
+  }, [settings.theme]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--overlay-opacity', String(settings.overlayOpacity));
+  }, [settings.overlayOpacity]);
+
+  const updateSetting = useCallback((key, value) => {
+    hasSavedSettingsRef.current = true;
+    setSettings((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  const isPlaybackMuted = useCallback(() => {
+    return settingsRef.current.muted || !audioUnlockedRef.current;
+  }, []);
+
+  const postPlayerCommand = useCallback((func, args = '') => {
+    const player = playerRef.current;
+    if (!player || player.tagName !== 'IFRAME' || !player.contentWindow) return;
+    player.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args }), '*');
+  }, []);
+
+  const rewriteCurrentEmbedAudio = useCallback((muted) => {
+    setCurrentEmbedUrl((currentUrl) => {
+      if (!currentUrl) return currentUrl;
+      try {
+        const urlObj = new URL(currentUrl);
+        urlObj.searchParams.set('autoplay', '1');
+        urlObj.searchParams.set('muted', muted ? '1' : '0');
+        const nextUrl = urlObj.toString();
+        return nextUrl === currentUrl ? currentUrl : nextUrl;
+      } catch (error) {
+        console.warn('[TV] Failed to update iframe audio URL:', error);
+        return currentUrl;
+      }
+    });
+  }, []);
+
+  const buildPlaybackUrl = useCallback((embedUrl, resumeAt = 0) => {
+    try {
+      const urlObj = new URL(embedUrl);
+      if (resumeAt > 0) urlObj.searchParams.set('resumeAt', Math.floor(resumeAt));
+      urlObj.searchParams.set('autoplay', '1');
+      urlObj.searchParams.set('muted', isPlaybackMuted() ? '1' : '0');
+      return urlObj.toString();
+    } catch (error) {
+      console.warn('[TV] Failed to parse embed URL:', error);
+      return embedUrl;
+    }
+  }, [isPlaybackMuted]);
+
+  const commitActiveProgress = useCallback(() => {
+    const s = S.current;
+    const channel = CHANNELS[s.activeChannelIndex];
+    const state = channel ? s.channelStates[channel.id] : null;
+    const progress = currentProgressRef.current;
+    const snapshot = getTimelineSnapshot(state);
+    if (!snapshot.currentItem || !Number.isFinite(progress) || progress < 0) return;
+
+    const boundedProgress = snapshot.currentItem.dur
+      ? Math.min(progress, Math.max(0, snapshot.currentItem.dur - 1))
+      : progress;
+    state.startedAt = Date.now() - ((snapshot.accumulatedBefore + boundedProgress) * 1000);
+    persistChannelStatesSnapshot(s.channelStates);
+  }, []);
 
   /* ── Toast helper ── */
   const showToast = useCallback((msg, ms = 2600) => {
@@ -63,6 +302,21 @@ export default function App() {
     clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => setToastShow(false), ms);
   }, []);
+
+  const unlockAudio = useCallback((forceUnmute = false) => {
+    if (!audioUnlockedRef.current) {
+      audioUnlockedRef.current = true;
+      setAudioUnlocked(true);
+    }
+
+    if (forceUnmute || !hasSavedSettingsRef.current) {
+      hasSavedSettingsRef.current = true;
+      updateSetting('muted', false);
+      postPlayerCommand('unMute');
+      rewriteCurrentEmbedAudio(false);
+      showToast('AUDIO ENABLED');
+    }
+  }, [postPlayerCommand, rewriteCurrentEmbedAudio, showToast, updateSetting]);
 
   /* ── Status helpers ── */
   const setStatus = useCallback((label) => {
@@ -138,8 +392,11 @@ export default function App() {
   }, [resetHudIdle]);
 
   /* ── Switch channel ── */
-  const switchTo = useCallback(async (index) => {
+  const switchTo = useCallback(async (index, options = {}) => {
     const s = S.current;
+    const refreshItem = options?.refreshItem === true;
+    const restartItem = options?.restartItem === true;
+    commitActiveProgress();
 
     // Wrap around index for infinite scrolling
     if (index < 0) index = (CHANNELS.length + (index % CHANNELS.length)) % CHANNELS.length;
@@ -150,10 +407,8 @@ export default function App() {
 
     flashGlitch();
     setStatus('TUNING');
-
-    const delayTime = s.failChainCount > 2 ? 800 : 250;
-    await new Promise((r) => setTimeout(r, delayTime));
-    if (tok !== s.switchToken) return;
+    setPlayPromptVisible(false);
+    clearTimeout(promptTimerRef.current);
 
     const channel = CHANNELS[index];
     s.activeChannelIndex = index;
@@ -166,65 +421,67 @@ export default function App() {
     if (!s.channelStates[channel.id]) {
       s.channelStates[channel.id] = {
         playlist: [],
-        // Will be dynamically offset based on the first fetched item
-        startedAt: Date.now()
+        startedAt: Date.now(),
       };
     }
 
     const state = s.channelStates[channel.id];
-    let elapsed = (Date.now() - state.startedAt) / 1000;
-    let currentItem = null;
-    let resumeAt = 0;
-    let exhausted = false;
+    let snapshot = getTimelineSnapshot(state);
+    let currentItem = snapshot.currentItem;
+    let resumeAt = snapshot.resumeAt;
 
-    // Traverse the timeline
-    while (true) {
-      let accumulatedTime = 0;
-      let foundIndex = -1;
+    if (refreshItem) {
+      setStatus('SCANNING');
+      const newItems = await fetchChannelContent(channel);
+      if (tok !== s.switchToken) return;
 
-      for (let i = 0; i < state.playlist.length; i++) {
-        const item = state.playlist[i];
-        if (elapsed < accumulatedTime + item.dur) {
-          foundIndex = i;
-          resumeAt = elapsed - accumulatedTime;
-          break;
-        }
-        accumulatedTime += item.dur;
-      }
-
-      if (foundIndex !== -1) {
-        currentItem = state.playlist[foundIndex];
-        break;
-      } else {
-        // The playlist is empty or exhausted, fetch a new dynamic batch!
-        setStatus('SCANNING');
-        const newItems = await fetchChannelContent(channel);
-        if (tok !== s.switchToken) return;
-
-        if (newItems && newItems.length > 0) {
-          if (state.playlist.length === 0) {
-            const firstItem = newItems[0];
-            let randomOffset;
-            if (firstItem.dur >= 5400) {
-              // Movie: 15 to 25 mins (900s to 1500s)
-              randomOffset = Math.floor(Math.random() * (1500 - 900 + 1) + 900);
-            } else {
-              // TV Show: 3 to 10 mins (180s to 600s)
-              randomOffset = Math.floor(Math.random() * (600 - 180 + 1) + 180);
-            }
-            state.startedAt = Date.now() - (randomOffset * 1000);
-            elapsed = (Date.now() - state.startedAt) / 1000;
-          }
-          state.playlist.push(...newItems);
-          // Loop again to find the item in the newly appended items
-        } else {
-          exhausted = true;
-          break;
-        }
+      if (newItems?.length) {
+        state.playlist = newItems;
+        state.startedAt = Date.now() - (getRandomStartOffset(newItems[0]) * 1000);
+        snapshot = getTimelineSnapshot(state);
+        currentItem = snapshot.currentItem;
+        resumeAt = snapshot.resumeAt;
+        persistChannelStatesSnapshot(s.channelStates);
       }
     }
 
-    if (exhausted || !currentItem) {
+    if (currentItem && restartItem) {
+      const nextStart = snapshot.accumulatedBefore + currentItem.dur + 1;
+      state.startedAt = Date.now() - (nextStart * 1000);
+      snapshot = getTimelineSnapshot(state);
+      currentItem = snapshot.currentItem;
+      resumeAt = snapshot.resumeAt;
+      persistChannelStatesSnapshot(s.channelStates);
+    }
+
+    let fetchAttempts = 0;
+    while (!currentItem && !refreshItem && fetchAttempts < 8) {
+      fetchAttempts++;
+      setStatus('SCANNING');
+      const newItems = await fetchChannelContent(channel);
+      if (tok !== s.switchToken) return;
+
+      if (!newItems?.length) break;
+
+      if (!state.playlist.length) {
+        state.startedAt = Date.now() - (getRandomStartOffset(newItems[0]) * 1000);
+      }
+      state.playlist.push(...newItems);
+      snapshot = getTimelineSnapshot(state);
+      currentItem = snapshot.currentItem;
+      resumeAt = snapshot.resumeAt;
+      persistChannelStatesSnapshot(s.channelStates);
+    }
+
+    if (!currentItem && state.playlist.length && snapshot.totalDuration > 0) {
+      state.startedAt = Date.now() - ((snapshot.elapsed % snapshot.totalDuration) * 1000);
+      snapshot = getTimelineSnapshot(state);
+      currentItem = snapshot.currentItem;
+      resumeAt = snapshot.resumeAt;
+      persistChannelStatesSnapshot(s.channelStates);
+    }
+
+    if (!currentItem) {
       s.failChainCount++;
       setStatus('NO SIGNAL');
       return;
@@ -233,23 +490,21 @@ export default function App() {
     s.failChainCount = 0;
 
     if (currentItem.embedUrl) {
-      let finalEmbedUrl = currentItem.embedUrl;
-      if (resumeAt > 0) {
-        try {
-          const urlObj = new URL(finalEmbedUrl);
-          urlObj.searchParams.set('resumeAt', Math.floor(resumeAt));
-          finalEmbedUrl = urlObj.toString();
-        } catch (e) {
-          console.warn('[TV] Failed to parse embed URL for resume time:', e);
-        }
-      }
+      currentProgressRef.current = null;
+      setCurrentTitle(currentItem.title);
+      setPlaybackTimeStr(`${formatTime(resumeAt)} / -${formatTime(Math.max(0, currentItem.dur - resumeAt))}`);
+      const finalEmbedUrl = buildPlaybackUrl(currentItem.embedUrl, resumeAt);
       setCurrentEmbedUrl(finalEmbedUrl);
+
+      promptTimerRef.current = setTimeout(() => {
+        if (S.current.switchToken === tok && !isPlaybackMuted()) setPlayPromptVisible(true);
+      }, 5500);
 
       setTimeout(() => {
         if (s.switchToken === tok) clearStatusFn();
       }, 1800);
     }
-  }, [flashGlitch, setStatus, syncLabels, clearStatusFn]);
+  }, [buildPlaybackUrl, clearStatusFn, commitActiveProgress, flashGlitch, isPlaybackMuted, setStatus, syncLabels]);
 
   /* ── Initial Load Logic ── */
   useEffect(() => {
@@ -266,28 +521,25 @@ export default function App() {
     startIndex = Math.max(0, Math.min(startIndex, CHANNELS.length - 1));
 
     // Slight delay to let noise canvas initialize
-    setTimeout(() => {
+    initialTimerRef.current = setTimeout(() => {
       switchTo(startIndex, 'forward');
     }, 100);
+    return () => clearTimeout(initialTimerRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ── Unmute Detection ── */
+  /* ── Iframe click audio unlock ── */
   useEffect(() => {
     const handleBlur = () => {
       setTimeout(() => {
         if (document.activeElement === playerRef.current) {
-          if (!hasUnmutedRef.current) {
-            setHasUnmuted(true);
-            hasUnmutedRef.current = true;
-            showToast('AUDIO ENABLED');
-          }
+          unlockAudio(true);
         }
       }, 0);
     };
     window.addEventListener('blur', handleBlur);
     return () => window.removeEventListener('blur', handleBlur);
-  }, [hasUnmuted, showToast]);
+  }, [unlockAudio]);
 
   /* ── Handle channel failure ── */
   const handleChannelFailure = useCallback(() => {
@@ -304,68 +556,102 @@ export default function App() {
   // HTML5 Video Handlers
   const handlePlay = useCallback(() => {
     S.current.failChainCount = 0;
+    setPlayPromptVisible(false);
+    clearTimeout(promptTimerRef.current);
     clearStatusFn();
   }, [clearStatusFn]);
 
   const skipCurrentVideo = useCallback(() => {
     const s = S.current;
-    const channel = CHANNELS[s.activeChannelIndex];
-    if (!channel) return;
-    const state = s.channelStates[channel.id];
-    if (!state || !state.playlist.length) return;
-
-    let elapsed = (Date.now() - state.startedAt) / 1000;
-    let accumulatedTime = 0;
-    let currentItem = null;
-
-    for (let i = 0; i < state.playlist.length; i++) {
-      const item = state.playlist[i];
-      if (elapsed < accumulatedTime + item.dur) {
-        currentItem = item;
-        break;
-      }
-      accumulatedTime += item.dur;
-    }
-
-    if (currentItem) {
-      state.startedAt -= (currentItem.dur * 1000);
-    }
-
-    switchTo(s.activeChannelIndex);
+    switchTo(s.activeChannelIndex, { refreshItem: true });
   }, [switchTo]);
 
   const handleEnded = useCallback(() => {
-    skipCurrentVideo();
-  }, [skipCurrentVideo]);
+    const s = S.current;
+    switchTo(s.activeChannelIndex, { restartItem: true });
+  }, [switchTo]);
 
   const handleError = useCallback(() => {
     handleChannelFailure();
   }, [handleChannelFailure]);
 
+  const retryPlayback = useCallback(() => {
+    unlockAudio(true);
+    setPlayPromptVisible(false);
+    clearTimeout(promptTimerRef.current);
+    switchTo(S.current.activeChannelIndex);
+  }, [switchTo, unlockAudio]);
+
+  useEffect(() => {
+    const player = playerRef.current;
+    const muted = isPlaybackMuted();
+
+    if (player?.tagName === 'VIDEO') {
+      player.muted = muted;
+      if (!isPoweredOff) player.play?.().catch(() => setPlayPromptVisible(true));
+    } else if (player?.tagName === 'IFRAME') {
+      postPlayerCommand(muted ? 'mute' : 'unMute');
+    }
+  }, [audioUnlocked, isPlaybackMuted, isPoweredOff, postPlayerCommand, settings.muted]);
+
+  const handleTouchStart = useCallback((event) => {
+    const touch = event.changedTouches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback((event) => {
+    if (!touchStartRef.current) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    if (Math.abs(deltaX) < 46 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4) return;
+    switchTo(S.current.activeChannelIndex + (deltaX < 0 ? 1 : -1));
+  }, [switchTo]);
+
   // Listen for iframe player events via postMessage
   useEffect(() => {
     function handleMessage(e) {
-      if (e.data && e.data.type === 'PLAYER_EVENT') {
-        const { player_status, player_progress } = e.data.data;
-        if (player_progress) {
-          currentProgressRef.current = player_progress;
+      let message = e.data;
+      if (typeof message === 'string') {
+        try {
+          message = JSON.parse(message);
+        } catch {
+          return;
+        }
+      }
+
+      if (message && message.type === 'PLAYER_EVENT') {
+        const { player_status, player_progress } = message.data || {};
+        const progressSeconds = readProgressSeconds(player_progress);
+        if (progressSeconds !== null && progressSeconds >= 0) {
+          const s = S.current;
+          const channel = CHANNELS[s.activeChannelIndex];
+          const state = channel ? s.channelStates[channel.id] : null;
+          const snapshot = getTimelineSnapshot(state);
+          currentProgressRef.current = progressSeconds;
+          if (snapshot.currentItem) {
+            const boundedProgress = snapshot.currentItem.dur
+              ? Math.min(progressSeconds, Math.max(0, snapshot.currentItem.dur - 1))
+              : progressSeconds;
+            state.startedAt = Date.now() - ((snapshot.accumulatedBefore + boundedProgress) * 1000);
+            if (Date.now() - lastPersistRef.current > 5000) {
+              lastPersistRef.current = Date.now();
+              persistChannelStatesSnapshot(s.channelStates);
+            }
+          }
         }
         if (player_status === 'playing') {
           handlePlay();
         } else if (player_status === 'completed') {
           handleEnded();
-        } else if (player_status === 'paused' && hasUnmutedRef.current) {
-          // If paused manually, forcefully resume it immediately
-          const s = S.current;
-          setTimeout(() => {
-            switchTo(s.activeChannelIndex, 'forward');
-          }, 100);
         }
       }
     }
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [handlePlay, handleEnded, switchTo]);
+  }, [handlePlay, handleEnded]);
 
 
   /* ── Open / Close Channel Modal ── */
@@ -398,12 +684,12 @@ export default function App() {
   }, []);
 
   /* ── Theme cycling ── */
-  const themes = useRef(['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan']);
-  const themeIdx = useRef(0);
   const cycleTheme = useCallback(() => {
-    themeIdx.current = (themeIdx.current + 1) % themes.current.length;
-    document.body.className = themes.current[themeIdx.current];
-  }, []);
+    const currentIndex = THEMES.indexOf(settingsRef.current.theme);
+    const nextTheme = THEMES[(currentIndex + 1) % THEMES.length];
+    updateSetting('theme', nextTheme);
+    showToast(nextTheme ? nextTheme.replace('theme-', '').toUpperCase() : 'CLASSIC', 1200);
+  }, [showToast, updateSetting]);
 
   /* ── Power toggle ── */
   const togglePower = useCallback(() => {
@@ -432,23 +718,14 @@ export default function App() {
         return;
       }
       if (
-        document.activeElement.tagName === 'INPUT' ||
-        document.activeElement.tagName === 'TEXTAREA'
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
       )
         return;
 
       const s = S.current;
 
-      if (e.key === ' ') {
-        e.preventDefault();
-        if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
-          playerRef.current.muted = !playerRef.current.muted;
-        } else if (playerRef.current && playerRef.current.tagName === 'IFRAME') {
-          // Send generic mute command via postMessage for cross-origin iframe
-          playerRef.current.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
-          playerRef.current.contentWindow.postMessage(JSON.stringify({ type: 'PLAYER_EVENT', data: { action: 'mute' } }), '*');
-        }
-      } else if (e.key.toLowerCase() === 'f') {
+      if (e.key.toLowerCase() === 'f') {
         e.preventDefault();
         toggleFullscreen();
       } else if (e.key.toLowerCase() === 'c') {
@@ -470,7 +747,7 @@ export default function App() {
     }
 
     document.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
   }, [channelModalOpen, closeChannelModal, openChannelModal, switchTo, cycleTheme, toggleFullscreen]);
 
   /* ── Time & Title Tracker ── */
@@ -480,56 +757,72 @@ export default function App() {
       const channel = CHANNELS[s.activeChannelIndex];
       if (!channel) return;
       const state = s.channelStates[channel.id];
-      if (!state || !state.playlist.length) return;
+      const snapshot = getTimelineSnapshot(state);
+      const currentItem = snapshot.currentItem;
+      if (!currentItem) return;
 
-      let elapsed = (Date.now() - state.startedAt) / 1000;
-      let accumulatedTime = 0;
-      let currentItem = null;
+      const currentSeconds = snapshot.resumeAt;
+      const remainingSeconds = Math.max(0, currentItem.dur - currentSeconds);
 
-      for (let i = 0; i < state.playlist.length; i++) {
-        const item = state.playlist[i];
-        if (elapsed < accumulatedTime + item.dur) {
-          currentItem = item;
-          break;
-        }
-        accumulatedTime += item.dur;
-      }
-
-      if (currentItem) {
-        const currentSeconds = Math.max(0, elapsed - accumulatedTime);
-        const remainingSeconds = Math.max(0, currentItem.dur - currentSeconds);
-
-        const formatTime = (secs) => {
-          const s = Math.floor(secs);
-          const h = Math.floor(s / 3600);
-          const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
-          const sec = Math.floor(s % 60).toString().padStart(2, '0');
-          if (h > 0) return `${h}:${m}:${sec}`;
-          return `${m}:${sec}`;
-        };
-
-        setPlaybackTimeStr(`${formatTime(currentSeconds)} / -${formatTime(remainingSeconds)}`);
-        setCurrentTitle(currentItem.title);
-      }
+      setPlaybackTimeStr(`${formatTime(currentSeconds)} / -${formatTime(remainingSeconds)}`);
+      setCurrentTitle(currentItem.title);
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const persistCurrentTimeline = () => {
+      commitActiveProgress();
+      persistChannelStatesSnapshot(S.current.channelStates);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') persistCurrentTimeline();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', persistCurrentTimeline);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', persistCurrentTimeline);
+      persistCurrentTimeline();
+    };
+  }, [commitActiveProgress]);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(toastTimerRef.current);
+      clearTimeout(promptTimerRef.current);
+      clearTimeout(initialTimerRef.current);
+    };
+  }, []);
+
   /* ── JSX ── */
+  const effectiveMuted = settings.muted || !audioUnlocked;
+
   return (
-    <div className={`app${isPoweredOff ? ' power-off' : ''}`}>
+    <div
+      className={`app${isPoweredOff ? ' power-off' : ''}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <PlayerStage
         playerRef={playerRef}
         onPlay={handlePlay}
         onEnded={handleEnded}
         onError={handleError}
         embedUrl={isPoweredOff ? '' : currentEmbedUrl}
-        hasUnmuted={hasUnmuted}
+        hasUnmuted={audioUnlocked}
+        isMuted={effectiveMuted}
+        playPromptVisible={playPromptVisible}
+        onPromptClick={retryPlayback}
       />
 
       <Overlays
         canvasRef={canvasRef}
         overlayEnabled={overlayEnabled}
+        scanlinesEnabled={settings.scanlines}
+        vignetteEnabled={settings.vignette}
         glitchRef={glitchRef}
         glitchActive={glitchActive}
         glitchBg={glitchBg}
@@ -542,6 +835,7 @@ export default function App() {
         toastShow={toastShow}
         toastMsg={toastMsg}
         togglePower={togglePower}
+        audioUnlocked={audioUnlocked}
       />
 
       <HUD
@@ -559,6 +853,9 @@ export default function App() {
         onClose={closeChannelModal}
         onSelect={handleSelectChannel}
         channels={CHANNELS}
+        settings={settings}
+        updateSetting={updateSetting}
+        themes={THEMES}
       />
     </div>
   );

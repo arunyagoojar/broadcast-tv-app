@@ -1,4 +1,14 @@
-export default function PlayerStage({ playerRef, onPlay, onEnded, onError, embedUrl, hasUnmuted }) {
+export default function PlayerStage({
+  playerRef,
+  onPlay,
+  onEnded,
+  onError,
+  embedUrl,
+  hasUnmuted,
+  isMuted,
+  playPromptVisible,
+  onPromptClick,
+}) {
   return (
     <div className="player-stage">
       <div id="player-wrap">
@@ -21,6 +31,7 @@ export default function PlayerStage({ playerRef, onPlay, onEnded, onError, embed
               ref={playerRef}
               playsInline
               autoPlay
+              muted={isMuted}
               onPlay={onPlay}
               onEnded={onEnded}
               onError={onError}
@@ -28,6 +39,11 @@ export default function PlayerStage({ playerRef, onPlay, onEnded, onError, embed
             />
           )}
         </div>
+        {playPromptVisible && (
+          <button className="play-prompt" onClick={onPromptClick}>
+            CLICK TO PLAY
+          </button>
+        )}
         {/* Shield blocks interactions ONLY after audio is unmuted */}
         <div className="player-shield" style={{ pointerEvents: hasUnmuted ? 'auto' : 'none' }}></div>
       </div>
