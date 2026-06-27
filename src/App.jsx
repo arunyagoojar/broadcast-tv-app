@@ -13,6 +13,9 @@ import { fetchChannelContent } from './api/channels';
 const SETTINGS_KEY = 'broadcastTV_settings';
 const CHANNEL_STATES_KEY = 'broadcastTV_channelStates';
 const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan'];
+const COMPLETION_GRACE_SECONDS = 45;
+const MIN_REPORTED_DURATION_SECONDS = 300;
+const MAX_REPORTED_DURATION_SECONDS = 12 * 60 * 60;
 const DEFAULT_SETTINGS = {
   overlayOpacity: 0.88,
   scanlines: true,
@@ -133,6 +136,33 @@ function getTimelineSnapshot(state) {
   };
 }
 
+function getActivePlaybackSnapshot(state, activePlayback) {
+  if (!activePlayback?.itemId || !state?.playlist?.length) {
+    return getTimelineSnapshot(state);
+  }
+
+  const elapsed = Math.max(0, (Date.now() - state.startedAt) / 1000);
+  let accumulated = 0;
+
+  for (let i = 0; i < state.playlist.length; i++) {
+    const item = state.playlist[i];
+    const dur = Number(item.dur) || 0;
+    if (item.id === activePlayback.itemId) {
+      return {
+        currentItem: item,
+        resumeAt: Math.max(0, elapsed - accumulated),
+        elapsed,
+        accumulatedBefore: accumulated,
+        itemIndex: i,
+        totalDuration: accumulated + dur,
+      };
+    }
+    if (dur > 0) accumulated += dur;
+  }
+
+  return getTimelineSnapshot(state);
+}
+
 function readProgressSeconds(progress) {
   if (typeof progress === 'number') return Number.isFinite(progress) ? progress : null;
   if (typeof progress === 'string') {
@@ -144,9 +174,9 @@ function readProgressSeconds(progress) {
     Number.isFinite(Number(progress.played)) &&
     Number(progress.played) > 0 &&
     Number(progress.played) <= 1 &&
-    Number.isFinite(Number(progress.duration))
+    normalizeDurationSeconds(progress.duration) !== null
   ) {
-    return Number(progress.played) * Number(progress.duration);
+    return Number(progress.played) * normalizeDurationSeconds(progress.duration);
   }
 
   const candidates = [
@@ -156,10 +186,81 @@ function readProgressSeconds(progress) {
     progress.position,
     progress.seconds,
     progress.time,
-    progress.played,
+    Number(progress.played) > 1 ? progress.played : undefined,
   ];
   const found = candidates.find((value) => Number.isFinite(Number(value)));
   return found === undefined ? null : Number(found);
+}
+
+function normalizeDurationSeconds(value) {
+  const duration = Number(value);
+  if (!Number.isFinite(duration) || duration <= 0) return null;
+  const seconds = duration > MAX_REPORTED_DURATION_SECONDS
+    ? duration / 1000
+    : duration;
+  if (
+    !Number.isFinite(seconds) ||
+    seconds < MIN_REPORTED_DURATION_SECONDS ||
+    seconds > MAX_REPORTED_DURATION_SECONDS
+  ) {
+    return null;
+  }
+  return Math.round(seconds);
+}
+
+function readProgressDurationSeconds(progress) {
+  if (!progress || typeof progress !== 'object') return null;
+
+  const candidates = [
+    progress.duration,
+    progress.dur,
+    progress.totalDuration,
+    progress.total_duration,
+    progress.length,
+  ];
+  const found = candidates.find((value) => normalizeDurationSeconds(value) !== null);
+  return found === undefined ? null : normalizeDurationSeconds(found);
+}
+
+function readProgressRatio(progress) {
+  if (typeof progress === 'number') {
+    return progress >= 0 && progress <= 1 ? progress : null;
+  }
+  if (!progress || typeof progress !== 'object') return null;
+
+  const candidates = [
+    progress.played,
+    progress.percent,
+    progress.percentage,
+    progress.progress,
+  ];
+  const found = candidates.find((value) => {
+    const ratio = Number(value);
+    return Number.isFinite(ratio) && ratio >= 0 && ratio <= 1;
+  });
+  return found === undefined ? null : Number(found);
+}
+
+function syncReportedDuration(state, snapshot, reportedDuration) {
+  const duration = normalizeDurationSeconds(reportedDuration);
+  const index = snapshot?.itemIndex;
+  if (
+    duration === null ||
+    !state?.playlist?.length ||
+    index == null ||
+    index < 0 ||
+    index >= state.playlist.length
+  ) {
+    return false;
+  }
+
+  const currentDuration = Number(state.playlist[index].dur) || 0;
+  if (Math.abs(currentDuration - duration) < 2) return false;
+
+  state.playlist = state.playlist.map((item, itemIndex) => (
+    itemIndex === index ? { ...item, dur: duration } : item
+  ));
+  return true;
 }
 
 function formatTime(secs) {
@@ -186,6 +287,7 @@ export default function App() {
   const playerRef = useRef(null);
   const noiseRef = useRef(null);
   const currentProgressRef = useRef(null);
+  const activePlaybackRef = useRef(null);
   const [settingsSeed] = useState(loadSettingsSnapshot);
   const [channelStatesSeed] = useState(loadChannelStatesSnapshot);
   const settingsRef = useRef(settingsSeed.settings);
@@ -293,7 +395,7 @@ export default function App() {
     const channel = CHANNELS[s.activeChannelIndex];
     const state = channel ? s.channelStates[channel.id] : null;
     const progress = currentProgressRef.current;
-    const snapshot = getTimelineSnapshot(state);
+    const snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
     if (!snapshot.currentItem || !Number.isFinite(progress) || progress < 0) return;
 
     const boundedProgress = snapshot.currentItem.dur
@@ -404,7 +506,8 @@ export default function App() {
     const s = S.current;
     const refreshItem = options?.refreshItem === true;
     const restartItem = options?.restartItem === true;
-    commitActiveProgress();
+    const skipCommit = options?.skipCommit === true;
+    if (!skipCommit) commitActiveProgress();
 
     // Wrap around index for infinite scrolling
     if (index < 0) index = (CHANNELS.length + (index % CHANNELS.length)) % CHANNELS.length;
@@ -454,8 +557,11 @@ export default function App() {
     }
 
     if (currentItem && restartItem) {
-      const nextStart = snapshot.accumulatedBefore + currentItem.dur + 1;
+      const endedSnapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
+      const itemToAdvance = endedSnapshot.currentItem ? endedSnapshot : snapshot;
+      const nextStart = itemToAdvance.accumulatedBefore + itemToAdvance.currentItem.dur + 1;
       state.startedAt = Date.now() - (nextStart * 1000);
+      activePlaybackRef.current = null;
       snapshot = getTimelineSnapshot(state);
       currentItem = snapshot.currentItem;
       resumeAt = snapshot.resumeAt;
@@ -499,6 +605,7 @@ export default function App() {
 
     if (currentItem.embedUrl) {
       currentProgressRef.current = null;
+      activePlaybackRef.current = { channelId: channel.id, itemId: currentItem.id };
       setCurrentTitle(currentItem.title);
       setPlaybackTimeStr(`${formatTime(resumeAt)} / -${formatTime(Math.max(0, currentItem.dur - resumeAt))}`);
       const finalEmbedUrl = buildPlaybackUrl(currentItem.embedUrl, resumeAt);
@@ -576,7 +683,7 @@ export default function App() {
 
   const handleEnded = useCallback(() => {
     const s = S.current;
-    switchTo(s.activeChannelIndex, { restartItem: true });
+    switchTo(s.activeChannelIndex, { restartItem: true, skipCommit: true });
   }, [switchTo]);
 
   const handleError = useCallback(() => {
@@ -589,6 +696,43 @@ export default function App() {
     clearTimeout(promptTimerRef.current);
     switchTo(S.current.activeChannelIndex);
   }, [switchTo, unlockAudio]);
+
+  const shouldAcceptCompletedEvent = useCallback((playerProgress) => {
+    const s = S.current;
+    const channel = CHANNELS[s.activeChannelIndex];
+    const state = channel ? s.channelStates[channel.id] : null;
+    if (!state) return true;
+
+    let snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
+    const reportedDuration = readProgressDurationSeconds(playerProgress);
+    if (syncReportedDuration(state, snapshot, reportedDuration)) {
+      persistChannelStatesSnapshot(s.channelStates);
+      snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
+    }
+
+    const currentItem = snapshot.currentItem;
+    if (!currentItem) return true;
+
+    const duration = Number(currentItem.dur) || reportedDuration;
+    const progressSeconds = readProgressSeconds(playerProgress);
+    const trackedProgress = progressSeconds ?? currentProgressRef.current ?? snapshot.resumeAt;
+    if (!Number.isFinite(duration) || duration <= 0 || !Number.isFinite(trackedProgress)) {
+      return true;
+    }
+
+    const ratio = readProgressRatio(playerProgress);
+    if (ratio !== null && progressSeconds !== null && progressSeconds <= 1 && reportedDuration === null) {
+      return ratio >= 0.96;
+    }
+
+    const nearEnough = trackedProgress >= Math.max(0, duration - COMPLETION_GRACE_SECONDS);
+    if (!nearEnough && import.meta.env.DEV) {
+      console.warn(
+        `[TV] Ignored early completion for ${currentItem.title}: ${formatTime(trackedProgress)} of ${formatTime(duration)}`
+      );
+    }
+    return nearEnough;
+  }, []);
 
   useEffect(() => {
     const player = playerRef.current;
@@ -633,18 +777,21 @@ export default function App() {
       if (message && message.type === 'PLAYER_EVENT') {
         const { player_status, player_progress } = message.data || {};
         const progressSeconds = readProgressSeconds(player_progress);
+        const reportedDuration = readProgressDurationSeconds(player_progress);
         if (progressSeconds !== null && progressSeconds >= 0) {
           const s = S.current;
           const channel = CHANNELS[s.activeChannelIndex];
           const state = channel ? s.channelStates[channel.id] : null;
-          const snapshot = getTimelineSnapshot(state);
+          let snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
+          const durationChanged = syncReportedDuration(state, snapshot, reportedDuration);
+          if (durationChanged) snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
           currentProgressRef.current = progressSeconds;
           if (snapshot.currentItem) {
             const boundedProgress = snapshot.currentItem.dur
               ? Math.min(progressSeconds, Math.max(0, snapshot.currentItem.dur - 1))
               : progressSeconds;
             state.startedAt = Date.now() - ((snapshot.accumulatedBefore + boundedProgress) * 1000);
-            if (Date.now() - lastPersistRef.current > 5000) {
+            if (durationChanged || Date.now() - lastPersistRef.current > 5000) {
               lastPersistRef.current = Date.now();
               persistChannelStatesSnapshot(s.channelStates);
             }
@@ -652,14 +799,14 @@ export default function App() {
         }
         if (player_status === 'playing') {
           handlePlay();
-        } else if (player_status === 'completed') {
+        } else if (player_status === 'completed' && shouldAcceptCompletedEvent(player_progress)) {
           handleEnded();
         }
       }
     }
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [handlePlay, handleEnded]);
+  }, [handlePlay, handleEnded, shouldAcceptCompletedEvent]);
 
 
   /* ── Open / Close Channel Modal ── */
@@ -765,7 +912,7 @@ export default function App() {
       const channel = CHANNELS[s.activeChannelIndex];
       if (!channel) return;
       const state = s.channelStates[channel.id];
-      const snapshot = getTimelineSnapshot(state);
+      const snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
       const currentItem = snapshot.currentItem;
       if (!currentItem) return;
 
