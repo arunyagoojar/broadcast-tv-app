@@ -1,4 +1,4 @@
-const CACHE_NAME = 'broadcast-tv-shell-v1';
+const CACHE_NAME = 'broadcast-tv-shell-v2';
 const SHELL_ASSETS = ['/', '/manifest.webmanifest', '/app.png'];
 
 self.addEventListener('install', (event) => {
@@ -22,10 +22,19 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => response)
+        .catch(() => caches.match('/'))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).catch(() => caches.match('/'));
+      return fetch(event.request);
     })
   );
 });
