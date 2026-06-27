@@ -46,14 +46,22 @@ function loadChannelStatesSnapshot() {
     const raw = localStorage.getItem(CHANNEL_STATES_KEY);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
+    const isOldNoSignalFallback = (item) => {
+      return (
+        item?.title?.startsWith?.('No Signal') ||
+        item?.id?.startsWith?.('fallback-') ||
+        item?.embedUrl?.includes?.('tt0468569')
+      );
+    };
     return Object.fromEntries(
       Object.entries(parsed)
         .map(([id, state]) => {
-          const playlist = Array.isArray(state.playlist)
+          const playlistSource = Array.isArray(state.playlist)
             ? state.playlist
             : state.lockedItem
               ? [state.lockedItem]
               : [];
+          const playlist = playlistSource.filter((item) => !isOldNoSignalFallback(item));
           if (!playlist.length) return null;
           return [id, {
             playlist,

@@ -5,6 +5,47 @@ const TITLE_CACHE_TTL = 24 * 60 * 60 * 1000;
 const BATCH_SIZE = 10;
 
 const localItems = Object.values(db).flat();
+const KNOWN_TITLES = {
+  'everybody loves raymond': { id: 'tt0115167', title: 'Everybody Loves Raymond', type: 'tv' },
+  'the big bang theory': { id: 'tt0898266', title: 'The Big Bang Theory', type: 'tv' },
+  'the vampire diaries': { id: 'tt1405406', title: 'The Vampire Diaries', type: 'tv' },
+  'family guy': { id: 'tt0182576', title: 'Family Guy', type: 'tv' },
+  'the simpsons': { id: 'tt0096697', title: 'The Simpsons', type: 'tv' },
+  'impractical jokers': { id: 'tt2100976', title: 'Impractical Jokers', type: 'tv' },
+  'louie': { id: 'tt1492966', title: 'Louie', type: 'tv' },
+  'lucky louie': { id: 'tt0462128', title: 'Lucky Louie', type: 'tv' },
+  'louis c k hilarious': { id: 'tt1421373', title: 'Louis C.K.: Hilarious', type: 'movie' },
+  'louis c k live at the beacon theater': { id: 'tt2112999', title: 'Louis C.K.: Live at the Beacon Theater', type: 'movie' },
+  'louis c k oh my god': { id: 'tt2510998', title: 'Louis C.K.: Oh My God', type: 'movie' },
+  'louis c k shameless': { id: 'tt0927619', title: 'Louis C.K.: Shameless', type: 'movie' },
+  'louis c k chewed up': { id: 'tt1190722', title: 'Louis C.K.: Chewed Up', type: 'movie' },
+  'andaz apna apna': { id: 'tt0109117', title: 'Andaz Apna Apna', type: 'movie' },
+  'hera pheri': { id: 'tt0242519', title: 'Hera Pheri', type: 'movie' },
+  'gol maal': { id: 'tt0079221', title: 'Gol Maal', type: 'movie' },
+  'chupke chupke': { id: 'tt0072783', title: 'Chupke Chupke', type: 'movie' },
+  'jaane bhi do yaaro': { id: 'tt0085743', title: 'Jaane Bhi Do Yaaro', type: 'movie' },
+  'padosan': { id: 'tt0063404', title: 'Padosan', type: 'movie' },
+  'chashme buddoor': { id: 'tt0085321', title: 'Chashme Buddoor', type: 'movie' },
+  'angoor': { id: 'tt0083564', title: 'Angoor', type: 'movie' },
+  'dilwale dulhania le jayenge': { id: 'tt0112870', title: 'Dilwale Dulhania Le Jayenge', type: 'movie' },
+  'sholay': { id: 'tt0073707', title: 'Sholay', type: 'movie' },
+  'mughal e azam': { id: 'tt0054098', title: 'Mughal-E-Azam', type: 'movie' },
+  'mother india': { id: 'tt0050188', title: 'Mother India', type: 'movie' },
+  'anand': { id: 'tt0066763', title: 'Anand', type: 'movie' },
+  'deewaar': { id: 'tt0072860', title: 'Deewaar', type: 'movie' },
+  'amar akbar anthony': { id: 'tt0075669', title: 'Amar Akbar Anthony', type: 'movie' },
+  'guide': { id: 'tt0059246', title: 'Guide', type: 'movie' },
+  'pyaasa': { id: 'tt0050870', title: 'Pyaasa', type: 'movie' },
+  'kabhi kabhie': { id: 'tt0074730', title: 'Kabhi Kabhie', type: 'movie' },
+  'malgudi days': { id: 'tt0249595', title: 'Malgudi Days', type: 'tv' },
+  'dekh bhai dekh': { id: 'tt0158417', title: 'Dekh Bhai Dekh', type: 'tv' },
+  'shrimaan shrimati': { id: 'tt0398564', title: 'Shrimaan Shrimati', type: 'tv' },
+  'hum paanch': { id: 'tt0249283', title: 'Hum Paanch', type: 'tv' },
+  'office office': { id: 'tt0398533', title: 'Office Office', type: 'tv' },
+  'fauji': { id: 'tt0363353', title: 'Fauji', type: 'tv' },
+  'byomkesh bakshi': { id: 'tt0157217', title: 'Byomkesh Bakshi', type: 'tv' },
+  'flop show': { id: 'tt0327329', title: 'Flop Show', type: 'tv' },
+};
 
 function normalizeTitle(title) {
   return String(title || '')
@@ -90,6 +131,9 @@ async function searchTitle(title) {
 }
 
 async function resolveTitle(title, channelId) {
+  const knownTitle = KNOWN_TITLES[normalizeTitle(title)];
+  if (knownTitle) return knownTitle;
+
   try {
     const apiItem = await searchTitle(title);
     if (apiItem) return apiItem;
@@ -125,14 +169,5 @@ export async function fetchChannelContent(channel) {
   const resolved = await Promise.all(selectedTitles.map((title) => resolveTitle(title, channel.id)));
   const playable = resolved.filter(Boolean).map(buildPlayableItem);
 
-  if (playable.length > 0) return playable;
-
-  return [
-    {
-      id: `fallback-${Math.random().toString(36).slice(2, 9)}`,
-      title: `No Signal (${channel.name})`,
-      embedUrl: 'https://vaplayer.ru/embed/movie/tt0468569?autoplay=1&hd=1&quality=1080p',
-      dur: 9120,
-    },
-  ];
+  return playable;
 }
