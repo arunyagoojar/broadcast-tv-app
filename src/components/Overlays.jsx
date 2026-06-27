@@ -41,7 +41,7 @@ export default function Overlays({
         className={`network-overlay${overlayEnabled && networkActive ? ' active' : ''}${networkFadeOut ? ' fade-out' : ''}`}
       >
         <div className="network-name" style={{ fontSize: '11px', letterSpacing: '1px' }}>{currentTitle}</div>
-        <div className="network-time" style={{ fontSize: '10px', opacity: 0.8, marginTop: '4px' }}>
+        <div className="network-time" style={{ fontSize: '10px', opacity: 0, marginTop: '4px' }}>
           {playbackTimeStr}
         </div>
       </div>
