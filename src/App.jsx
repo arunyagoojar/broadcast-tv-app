@@ -13,7 +13,6 @@ import { fetchChannelContent } from './api/channels';
 const SETTINGS_KEY = 'broadcastTV_settings';
 const CHANNEL_STATES_KEY = 'broadcastTV_channelStates';
 const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan'];
-const COMPLETION_GRACE_SECONDS = 45;
 const MIN_REPORTED_DURATION_SECONDS = 300;
 const MAX_REPORTED_DURATION_SECONDS = 12 * 60 * 60;
 const DEFAULT_SETTINGS = {
@@ -222,25 +221,6 @@ function readProgressDurationSeconds(progress) {
   return found === undefined ? null : normalizeDurationSeconds(found);
 }
 
-function readProgressRatio(progress) {
-  if (typeof progress === 'number') {
-    return progress >= 0 && progress <= 1 ? progress : null;
-  }
-  if (!progress || typeof progress !== 'object') return null;
-
-  const candidates = [
-    progress.played,
-    progress.percent,
-    progress.percentage,
-    progress.progress,
-  ];
-  const found = candidates.find((value) => {
-    const ratio = Number(value);
-    return Number.isFinite(ratio) && ratio >= 0 && ratio <= 1;
-  });
-  return found === undefined ? null : Number(found);
-}
-
 function syncReportedDuration(state, snapshot, reportedDuration) {
   const duration = normalizeDurationSeconds(reportedDuration);
   const index = snapshot?.itemIndex;
@@ -261,6 +241,18 @@ function syncReportedDuration(state, snapshot, reportedDuration) {
     itemIndex === index ? { ...item, dur: duration } : item
   ));
   return true;
+}
+
+function getDisplayProgressSeconds(snapshot, activePlayback, playerProgress) {
+  const duration = Number(snapshot?.currentItem?.dur) || 0;
+  const initialProgress = Number(activePlayback?.resumeAt);
+  const progress = Number.isFinite(playerProgress)
+    ? playerProgress
+    : Number.isFinite(initialProgress)
+      ? initialProgress
+      : snapshot?.resumeAt;
+  const seconds = Number.isFinite(Number(progress)) ? Number(progress) : 0;
+  return duration > 0 ? Math.min(Math.max(0, seconds), duration) : Math.max(0, seconds);
 }
 
 function formatTime(secs) {
@@ -605,7 +597,7 @@ export default function App() {
 
     if (currentItem.embedUrl) {
       currentProgressRef.current = null;
-      activePlaybackRef.current = { channelId: channel.id, itemId: currentItem.id };
+      activePlaybackRef.current = { channelId: channel.id, itemId: currentItem.id, resumeAt };
       setCurrentTitle(currentItem.title);
       setPlaybackTimeStr(`${formatTime(resumeAt)} / -${formatTime(Math.max(0, currentItem.dur - resumeAt))}`);
       const finalEmbedUrl = buildPlaybackUrl(currentItem.embedUrl, resumeAt);
@@ -697,43 +689,6 @@ export default function App() {
     switchTo(S.current.activeChannelIndex);
   }, [switchTo, unlockAudio]);
 
-  const shouldAcceptCompletedEvent = useCallback((playerProgress) => {
-    const s = S.current;
-    const channel = CHANNELS[s.activeChannelIndex];
-    const state = channel ? s.channelStates[channel.id] : null;
-    if (!state) return true;
-
-    let snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
-    const reportedDuration = readProgressDurationSeconds(playerProgress);
-    if (syncReportedDuration(state, snapshot, reportedDuration)) {
-      persistChannelStatesSnapshot(s.channelStates);
-      snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
-    }
-
-    const currentItem = snapshot.currentItem;
-    if (!currentItem) return true;
-
-    const duration = Number(currentItem.dur) || reportedDuration;
-    const progressSeconds = readProgressSeconds(playerProgress);
-    const trackedProgress = progressSeconds ?? currentProgressRef.current ?? snapshot.resumeAt;
-    if (!Number.isFinite(duration) || duration <= 0 || !Number.isFinite(trackedProgress)) {
-      return true;
-    }
-
-    const ratio = readProgressRatio(playerProgress);
-    if (ratio !== null && progressSeconds !== null && progressSeconds <= 1 && reportedDuration === null) {
-      return ratio >= 0.96;
-    }
-
-    const nearEnough = trackedProgress >= Math.max(0, duration - COMPLETION_GRACE_SECONDS);
-    if (!nearEnough && import.meta.env.DEV) {
-      console.warn(
-        `[TV] Ignored early completion for ${currentItem.title}: ${formatTime(trackedProgress)} of ${formatTime(duration)}`
-      );
-    }
-    return nearEnough;
-  }, []);
-
   useEffect(() => {
     const player = playerRef.current;
     const muted = isPlaybackMuted();
@@ -799,14 +754,14 @@ export default function App() {
         }
         if (player_status === 'playing') {
           handlePlay();
-        } else if (player_status === 'completed' && shouldAcceptCompletedEvent(player_progress)) {
+        } else if (player_status === 'completed') {
           handleEnded();
         }
       }
     }
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [handlePlay, handleEnded, shouldAcceptCompletedEvent]);
+  }, [handlePlay, handleEnded]);
 
 
   /* ── Open / Close Channel Modal ── */
@@ -916,7 +871,11 @@ export default function App() {
       const currentItem = snapshot.currentItem;
       if (!currentItem) return;
 
-      const currentSeconds = snapshot.resumeAt;
+      const currentSeconds = getDisplayProgressSeconds(
+        snapshot,
+        activePlaybackRef.current,
+        currentProgressRef.current
+      );
       const remainingSeconds = Math.max(0, currentItem.dur - currentSeconds);
 
       setPlaybackTimeStr(`${formatTime(currentSeconds)} / -${formatTime(remainingSeconds)}`);
