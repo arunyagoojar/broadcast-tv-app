@@ -1,5 +1,6 @@
 export default function PlayerStage({
   playerRef,
+  playerKey,
   onPlay,
   onEnded,
   onError,
@@ -15,6 +16,7 @@ export default function PlayerStage({
         <div id="player-container">
           {embedUrl ? (
             <iframe
+              key={playerKey}
               id="player"
               ref={playerRef}
               src={embedUrl}
@@ -27,6 +29,7 @@ export default function PlayerStage({
             />
           ) : (
             <video
+              key={playerKey}
               id="player"
               ref={playerRef}
               playsInline

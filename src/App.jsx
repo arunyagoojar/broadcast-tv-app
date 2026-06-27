@@ -15,6 +15,8 @@ const CHANNEL_STATES_KEY = 'broadcastTV_channelStates';
 const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan'];
 const MIN_REPORTED_DURATION_SECONDS = 300;
 const MAX_REPORTED_DURATION_SECONDS = 12 * 60 * 60;
+const COMPLETION_LOAD_GRACE_MS = 3000;
+const NEAR_END_ADVANCE_SECONDS = 1;
 const DEFAULT_SETTINGS = {
   overlayOpacity: 0.88,
   scanlines: true,
@@ -264,6 +266,22 @@ function formatTime(secs) {
   return `${m}:${sec}`;
 }
 
+function getPlayableKey(item) {
+  if (!item) return '';
+  try {
+    const urlObj = new URL(item.embedUrl);
+    return `${urlObj.origin}${urlObj.pathname}`;
+  } catch {
+    return String(item.title || item.id || '').toLowerCase().trim();
+  }
+}
+
+function isSamePlayableItem(a, b) {
+  const aKey = getPlayableKey(a);
+  const bKey = getPlayableKey(b);
+  return Boolean(aKey && bKey && aKey === bKey);
+}
+
 /* ─────────────────────────────────────────────────────
    MAIN APP COMPONENT
 ───────────────────────────────────────────────────── */
@@ -280,6 +298,8 @@ export default function App() {
   const noiseRef = useRef(null);
   const currentProgressRef = useRef(null);
   const activePlaybackRef = useRef(null);
+  const playerLoadStartedAtRef = useRef(0);
+  const lastCompletionRef = useRef({ key: '', at: 0 });
   const [settingsSeed] = useState(loadSettingsSnapshot);
   const [channelStatesSeed] = useState(loadChannelStatesSnapshot);
   const settingsRef = useRef(settingsSeed.settings);
@@ -317,6 +337,7 @@ export default function App() {
   const [settings, setSettings] = useState(settingsSeed.settings);
   const [playPromptVisible, setPlayPromptVisible] = useState(false);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState('');
+  const [playerLoadKey, setPlayerLoadKey] = useState(0);
 
   /* ── Screen Wake Lock ── */
   useWakeLock();
@@ -497,7 +518,7 @@ export default function App() {
   const switchTo = useCallback(async (index, options = {}) => {
     const s = S.current;
     const refreshItem = options?.refreshItem === true;
-    const restartItem = options?.restartItem === true;
+    const advanceItem = options?.advanceItem === true || options?.restartItem === true;
     const skipCommit = options?.skipCommit === true;
     if (!skipCommit) commitActiveProgress();
 
@@ -532,6 +553,7 @@ export default function App() {
     let snapshot = getTimelineSnapshot(state);
     let currentItem = snapshot.currentItem;
     let resumeAt = snapshot.resumeAt;
+    let completedItem = null;
 
     if (refreshItem) {
       setStatus('SCANNING');
@@ -548,12 +570,29 @@ export default function App() {
       }
     }
 
-    if (currentItem && restartItem) {
+    if (advanceItem) {
       const endedSnapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
       const itemToAdvance = endedSnapshot.currentItem ? endedSnapshot : snapshot;
-      const nextStart = itemToAdvance.accumulatedBefore + itemToAdvance.currentItem.dur + 1;
+      if (itemToAdvance.currentItem) {
+        completedItem = itemToAdvance.currentItem;
+        const nextStart = itemToAdvance.accumulatedBefore + (Number(itemToAdvance.currentItem.dur) || 0);
+        state.startedAt = Date.now() - (nextStart * 1000);
+        activePlaybackRef.current = null;
+        currentProgressRef.current = null;
+        snapshot = getTimelineSnapshot(state);
+        currentItem = snapshot.currentItem;
+        resumeAt = snapshot.resumeAt;
+        persistChannelStatesSnapshot(s.channelStates);
+      }
+    }
+
+    let duplicateSkipCount = 0;
+    while (advanceItem && completedItem && currentItem && isSamePlayableItem(currentItem, completedItem) && duplicateSkipCount < 20) {
+      duplicateSkipCount++;
+      const nextStart = snapshot.accumulatedBefore + (Number(currentItem.dur) || 0);
       state.startedAt = Date.now() - (nextStart * 1000);
       activePlaybackRef.current = null;
+      currentProgressRef.current = null;
       snapshot = getTimelineSnapshot(state);
       currentItem = snapshot.currentItem;
       resumeAt = snapshot.resumeAt;
@@ -569,17 +608,26 @@ export default function App() {
 
       if (!newItems?.length) break;
 
-      if (!state.playlist.length) {
-        state.startedAt = Date.now() - (getRandomStartOffset(newItems[0]) * 1000);
+      const playableItems = advanceItem && completedItem
+        ? newItems.filter((item) => !isSamePlayableItem(item, completedItem))
+        : newItems;
+      if (!playableItems.length) continue;
+
+      if (advanceItem && state.playlist.length && snapshot.totalDuration > 0) {
+        state.startedAt = Date.now() - (snapshot.totalDuration * 1000);
       }
-      state.playlist.push(...newItems);
+
+      if (!state.playlist.length) {
+        state.startedAt = Date.now() - ((advanceItem ? 0 : getRandomStartOffset(playableItems[0])) * 1000);
+      }
+      state.playlist.push(...playableItems);
       snapshot = getTimelineSnapshot(state);
       currentItem = snapshot.currentItem;
       resumeAt = snapshot.resumeAt;
       persistChannelStatesSnapshot(s.channelStates);
     }
 
-    if (!currentItem && state.playlist.length && snapshot.totalDuration > 0) {
+    if (!currentItem && !advanceItem && state.playlist.length && snapshot.totalDuration > 0) {
       state.startedAt = Date.now() - ((snapshot.elapsed % snapshot.totalDuration) * 1000);
       snapshot = getTimelineSnapshot(state);
       currentItem = snapshot.currentItem;
@@ -601,6 +649,8 @@ export default function App() {
       setCurrentTitle(currentItem.title);
       setPlaybackTimeStr(`${formatTime(resumeAt)} / -${formatTime(Math.max(0, currentItem.dur - resumeAt))}`);
       const finalEmbedUrl = buildPlaybackUrl(currentItem.embedUrl, resumeAt);
+      playerLoadStartedAtRef.current = Date.now();
+      setPlayerLoadKey((key) => key + 1);
       setCurrentEmbedUrl(finalEmbedUrl);
 
       promptTimerRef.current = setTimeout(() => {
@@ -675,7 +725,23 @@ export default function App() {
 
   const handleEnded = useCallback(() => {
     const s = S.current;
-    switchTo(s.activeChannelIndex, { restartItem: true, skipCommit: true });
+    const now = Date.now();
+    if (now - playerLoadStartedAtRef.current < COMPLETION_LOAD_GRACE_MS) return;
+
+    const activePlayback = activePlaybackRef.current;
+    const completionKey = activePlayback?.itemId
+      ? `${activePlayback.channelId}:${activePlayback.itemId}`
+      : `channel:${s.activeChannelIndex}`;
+
+    if (
+      lastCompletionRef.current.key === completionKey &&
+      now - lastCompletionRef.current.at < COMPLETION_LOAD_GRACE_MS
+    ) {
+      return;
+    }
+
+    lastCompletionRef.current = { key: completionKey, at: now };
+    switchTo(s.activeChannelIndex, { advanceItem: true, skipCommit: true });
   }, [switchTo]);
 
   const handleError = useCallback(() => {
@@ -733,6 +799,7 @@ export default function App() {
         const { player_status, player_progress } = message.data || {};
         const progressSeconds = readProgressSeconds(player_progress);
         const reportedDuration = readProgressDurationSeconds(player_progress);
+        let reachedKnownEnd = false;
         if (progressSeconds !== null && progressSeconds >= 0) {
           const s = S.current;
           const channel = CHANNELS[s.activeChannelIndex];
@@ -750,11 +817,19 @@ export default function App() {
               lastPersistRef.current = Date.now();
               persistChannelStatesSnapshot(s.channelStates);
             }
+            reachedKnownEnd =
+              snapshot.currentItem.dur > 0 &&
+              progressSeconds >= Math.max(0, snapshot.currentItem.dur - NEAR_END_ADVANCE_SECONDS);
           }
         }
         if (player_status === 'playing') {
           handlePlay();
-        } else if (player_status === 'completed') {
+        } else if (
+          player_status === 'completed' ||
+          player_status === 'complete' ||
+          player_status === 'ended' ||
+          reachedKnownEnd
+        ) {
           handleEnded();
         }
       }
@@ -922,6 +997,7 @@ export default function App() {
     >
       <PlayerStage
         playerRef={playerRef}
+        playerKey={playerLoadKey}
         onPlay={handlePlay}
         onEnded={handleEnded}
         onError={handleError}
