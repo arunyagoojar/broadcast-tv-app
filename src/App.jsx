@@ -16,7 +16,8 @@ const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'the
 const MIN_REPORTED_DURATION_SECONDS = 300;
 const MAX_REPORTED_DURATION_SECONDS = 12 * 60 * 60;
 const COMPLETION_LOAD_GRACE_MS = 3000;
-const NEAR_END_ADVANCE_SECONDS = 1;
+const TRUSTED_END_EPSILON_SECONDS = 0.5;
+const TRUSTED_TIMELINE_CATCHUP_SECONDS = 1;
 const DEFAULT_SETTINGS = {
   overlayOpacity: 0.88,
   scanlines: true,
@@ -164,12 +165,32 @@ function getActivePlaybackSnapshot(state, activePlayback) {
   return getTimelineSnapshot(state);
 }
 
-function readProgressSeconds(progress) {
-  if (typeof progress === 'number') return Number.isFinite(progress) ? progress : null;
-  if (typeof progress === 'string') {
-    const parsed = Number(progress);
-    return Number.isFinite(parsed) ? parsed : null;
+function parseSecondsValue(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string') return null;
+
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  if (/^\d+(?::\d{1,2}){1,2}(?:\.\d+)?$/.test(trimmed)) {
+    const parts = trimmed.split(':').map(Number);
+    if (parts.some((part) => !Number.isFinite(part))) return null;
+    return parts.reduce((total, part) => (total * 60) + part, 0);
   }
+
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function normalizeProgressSeconds(value) {
+  if (!Number.isFinite(value) || value < 0) return null;
+  return value > MAX_REPORTED_DURATION_SECONDS ? value / 1000 : value;
+}
+
+function readProgressSeconds(progress) {
+  const directSeconds = parseSecondsValue(progress);
+  if (directSeconds !== null) return normalizeProgressSeconds(directSeconds);
+
   if (!progress || typeof progress !== 'object') return null;
   if (
     Number.isFinite(Number(progress.played)) &&
@@ -187,14 +208,18 @@ function readProgressSeconds(progress) {
     progress.position,
     progress.seconds,
     progress.time,
+    progress.elapsed,
+    progress.currentTimeText,
+    progress.current_time_text,
+    progress.positionText,
     Number(progress.played) > 1 ? progress.played : undefined,
   ];
-  const found = candidates.find((value) => Number.isFinite(Number(value)));
-  return found === undefined ? null : Number(found);
+  const found = candidates.map(parseSecondsValue).find((value) => value !== null);
+  return found === undefined ? null : normalizeProgressSeconds(found);
 }
 
 function normalizeDurationSeconds(value) {
-  const duration = Number(value);
+  const duration = parseSecondsValue(value);
   if (!Number.isFinite(duration) || duration <= 0) return null;
   const seconds = duration > MAX_REPORTED_DURATION_SECONDS
     ? duration / 1000
@@ -218,9 +243,98 @@ function readProgressDurationSeconds(progress) {
     progress.totalDuration,
     progress.total_duration,
     progress.length,
+    progress.total,
+    progress.totalTime,
+    progress.total_time,
+    progress.durationText,
+    progress.duration_text,
+    progress.lengthText,
   ];
   const found = candidates.find((value) => normalizeDurationSeconds(value) !== null);
   return found === undefined ? null : normalizeDurationSeconds(found);
+}
+
+function parseMaybeJson(value) {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
+
+function normalizePlayerStatus(value) {
+  if (value === 0 || value === '0') return 'ended';
+  if (value === 1 || value === '1') return 'playing';
+  if (value === 2 || value === '2') return 'paused';
+  return String(value || '').toLowerCase().trim();
+}
+
+function isPlayingStatus(status) {
+  return status === 'playing' || status === 'play';
+}
+
+function isCompletionStatus(status) {
+  return [
+    'completed',
+    'complete',
+    'ended',
+    'end',
+    'finished',
+    'finish',
+  ].includes(status);
+}
+
+function hasProgressShape(value) {
+  if (!value || typeof value !== 'object') return false;
+  return [
+    'currentTime',
+    'current_time',
+    'current',
+    'position',
+    'seconds',
+    'time',
+    'played',
+    'duration',
+    'dur',
+    'totalDuration',
+    'total_duration',
+    'length',
+  ].some((key) => value[key] !== undefined);
+}
+
+function readPlayerEventPayload(message) {
+  const parsed = parseMaybeJson(message);
+  if (!parsed || typeof parsed !== 'object') return null;
+
+  const candidates = [
+    parsed,
+    parseMaybeJson(parsed.data),
+    parseMaybeJson(parsed.detail),
+    parseMaybeJson(parsed.payload),
+  ].filter((item) => item && typeof item === 'object');
+
+  for (const candidate of candidates) {
+    const progress = candidate.player_progress ?? candidate.progress ?? candidate.currentProgress;
+    const eventName = normalizePlayerStatus(candidate.type ?? candidate.event ?? candidate.name);
+    const isPlayerEvent = eventName.includes('player') || eventName.includes('playback');
+    const eventStatus = isPlayingStatus(eventName) || isCompletionStatus(eventName) ? eventName : undefined;
+    const status = candidate.player_status ?? candidate.status ?? candidate.state ?? candidate.playerState ?? eventStatus;
+
+    if (status !== undefined || progress !== undefined || hasProgressShape(candidate)) {
+      return {
+        player_status: normalizePlayerStatus(status),
+        player_progress: progress ?? candidate,
+      };
+    }
+
+    if (isPlayerEvent && candidate.data && typeof candidate.data === 'object') {
+      const nested = readPlayerEventPayload(candidate.data);
+      if (nested) return nested;
+    }
+  }
+
+  return null;
 }
 
 function syncReportedDuration(state, snapshot, reportedDuration) {
@@ -236,11 +350,12 @@ function syncReportedDuration(state, snapshot, reportedDuration) {
     return false;
   }
 
-  const currentDuration = Number(state.playlist[index].dur) || 0;
-  if (Math.abs(currentDuration - duration) < 2) return false;
+  const currentItem = state.playlist[index];
+  const currentDuration = Number(currentItem.dur) || 0;
+  if (Math.abs(currentDuration - duration) < 2 && currentItem.durationTrusted) return false;
 
   state.playlist = state.playlist.map((item, itemIndex) => (
-    itemIndex === index ? { ...item, dur: duration } : item
+    itemIndex === index ? { ...item, dur: duration, durationTrusted: true } : item
   ));
   return true;
 }
@@ -729,6 +844,9 @@ export default function App() {
     if (now - playerLoadStartedAtRef.current < COMPLETION_LOAD_GRACE_MS) return;
 
     const activePlayback = activePlaybackRef.current;
+    const channel = CHANNELS[s.activeChannelIndex];
+    if (!activePlayback || !channel || activePlayback.channelId !== channel.id) return;
+
     const completionKey = activePlayback?.itemId
       ? `${activePlayback.channelId}:${activePlayback.itemId}`
       : `channel:${s.activeChannelIndex}`;
@@ -786,27 +904,40 @@ export default function App() {
   // Listen for iframe player events via postMessage
   useEffect(() => {
     function handleMessage(e) {
-      let message = e.data;
-      if (typeof message === 'string') {
-        try {
-          message = JSON.parse(message);
-        } catch {
-          return;
-        }
-      }
+      const eventPayload = readPlayerEventPayload(e.data);
 
-      if (message && message.type === 'PLAYER_EVENT') {
-        const { player_status, player_progress } = message.data || {};
+      if (eventPayload) {
+        const { player_status, player_progress } = eventPayload;
         const progressSeconds = readProgressSeconds(player_progress);
         const reportedDuration = readProgressDurationSeconds(player_progress);
-        let reachedKnownEnd = false;
+        const player = playerRef.current;
+        const activePlayback = activePlaybackRef.current;
+        const channel = CHANNELS[S.current.activeChannelIndex];
+        const hasCompletionStatus = isCompletionStatus(player_status);
+
+        if (
+          !player ||
+          player.tagName !== 'IFRAME' ||
+          !activePlayback ||
+          !channel ||
+          activePlayback.channelId !== channel.id
+        ) {
+          return;
+        }
+
+        let reachedTrustedEnd = false;
+        const s = S.current;
+        const activeChannel = CHANNELS[s.activeChannelIndex];
+        const state = activeChannel ? s.channelStates[activeChannel.id] : null;
+        let snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
+        const durationChanged = syncReportedDuration(state, snapshot, reportedDuration);
+        if (durationChanged) {
+          snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
+          lastPersistRef.current = Date.now();
+          persistChannelStatesSnapshot(s.channelStates);
+        }
+
         if (progressSeconds !== null && progressSeconds >= 0) {
-          const s = S.current;
-          const channel = CHANNELS[s.activeChannelIndex];
-          const state = channel ? s.channelStates[channel.id] : null;
-          let snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
-          const durationChanged = syncReportedDuration(state, snapshot, reportedDuration);
-          if (durationChanged) snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
           currentProgressRef.current = progressSeconds;
           if (snapshot.currentItem) {
             const boundedProgress = snapshot.currentItem.dur
@@ -817,19 +948,14 @@ export default function App() {
               lastPersistRef.current = Date.now();
               persistChannelStatesSnapshot(s.channelStates);
             }
-            reachedKnownEnd =
-              snapshot.currentItem.dur > 0 &&
-              progressSeconds >= Math.max(0, snapshot.currentItem.dur - NEAR_END_ADVANCE_SECONDS);
+            reachedTrustedEnd =
+              reportedDuration !== null &&
+              progressSeconds >= Math.max(0, reportedDuration - TRUSTED_END_EPSILON_SECONDS);
           }
         }
-        if (player_status === 'playing') {
+        if (isPlayingStatus(player_status)) {
           handlePlay();
-        } else if (
-          player_status === 'completed' ||
-          player_status === 'complete' ||
-          player_status === 'ended' ||
-          reachedKnownEnd
-        ) {
+        } else if (hasCompletionStatus || reachedTrustedEnd) {
           handleEnded();
         }
       }
@@ -942,9 +1068,25 @@ export default function App() {
       const channel = CHANNELS[s.activeChannelIndex];
       if (!channel) return;
       const state = s.channelStates[channel.id];
+      const activePlayback = activePlaybackRef.current;
       const snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
       const currentItem = snapshot.currentItem;
       if (!currentItem) return;
+
+      const timelineSnapshot = getTimelineSnapshot(state);
+      const timelineMovedPastActive =
+        !timelineSnapshot.currentItem || timelineSnapshot.currentItem.id !== activePlayback?.itemId;
+      if (
+        activePlayback?.channelId === channel.id &&
+        activePlayback.itemId === currentItem.id &&
+        currentItem.durationTrusted &&
+        Number(currentItem.dur) > 0 &&
+        snapshot.resumeAt >= Number(currentItem.dur) + TRUSTED_TIMELINE_CATCHUP_SECONDS &&
+        timelineMovedPastActive
+      ) {
+        handleEnded();
+        return;
+      }
 
       const currentSeconds = getDisplayProgressSeconds(
         snapshot,
@@ -957,7 +1099,7 @@ export default function App() {
       setCurrentTitle(currentItem.title);
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [handleEnded]);
 
   useEffect(() => {
     const persistCurrentTimeline = () => {
