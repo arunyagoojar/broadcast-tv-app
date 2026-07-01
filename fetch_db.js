@@ -23,6 +23,34 @@ async function fetchImdbId(title, isTv) {
   return null;
 }
 
+async function fetchTvMazeData(imdbId) {
+  try {
+    const lookupRes = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${imdbId}`);
+    if (!lookupRes.ok) return null;
+    const showData = await lookupRes.json();
+    const tvmazeId = showData.id;
+    
+    const epRes = await fetch(`https://api.tvmaze.com/shows/${tvmazeId}/episodes`);
+    if (!epRes.ok) return null;
+    const episodes = await epRes.json();
+    
+    const maxEpisodes = {};
+    for (const ep of episodes) {
+      if (ep.season && ep.number) {
+        maxEpisodes[ep.season] = Math.max(maxEpisodes[ep.season] || 0, ep.number);
+      }
+    }
+    
+    const validSeasons = Object.keys(maxEpisodes).map(Number).sort((a,b) => a - b);
+    if (validSeasons.length === 0) return null;
+    
+    return { seasons: validSeasons, maxEpisodes };
+  } catch (err) {
+    console.error(`TVMaze fetch failed for ${imdbId}`);
+    return null;
+  }
+}
+
 async function main() {
   console.log("Fetching IMDB IDs for all channels...");
   const database = {};
@@ -50,10 +78,16 @@ async function main() {
       const result = await fetchImdbId(title, true);
       if (result) {
         if (!database[channelId].find(i => i.id === result.id)) {
+          console.log(`Fetching seasons for TV show: ${result.title}...`);
+          const tvData = await fetchTvMazeData(result.id);
+          if (tvData) {
+            result.seasons = tvData.seasons;
+            result.maxEpisodes = tvData.maxEpisodes;
+          }
           database[channelId].push(result);
         }
       }
-      await new Promise(r => setTimeout(r, 80));
+      await new Promise(r => setTimeout(r, 600)); // Respect TVMaze rate limit
     }
   }
 

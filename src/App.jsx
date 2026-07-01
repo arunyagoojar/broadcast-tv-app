@@ -436,7 +436,6 @@ export default function App() {
   const [hudFadeOut, setHudFadeOut] = useState(false);
   const [networkFadeOut, setNetworkFadeOut] = useState(false);
   const [networkActive, setNetworkActive] = useState(false);
-
   const [currentTitle, setCurrentTitle] = useState('');
   const [playbackTimeStr, setPlaybackTimeStr] = useState('');
 
@@ -986,6 +985,31 @@ export default function App() {
   }, [closeChannelModal, switchTo]);
 
   /* ── Fullscreen toggle ── */
+  useEffect(() => {
+    const checkFullscreenSupport = () => {
+      const supportsFS = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+      if (supportsFS) document.body.classList.add('supports-fs');
+    };
+    checkFullscreenSupport();
+
+    const handleFullscreenChange = () => {
+      const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (isFS) {
+        document.body.classList.add('is-fs');
+      } else {
+        document.body.classList.remove('is-fs');
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    handleFullscreenChange();
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   const toggleFullscreen = useCallback(async () => {
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen?.().catch(() => { });
@@ -1132,12 +1156,37 @@ export default function App() {
   const effectiveMuted = settings.muted || !audioUnlocked;
 
   return (
-    <div
-      className={`app${isPoweredOff ? ' power-off' : ''}`}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      <PlayerStage
+    <>
+      <div className="landscape-fs-prompt">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '320px' }}>
+          <div style={{ marginBottom: '32px', lineHeight: '1.8' }}>
+            Please return to fullscreen mode for the best experience.
+          </div>
+          <button className="tilt-fullscreen-btn" onClick={toggleFullscreen}>
+            ENTER FULLSCREEN
+          </button>
+        </div>
+      </div>
+      <div className="tilt-prompt">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: '320px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+            <line x1="12" y1="18" x2="12.01" y2="18" />
+          </svg>
+          <div style={{ marginBottom: '32px', lineHeight: '1.8' }}>
+            To hide the browser bar, please fullscreen the app before rotating your device.
+          </div>
+          <button className="tilt-fullscreen-btn" onClick={toggleFullscreen}>
+            FULLSCREEN
+          </button>
+        </div>
+      </div>
+      <div
+        className={`app${isPoweredOff ? ' power-off' : ''}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <PlayerStage
         playerRef={playerRef}
         playerKey={playerLoadKey}
         onPlay={handlePlay}
@@ -1190,5 +1239,6 @@ export default function App() {
         themes={THEMES}
       />
     </div>
+    </>
   );
 }

@@ -1,131 +1,4 @@
 {
-  "0": [
-    {
-      "id": "tt15239678",
-      "title": "Dune: Part Two",
-      "type": "movie"
-    },
-    {
-      "id": "tt15398776",
-      "title": "Oppenheimer",
-      "type": "movie"
-    },
-    {
-      "id": "tt1517268",
-      "title": "Barbie",
-      "type": "movie"
-    },
-    {
-      "id": "tt6263850",
-      "title": "Deadpool & Wolverine",
-      "type": "movie"
-    },
-    {
-      "id": "tt22022452",
-      "title": "Inside Out 2",
-      "type": "movie"
-    },
-    {
-      "id": "tt12037194",
-      "title": "Furiosa: A Mad Max Saga",
-      "type": "movie"
-    },
-    {
-      "id": "tt1684562",
-      "title": "The Fall Guy",
-      "type": "movie"
-    },
-    {
-      "id": "tt17279496",
-      "title": "Civil War",
-      "type": "movie"
-    },
-    {
-      "id": "tt9214772",
-      "title": "Monkey Man",
-      "type": "movie"
-    },
-    {
-      "id": "tt23289160",
-      "title": "Godzilla Minus One",
-      "type": "movie"
-    },
-    {
-      "id": "tt9362722",
-      "title": "Spider-Man: Across the Spider-Verse",
-      "type": "movie"
-    },
-    {
-      "id": "tt9603212",
-      "title": "Mission: Impossible - Dead Reckoning Part One",
-      "type": "movie"
-    },
-    {
-      "id": "tt10366206",
-      "title": "John Wick: Chapter 4",
-      "type": "movie"
-    },
-    {
-      "id": "tt6718170",
-      "title": "The Super Mario Bros. Movie",
-      "type": "movie"
-    },
-    {
-      "id": "tt6791350",
-      "title": "Guardians of the Galaxy Vol. 3",
-      "type": "movie"
-    },
-    {
-      "id": "tt1630029",
-      "title": "Avatar: The Way of Water",
-      "type": "movie"
-    },
-    {
-      "id": "tt1745960",
-      "title": "Top Gun: Maverick",
-      "type": "movie"
-    },
-    {
-      "id": "tt1877830",
-      "title": "The Batman",
-      "type": "movie"
-    },
-    {
-      "id": "tt6710474",
-      "title": "Everything Everywhere All at Once",
-      "type": "movie"
-    },
-    {
-      "id": "tt16426418",
-      "title": "Challengers",
-      "type": "movie"
-    },
-    {
-      "id": "tt11389872",
-      "title": "Kingdom of the Planet of the Apes",
-      "type": "movie"
-    },
-    {
-      "id": "tt13433802",
-      "title": "A Quiet Place: Day One",
-      "type": "movie"
-    },
-    {
-      "id": "tt12584954",
-      "title": "Twisters",
-      "type": "movie"
-    },
-    {
-      "id": "tt18412256",
-      "title": "Alien: Romulus",
-      "type": "movie"
-    },
-    {
-      "id": "tt2049403",
-      "title": "Beetlejuice Beetlejuice",
-      "type": "movie"
-    }
-  ],
   "1": [
     {
       "id": "tt0848228",
@@ -148,8 +21,8 @@
       "type": "movie"
     },
     {
-      "id": "tt0117060",
-      "title": "Mission: Impossible",
+      "id": "tt9603208",
+      "title": "Mission: Impossible - The Final Reckoning",
       "type": "movie"
     },
     {
@@ -229,7 +102,7 @@
     },
     {
       "id": "tt0112864",
-      "title": "Die Hard: With a Vengeance",
+      "title": "Die Hard with a Vengeance",
       "type": "movie"
     },
     {
@@ -328,8 +201,13 @@
       "type": "movie"
     },
     {
-      "id": "tt31036941",
-      "title": "Jurassic World: Rebirth",
+      "id": "tt0369610",
+      "title": "Jurassic World",
+      "type": "movie"
+    },
+    {
+      "id": "tt0092099",
+      "title": "Top Gun",
       "type": "movie"
     },
     {
@@ -567,6 +445,11 @@
     {
       "id": "tt15239678",
       "title": "Dune: Part Two",
+      "type": "movie"
+    },
+    {
+      "id": "tt0083658",
+      "title": "Blade Runner",
       "type": "movie"
     },
     {
@@ -957,8 +840,8 @@
       "type": "movie"
     },
     {
-      "id": "tt0247745",
-      "title": "Super Troopers",
+      "id": "tt8820258",
+      "title": "Super Troopers 3",
       "type": "movie"
     },
     {
@@ -1071,266 +954,976 @@
     {
       "id": "tt0386676",
       "title": "The Office",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "maxEpisodes": {
+        "1": 6,
+        "2": 22,
+        "3": 25,
+        "4": 19,
+        "5": 28,
+        "6": 26,
+        "7": 27,
+        "8": 24,
+        "9": 25
+      }
     }
   ],
   "5": [
     {
       "id": "tt0108778",
       "title": "Friends",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "maxEpisodes": {
+        "1": 24,
+        "2": 24,
+        "3": 25,
+        "4": 24,
+        "5": 24,
+        "6": 25,
+        "7": 24,
+        "8": 24,
+        "9": 24,
+        "10": 18
+      }
     }
   ],
   "6": [
     {
       "id": "tt0903747",
       "title": "Breaking Bad",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 7,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 16
+      }
     },
     {
       "id": "tt0944947",
       "title": "Game of Thrones",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 10,
+        "7": 7,
+        "8": 6
+      }
     },
     {
       "id": "tt4574334",
       "title": "Stranger Things",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 9,
+        "3": 8,
+        "4": 9,
+        "5": 8
+      }
     },
     {
       "id": "tt3032476",
       "title": "Better Call Saul",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 13
+      }
     },
     {
       "id": "tt1190634",
       "title": "The Boys",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8,
+        "5": 8
+      }
     },
     {
       "id": "tt0306414",
       "title": "The Wire",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 12,
+        "3": 12,
+        "4": 13,
+        "5": 10
+      }
     },
     {
       "id": "tt0141842",
       "title": "The Sopranos",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13,
+        "6": 21
+      }
     },
     {
       "id": "tt7660850",
       "title": "Succession",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 9,
+        "4": 10
+      }
     },
     {
       "id": "tt0804503",
       "title": "Mad Men",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13,
+        "6": 13,
+        "7": 14
+      }
     },
     {
       "id": "tt2442560",
       "title": "Peaky Blinders",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 6,
+        "2": 6,
+        "3": 6,
+        "4": 6,
+        "5": 6,
+        "6": 6
+      }
     },
     {
       "id": "tt7366338",
       "title": "Chernobyl",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1
+      ],
+      "maxEpisodes": {
+        "1": 5
+      }
     },
     {
       "id": "tt0185906",
       "title": "Band of Brothers",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1
+      ],
+      "maxEpisodes": {
+        "1": 10
+      }
     },
     {
       "id": "tt2356777",
       "title": "True Detective",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 6
+      }
     },
     {
       "id": "tt2802850",
       "title": "Fargo",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 11,
+        "5": 10
+      }
     },
     {
       "id": "tt2707408",
       "title": "Narcos",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10
+      }
     },
     {
       "id": "tt5753856",
       "title": "Dark",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 8,
+        "3": 8
+      }
     },
     {
       "id": "tt5290382",
       "title": "Mindhunter",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 9
+      }
     },
     {
       "id": "tt2085059",
       "title": "Black Mirror",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "maxEpisodes": {
+        "1": 3,
+        "2": 3,
+        "3": 6,
+        "4": 6,
+        "5": 3,
+        "6": 5,
+        "7": 6
+      }
     },
     {
       "id": "tt4786824",
       "title": "The Crown",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 10
+      }
     },
     {
       "id": "tt1856010",
       "title": "House of Cards",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13,
+        "6": 8
+      }
     },
     {
       "id": "tt5071412",
       "title": "Ozark",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 14
+      }
     },
     {
       "id": "tt5834204",
       "title": "The Handmaid's Tale",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 13,
+        "3": 13,
+        "4": 10,
+        "5": 10,
+        "6": 10
+      }
     },
     {
       "id": "tt0475784",
       "title": "Westworld",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 8,
+        "4": 8
+      }
     },
     {
       "id": "tt11280740",
       "title": "Severance",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 9,
+        "2": 10
+      }
     },
     {
       "id": "tt3581920",
       "title": "The Last of Us",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 9,
+        "2": 7
+      }
     },
     {
       "id": "tt0411008",
       "title": "Lost",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 25,
+        "2": 24,
+        "3": 23,
+        "4": 14,
+        "5": 17,
+        "6": 18
+      }
     },
     {
       "id": "tt0455275",
       "title": "Prison Break",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 22,
+        "2": 22,
+        "3": 13,
+        "4": 22,
+        "5": 9
+      }
     },
     {
       "id": "tt0285331",
       "title": "24",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "maxEpisodes": {
+        "1": 24,
+        "2": 24,
+        "3": 24,
+        "4": 24,
+        "5": 24,
+        "6": 24,
+        "7": 24,
+        "8": 24,
+        "9": 12
+      }
     },
     {
       "id": "tt1796960",
       "title": "Homeland",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12,
+        "5": 12,
+        "6": 12,
+        "7": 12,
+        "8": 12
+      }
     },
     {
       "id": "tt0773262",
       "title": "Dexter",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12,
+        "5": 12,
+        "6": 12,
+        "7": 12,
+        "8": 12
+      }
     },
     {
       "id": "tt1520211",
       "title": "The Walking Dead",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "maxEpisodes": {
+        "1": 6,
+        "2": 13,
+        "3": 16,
+        "4": 16,
+        "5": 16,
+        "6": 16,
+        "7": 16,
+        "8": 16,
+        "9": 16,
+        "10": 22,
+        "11": 24
+      }
     },
     {
       "id": "tt4236770",
       "title": "Yellowstone",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 9,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 14
+      }
     },
     {
       "id": "tt13406094",
       "title": "The White Lotus",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 6,
+        "2": 7,
+        "3": 8
+      }
     },
     {
       "id": "tt8772296",
       "title": "Euphoria",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 8,
+        "3": 8
+      }
     },
     {
       "id": "tt3920596",
       "title": "Big Little Lies",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 7,
+        "2": 7
+      }
     },
     {
       "id": "tt0844441",
       "title": "True Blood",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12,
+        "5": 12,
+        "6": 10,
+        "7": 10
+      }
     },
     {
       "id": "tt0979432",
       "title": "Boardwalk Empire",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12,
+        "5": 8
+      }
     },
     {
       "id": "tt0384766",
       "title": "Rome",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 10
+      }
     },
     {
       "id": "tt1442449",
       "title": "Spartacus",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 10,
+        "3": 10
+      }
     },
     {
       "id": "tt2699128",
       "title": "The Leftovers",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 8
+      }
     },
     {
       "id": "tt0248654",
       "title": "Six Feet Under",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 12,
+        "5": 12
+      }
     },
     {
       "id": "tt0286486",
       "title": "The Shield",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 15,
+        "4": 13,
+        "5": 11,
+        "6": 10,
+        "7": 13
+      }
     },
     {
       "id": "tt1124373",
       "title": "Sons of Anarchy",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 14,
+        "5": 13,
+        "6": 13,
+        "7": 13
+      }
     },
     {
       "id": "tt1489428",
       "title": "Justified",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13,
+        "6": 13
+      }
     },
     {
       "id": "tt0348914",
       "title": "Deadwood",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12,
+        "3": 12
+      }
     },
     {
       "id": "tt11041332",
       "title": "Yellowjackets",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 9,
+        "3": 10
+      }
     },
     {
       "id": "tt8111088",
       "title": "The Mandalorian",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 8,
+        "3": 8
+      }
     },
     {
       "id": "tt9253284",
       "title": "Andor",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12
+      }
     },
     {
       "id": "tt9140554",
       "title": "Loki",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 6,
+        "2": 6
+      }
     },
     {
       "id": "tt9140560",
       "title": "WandaVision",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1
+      ],
+      "maxEpisodes": {
+        "1": 9
+      }
     }
   ],
   "7": [
@@ -1871,222 +2464,1102 @@
     {
       "id": "tt2861424",
       "title": "Rick and Morty",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "maxEpisodes": {
+        "1": 11,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10,
+        "9": 10
+      }
     },
     {
       "id": "tt0121955",
       "title": "South Park",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 18,
+        "3": 17,
+        "4": 17,
+        "5": 14,
+        "6": 17,
+        "7": 15,
+        "8": 14,
+        "9": 14,
+        "10": 14,
+        "11": 14,
+        "12": 14,
+        "13": 14,
+        "14": 14,
+        "15": 14,
+        "16": 14,
+        "17": 10,
+        "18": 10,
+        "19": 10,
+        "20": 10,
+        "21": 10,
+        "22": 10,
+        "23": 10,
+        "25": 6,
+        "26": 6,
+        "27": 5,
+        "28": 5,
+        "29": 6
+      }
     },
     {
       "id": "tt0182576",
       "title": "Family Guy",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "maxEpisodes": {
+        "1": 7,
+        "2": 21,
+        "3": 22,
+        "4": 30,
+        "5": 18,
+        "6": 12,
+        "7": 16,
+        "8": 21,
+        "9": 18,
+        "10": 23,
+        "11": 22,
+        "12": 21,
+        "13": 18,
+        "14": 20,
+        "15": 20,
+        "16": 20,
+        "17": 20,
+        "18": 20,
+        "19": 20,
+        "20": 20,
+        "21": 20,
+        "22": 15,
+        "23": 18,
+        "24": 15
+      }
     },
     {
       "id": "tt0096697",
       "title": "The Simpsons",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 22,
+        "3": 24,
+        "4": 22,
+        "5": 22,
+        "6": 25,
+        "7": 25,
+        "8": 25,
+        "9": 25,
+        "10": 23,
+        "11": 22,
+        "12": 21,
+        "13": 22,
+        "14": 22,
+        "15": 22,
+        "16": 21,
+        "17": 22,
+        "18": 22,
+        "19": 20,
+        "20": 21,
+        "21": 23,
+        "22": 22,
+        "23": 22,
+        "24": 22,
+        "25": 22,
+        "26": 22,
+        "27": 22,
+        "28": 22,
+        "29": 21,
+        "30": 23,
+        "31": 22,
+        "32": 22,
+        "33": 22,
+        "34": 22,
+        "35": 18,
+        "36": 18,
+        "37": 15
+      }
     },
     {
       "id": "tt0149460",
       "title": "Futurama",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        11,
+        12,
+        13,
+        14
+      ],
+      "maxEpisodes": {
+        "1": 9,
+        "2": 20,
+        "3": 15,
+        "4": 12,
+        "5": 16,
+        "6": 26,
+        "7": 26,
+        "11": 10,
+        "12": 10,
+        "13": 10,
+        "14": 1
+      }
     },
     {
       "id": "tt3398228",
       "title": "BoJack Horseman",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12,
+        "5": 12,
+        "6": 16
+      }
     },
     {
       "id": "tt1486217",
       "title": "Archer",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13,
+        "6": 13,
+        "7": 10,
+        "8": 8,
+        "9": 8,
+        "10": 9,
+        "11": 8,
+        "12": 8,
+        "13": 8,
+        "14": 9
+      }
     },
     {
       "id": "tt1561755",
       "title": "Bob's Burgers",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 9,
+        "3": 23,
+        "4": 22,
+        "5": 21,
+        "6": 19,
+        "7": 22,
+        "8": 21,
+        "9": 22,
+        "10": 22,
+        "11": 22,
+        "12": 22,
+        "13": 22,
+        "14": 16,
+        "15": 22,
+        "16": 15
+      }
     },
     {
       "id": "tt0397306",
       "title": "American Dad!",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "maxEpisodes": {
+        "1": 23,
+        "2": 19,
+        "3": 16,
+        "4": 20,
+        "5": 18,
+        "6": 19,
+        "7": 18,
+        "8": 19,
+        "9": 20,
+        "10": 3,
+        "11": 15,
+        "12": 22,
+        "13": 22,
+        "14": 22,
+        "15": 20,
+        "16": 24,
+        "17": 22,
+        "18": 22,
+        "19": 22,
+        "20": 22,
+        "21": 11
+      }
     },
     {
       "id": "tt0118375",
       "title": "King of the Hill",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 23,
+        "3": 25,
+        "4": 24,
+        "5": 20,
+        "6": 22,
+        "7": 23,
+        "8": 22,
+        "9": 15,
+        "10": 15,
+        "11": 12,
+        "12": 22,
+        "13": 24,
+        "14": 10,
+        "15": 10
+      }
     },
     {
       "id": "tt6524350",
       "title": "Big Mouth",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10
+      }
     },
     {
       "id": "tt4326894",
       "title": "F Is for Family",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 6,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 8
+      }
     },
     {
       "id": "tt5363918",
       "title": "Disenchantment",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 20,
+        "2": 20,
+        "3": 10
+      }
     },
     {
       "id": "tt8910922",
       "title": "Solar Opposites",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 8,
+        "3": 11,
+        "4": 11,
+        "5": 11,
+        "6": 10
+      }
     },
     {
       "id": "tt6741278",
       "title": "Invincible",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8
+      }
     },
     {
       "id": "tt12590266",
       "title": "Cyberpunk: Edgerunners",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1
+      ],
+      "maxEpisodes": {
+        "1": 10
+      }
     },
     {
       "id": "tt11126994",
       "title": "Arcane",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 9,
+        "2": 9
+      }
     },
     {
       "id": "tt6517102",
       "title": "Castlevania",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 4,
+        "2": 8,
+        "3": 10,
+        "4": 10
+      }
     },
     {
       "id": "tt10009170",
       "title": "Blood of Zeus",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 8,
+        "3": 8
+      }
     },
     {
       "id": "tt9561862",
       "title": "Love, Death & Robots",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 18,
+        "2": 8,
+        "3": 9,
+        "4": 10
+      }
     },
     {
       "id": "tt0417373",
       "title": "The Venture Bros.",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 16,
+        "5": 8,
+        "6": 8,
+        "7": 10
+      }
     },
     {
       "id": "tt0297494",
       "title": "Aqua Teen Hunger Force",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "maxEpisodes": {
+        "1": 18,
+        "2": 24,
+        "3": 13,
+        "4": 13,
+        "5": 10,
+        "6": 10,
+        "7": 11,
+        "8": 10,
+        "9": 10,
+        "10": 10,
+        "11": 9,
+        "12": 5
+      }
     },
     {
       "id": "tt0437745",
       "title": "Robot Chicken",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "maxEpisodes": {
+        "1": 20,
+        "2": 20,
+        "3": 20,
+        "4": 20,
+        "5": 19,
+        "6": 20,
+        "7": 19,
+        "8": 20,
+        "9": 20,
+        "10": 20,
+        "11": 20
+      }
     },
     {
       "id": "tt0839188",
       "title": "Metalocalypse",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 20,
+        "2": 20,
+        "3": 10,
+        "4": 12
+      }
     },
     {
       "id": "tt0294097",
       "title": "Harvey Birdman, Attorney at Law",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 9,
+        "2": 11,
+        "3": 12,
+        "4": 7
+      }
     },
     {
       "id": "tt13309742",
       "title": "Blue Eye Samurai",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1
+      ],
+      "maxEpisodes": {
+        "1": 8
+      }
     },
     {
       "id": "tt11247158",
       "title": "The Legend of Vox Machina",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 12,
+        "3": 12,
+        "4": 12
+      }
     },
     {
       "id": "tt10332508",
       "title": "Primal",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 10,
+        "2": 10,
+        "3": 10
+      }
     },
     {
       "id": "tt0278238",
       "title": "Samurai Jack",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 10
+      }
     },
     {
       "id": "tt0373732",
       "title": "The Boondocks",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 15,
+        "2": 15,
+        "3": 15,
+        "4": 10
+      }
     },
     {
       "id": "tt0206512",
       "title": "SpongeBob SquarePants",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "maxEpisodes": {
+        "1": 41,
+        "2": 36,
+        "3": 37,
+        "4": 33,
+        "5": 39,
+        "6": 34,
+        "7": 35,
+        "8": 26,
+        "9": 42,
+        "10": 71,
+        "11": 55,
+        "12": 34,
+        "13": 61,
+        "14": 20,
+        "15": 27,
+        "16": 21,
+        "17": 16
+      }
     },
     {
       "id": "tt1305826",
       "title": "Adventure Time",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "maxEpisodes": {
+        "1": 26,
+        "2": 26,
+        "3": 26,
+        "4": 26,
+        "5": 52,
+        "6": 43,
+        "7": 38,
+        "8": 14,
+        "9": 14,
+        "10": 13
+      }
     },
     {
       "id": "tt1710308",
       "title": "Regular Show",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 28,
+        "3": 39,
+        "4": 37,
+        "5": 37,
+        "6": 28,
+        "7": 36,
+        "8": 29
+      }
     },
     {
       "id": "tt1942683",
       "title": "The Amazing World of Gumball",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "maxEpisodes": {
+        "1": 36,
+        "2": 40,
+        "3": 40,
+        "4": 39,
+        "5": 41,
+        "6": 44
+      }
     },
     {
       "id": "tt3061046",
       "title": "Steven Universe",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 52,
+        "2": 26,
+        "3": 24,
+        "4": 24,
+        "5": 28
+      }
     },
     {
       "id": "tt1865718",
       "title": "Gravity Falls",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 20,
+        "2": 20
+      }
     },
     {
       "id": "tt3718778",
       "title": "Over the Garden Wall",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1
+      ],
+      "maxEpisodes": {
+        "1": 10
+      }
     },
     {
-      "id": "tt0417299",
+      "id": "tt9018736",
       "title": "Avatar: The Last Airbender",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2
+      ],
+      "maxEpisodes": {
+        "1": 8,
+        "2": 7
+      }
     },
     {
       "id": "tt1695360",
       "title": "The Legend of Korra",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 12,
+        "2": 14,
+        "3": 13,
+        "4": 13
+      }
     },
     {
       "id": "tt0103359",
       "title": "Batman: The Animated Series",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 60,
+        "2": 10,
+        "3": 10,
+        "4": 5
+      }
     },
     {
       "id": "tt6025022",
       "title": "Justice League Unlimited",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13
+      }
     },
     {
       "id": "tt1641384",
       "title": "Young Justice",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 26,
+        "2": 20,
+        "3": 26,
+        "4": 26
+      }
     },
     {
       "id": "tt0343314",
       "title": "Teen Titans",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 13,
+        "4": 13,
+        "5": 13
+      }
     },
     {
       "id": "tt0103584",
       "title": "X-Men",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "maxEpisodes": {
+        "1": 13,
+        "2": 13,
+        "3": 19,
+        "4": 17,
+        "5": 14
+      }
     },
     {
       "id": "tt0214341",
@@ -2096,17 +3569,51 @@
     {
       "id": "tt0409591",
       "title": "Naruto",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007
+      ],
+      "maxEpisodes": {
+        "2002": 13,
+        "2003": 51,
+        "2004": 51,
+        "2005": 50,
+        "2006": 50,
+        "2007": 5
+      }
     },
     {
       "id": "tt2560140",
       "title": "Attack on Titan",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "maxEpisodes": {
+        "1": 25,
+        "2": 12,
+        "3": 22,
+        "4": 30
+      }
     },
     {
       "id": "tt0877057",
       "title": "Death Note",
-      "type": "tv"
+      "type": "tv",
+      "seasons": [
+        1
+      ],
+      "maxEpisodes": {
+        "1": 37
+      }
     }
   ],
   "10": [
@@ -2583,8 +4090,8 @@
       "type": "movie"
     },
     {
-      "id": "tt1856101",
-      "title": "Blade Runner 2049",
+      "id": "tt0120611",
+      "title": "Blade",
       "type": "movie"
     },
     {
@@ -3154,13 +4661,33 @@
       "type": "movie"
     },
     {
-      "id": "tt1187043",
-      "title": "3 Idiots",
+      "id": "tt9389998",
+      "title": "Pushpa: The Rise - Part 1",
       "type": "movie"
     },
     {
-      "id": "tt2338151",
-      "title": "PK",
+      "id": "tt15327088",
+      "title": "Kantara",
+      "type": "movie"
+    },
+    {
+      "id": "tt6277462",
+      "title": "Brahmastra Part One: Shiva",
+      "type": "movie"
+    },
+    {
+      "id": "tt15940132",
+      "title": "War Machine",
+      "type": "movie"
+    },
+    {
+      "id": "tt5956100",
+      "title": "Tiger Zinda Hai",
+      "type": "movie"
+    },
+    {
+      "id": "tt2016894",
+      "title": "Ek Tha Tiger",
       "type": "movie"
     },
     {
@@ -3171,6 +4698,16 @@
     {
       "id": "tt4832640",
       "title": "Sultan",
+      "type": "movie"
+    },
+    {
+      "id": "tt2338151",
+      "title": "PK",
+      "type": "movie"
+    },
+    {
+      "id": "tt1187043",
+      "title": "3 Idiots",
       "type": "movie"
     },
     {
@@ -3189,13 +4726,18 @@
       "type": "movie"
     },
     {
-      "id": "tt5956100",
-      "title": "Tiger Zinda Hai",
+      "id": "tt2461132",
+      "title": "Happy New Year",
       "type": "movie"
     },
     {
-      "id": "tt15940132",
-      "title": "War Machine",
+      "id": "tt1833673",
+      "title": "Dhoom 3",
+      "type": "movie"
+    },
+    {
+      "id": "tt1029231",
+      "title": "Krrish 3",
       "type": "movie"
     },
     {
@@ -3204,10 +4746,177 @@
       "type": "movie"
     },
     {
+      "id": "tt2467700",
+      "title": "Animal Farm",
+      "type": "movie"
+    },
+    {
       "id": "tt15441054",
       "title": "Gadar 2",
       "type": "movie"
     },
+    {
+      "id": "tt5970844",
+      "title": "Thugs of Hindostan",
+      "type": "movie"
+    },
+    {
+      "id": "tt3595298",
+      "title": "Prem Ratan Dhan Payo",
+      "type": "movie"
+    },
+    {
+      "id": "tt1250777",
+      "title": "Kick-Ass",
+      "type": "movie"
+    },
+    {
+      "id": "tt0373469",
+      "title": "Kiss Kiss Bang Bang",
+      "type": "movie"
+    },
+    {
+      "id": "tt7212726",
+      "title": "Simmba",
+      "type": "movie"
+    },
+    {
+      "id": "tt9531772",
+      "title": "Sooryavanshi",
+      "type": "movie"
+    },
+    {
+      "id": "tt11976134",
+      "title": "Singham Again",
+      "type": "movie"
+    },
+    {
+      "id": "tt2309764",
+      "title": "Singham Returns",
+      "type": "movie"
+    },
+    {
+      "id": "tt1166100",
+      "title": "Ghajini",
+      "type": "movie"
+    },
+    {
+      "id": "tt29623480",
+      "title": "The Wild Robot",
+      "type": "movie"
+    },
+    {
+      "id": "tt24082438",
+      "title": "20 Days in Mariupol",
+      "type": "movie"
+    },
+    {
+      "id": "tt8291224",
+      "title": "Uri: The Surgical Strike",
+      "type": "movie"
+    },
+    {
+      "id": "tt8108274",
+      "title": "Tanhaji: The Unsung Warrior",
+      "type": "movie"
+    },
+    {
+      "id": "tt14113634",
+      "title": "Drishyam 3",
+      "type": "movie"
+    },
+    {
+      "id": "tt12361178",
+      "title": "Drishyam 2",
+      "type": "movie"
+    },
+    {
+      "id": "tt6455162",
+      "title": "Bhool Bhulaiyaa 2",
+      "type": "movie"
+    },
+    {
+      "id": "tt7431594",
+      "title": "Race 3",
+      "type": "movie"
+    },
+    {
+      "id": "tt7721946",
+      "title": "Housefull 4",
+      "type": "movie"
+    },
+    {
+      "id": "tt33334267",
+      "title": "Bharat Bhhagya Viddhaata",
+      "type": "movie"
+    },
+    {
+      "id": "tt7485048",
+      "title": "Super 30",
+      "type": "movie"
+    },
+    {
+      "id": "tt2395469",
+      "title": "Gully Boy",
+      "type": "movie"
+    },
+    {
+      "id": "tt9052870",
+      "title": "Chhichhore",
+      "type": "movie"
+    },
+    {
+      "id": "tt0073707",
+      "title": "Sholay",
+      "type": "movie"
+    },
+    {
+      "id": "tt0112870",
+      "title": "Dilwale Dulhania Le Jayenge",
+      "type": "movie"
+    },
+    {
+      "id": "tt0172684",
+      "title": "Kuch Kuch Hota Hai",
+      "type": "movie"
+    },
+    {
+      "id": "tt0248126",
+      "title": "Kabhi Khushi Kabhie Gham...",
+      "type": "movie"
+    },
+    {
+      "id": "tt0169102",
+      "title": "Lagaan: Once Upon a Time in India",
+      "type": "movie"
+    },
+    {
+      "id": "tt0367110",
+      "title": "Swades",
+      "type": "movie"
+    },
+    {
+      "id": "tt0871510",
+      "title": "Chak De! India",
+      "type": "movie"
+    },
+    {
+      "id": "tt1188996",
+      "title": "My Name Is Khan",
+      "type": "movie"
+    },
+    {
+      "id": "tt1562872",
+      "title": "Zindagi Na Milegi Dobara",
+      "type": "movie"
+    },
+    {
+      "id": "tt2178470",
+      "title": "Yeh Jawaani Hai Deewani",
+      "type": "movie"
+    }
+  ],
+  "15": [
     {
       "id": "tt0242519",
       "title": "Hera Pheri",
@@ -3221,6 +4930,11 @@
     {
       "id": "tt0495034",
       "title": "Golmaal: Fun Unlimited",
+      "type": "movie"
+    },
+    {
+      "id": "tt1092005",
+      "title": "Golmaal Returns",
       "type": "movie"
     },
     {
@@ -3239,8 +4953,23 @@
       "type": "movie"
     },
     {
+      "id": "tt1728239",
+      "title": "Double Dhamaal",
+      "type": "movie"
+    },
+    {
+      "id": "tt7639372",
+      "title": "Total Dhamaal",
+      "type": "movie"
+    },
+    {
       "id": "tt28540171",
       "title": "Welcome to the Jungle",
+      "type": "movie"
+    },
+    {
+      "id": "tt3159708",
+      "title": "Welcome Back",
       "type": "movie"
     },
     {
@@ -3274,28 +5003,203 @@
       "type": "movie"
     },
     {
+      "id": "tt0437238",
+      "title": "Hulchul",
+      "type": "movie"
+    },
+    {
       "id": "tt0453671",
       "title": "Garam Masala",
       "type": "movie"
     },
     {
-      "id": "tt0073707",
-      "title": "Sholay",
+      "id": "tt1255951",
+      "title": "De Dana Dan",
       "type": "movie"
     },
     {
-      "id": "tt0112870",
-      "title": "Dilwale Dulhania Le Jayenge",
+      "id": "tt0476805",
+      "title": "Malamaal Weekly",
       "type": "movie"
     },
     {
-      "id": "tt0248126",
-      "title": "Kabhi Khushi Kabhie Gham...",
+      "id": "tt0995035",
+      "title": "Dhol",
       "type": "movie"
     },
     {
-      "id": "tt1562872",
-      "title": "Zindagi Na Milegi Dobara",
+      "id": "tt0451833",
+      "title": "No Entry",
+      "type": "movie"
+    },
+    {
+      "id": "tt0406977",
+      "title": "Masti",
+      "type": "movie"
+    },
+    {
+      "id": "tt2476154",
+      "title": "Grand Masti",
+      "type": "movie"
+    },
+    {
+      "id": "tt0456500",
+      "title": "Kyaa Kool Hai Hum",
+      "type": "movie"
+    },
+    {
+      "id": "tt2027138",
+      "title": "Kyaa Super Kool Hain Hum",
+      "type": "movie"
+    },
+    {
+      "id": "tt1573072",
+      "title": "Housefull",
+      "type": "movie"
+    },
+    {
+      "id": "tt1980986",
+      "title": "Housefull 2",
+      "type": "movie"
+    },
+    {
+      "id": "tt4559046",
+      "title": "Housefull 3",
+      "type": "movie"
+    },
+    {
+      "id": "tt7721946",
+      "title": "Housefull 4",
+      "type": "movie"
+    },
+    {
+      "id": "tt0319020",
+      "title": "Awara Paagal Deewana",
+      "type": "movie"
+    },
+    {
+      "id": "tt0444781",
+      "title": "Deewane Huye Paagal",
+      "type": "movie"
+    },
+    {
+      "id": "tt0418362",
+      "title": "Mujhse Shaadi Karogi",
+      "type": "movie"
+    },
+    {
+      "id": "tt0451803",
+      "title": "Maine Pyaar Kyun Kiya",
+      "type": "movie"
+    },
+    {
+      "id": "tt1300858",
+      "title": "The Partner",
+      "type": "movie"
+    },
+    {
+      "id": "tt5456546",
+      "title": "Judwaa 2",
+      "type": "movie"
+    },
+    {
+      "id": "tt2762334",
+      "title": "Main Tera Hero",
+      "type": "movie"
+    },
+    {
+      "id": "tt1926313",
+      "title": "Pyaar Ka Punchnama",
+      "type": "movie"
+    },
+    {
+      "id": "tt4430136",
+      "title": "Pyaar Ka Punchnama 2",
+      "type": "movie"
+    },
+    {
+      "id": "tt7581902",
+      "title": "Sonu Ke Titu Ki Sweety",
+      "type": "movie"
+    },
+    {
+      "id": "tt2806788",
+      "title": "Fukrey",
+      "type": "movie"
+    },
+    {
+      "id": "tt6712014",
+      "title": "Fukrey Returns",
+      "type": "movie"
+    },
+    {
+      "id": "tt1934231",
+      "title": "Delhi Belly",
+      "type": "movie"
+    },
+    {
+      "id": "tt2436516",
+      "title": "Go Goa Gone",
+      "type": "movie"
+    },
+    {
+      "id": "tt1728986",
+      "title": "Bol Bachchan",
+      "type": "movie"
+    },
+    {
+      "id": "tt1841542",
+      "title": "Children's Party",
+      "type": "movie"
+    },
+    {
+      "id": "tt1014672",
+      "title": "Bheja Fry",
+      "type": "movie"
+    },
+    {
+      "id": "tt0466460",
+      "title": "Khosla Ka Ghosla!",
+      "type": "movie"
+    },
+    {
+      "id": "tt1292703",
+      "title": "Oye Lucky! Lucky Oye!",
+      "type": "movie"
+    },
+    {
+      "id": "tt2317337",
+      "title": "Vicky Donor",
+      "type": "movie"
+    },
+    {
+      "id": "tt3767372",
+      "title": "Piku",
+      "type": "movie"
+    },
+    {
+      "id": "tt7725596",
+      "title": "Badhaai Ho",
+      "type": "movie"
+    },
+    {
+      "id": "tt9248940",
+      "title": "Dream Girl",
+      "type": "movie"
+    },
+    {
+      "id": "tt9420648",
+      "title": "Bala",
+      "type": "movie"
+    },
+    {
+      "id": "tt27510174",
+      "title": "Stree 2",
+      "type": "movie"
+    },
+    {
+      "id": "tt8908002",
+      "title": "Luka Chuppi",
       "type": "movie"
     }
   ],
@@ -3426,8 +5330,8 @@
       "type": "movie"
     },
     {
-      "id": "tt34378301",
-      "title": "Tom Clancy's Jack Ryan: Ghost War",
+      "id": "tt0099653",
+      "title": "Ghost",
       "type": "movie"
     },
     {

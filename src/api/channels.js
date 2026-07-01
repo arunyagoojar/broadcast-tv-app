@@ -97,6 +97,34 @@ function pickSuggestion(title, suggestions) {
   );
 }
 
+async function fetchTvMazeData(imdbId) {
+  try {
+    const lookupRes = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${imdbId}`);
+    if (!lookupRes.ok) return null;
+    const showData = await lookupRes.json();
+    const tvmazeId = showData.id;
+    
+    const epRes = await fetch(`https://api.tvmaze.com/shows/${tvmazeId}/episodes`);
+    if (!epRes.ok) return null;
+    const episodes = await epRes.json();
+    
+    const maxEpisodes = {};
+    for (const ep of episodes) {
+      if (ep.season && ep.number) {
+        maxEpisodes[ep.season] = Math.max(maxEpisodes[ep.season] || 0, ep.number);
+      }
+    }
+    
+    const validSeasons = Object.keys(maxEpisodes).map(Number).sort((a,b) => a - b);
+    if (validSeasons.length === 0) return null;
+    
+    return { seasons: validSeasons, maxEpisodes };
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn(`[TV] TVMaze fetch failed for ${imdbId}`, err);
+    return null;
+  }
+}
+
 async function searchTitle(title) {
   const cacheKey = normalizeTitle(title);
   const cache = readCache();
@@ -131,25 +159,59 @@ async function searchTitle(title) {
 }
 
 async function resolveTitle(title, channelId) {
-  const knownTitle = KNOWN_TITLES[normalizeTitle(title)];
-  if (knownTitle) return knownTitle;
+  let resolvedItem = null;
 
-  try {
-    const apiItem = await searchTitle(title);
-    if (apiItem) return apiItem;
-  } catch (error) {
-    if (import.meta.env.DEV) console.warn(`[TV] title API failed for "${title}":`, error);
+  const knownTitle = KNOWN_TITLES[normalizeTitle(title)];
+  if (knownTitle) {
+    resolvedItem = { ...knownTitle };
+  } else {
+    try {
+      resolvedItem = await searchTitle(title);
+    } catch (error) {
+      if (import.meta.env.DEV) console.warn(`[TV] title API failed for "${title}":`, error);
+    }
   }
 
   const fallback = findLocalTitle(title, channelId);
-  if (fallback && import.meta.env.DEV) console.log(`[TV] local fallback: ${title}`);
-  return fallback || null;
+
+  if (resolvedItem) {
+    const localDbItem = localItems.find(i => i.id === resolvedItem.id) || fallback;
+    if (localDbItem && localDbItem.seasons) {
+      resolvedItem.seasons = localDbItem.seasons;
+      resolvedItem.maxEpisodes = localDbItem.maxEpisodes;
+    } else if (resolvedItem.type === 'tv') {
+      const tvData = await fetchTvMazeData(resolvedItem.id);
+      if (tvData) {
+        resolvedItem.seasons = tvData.seasons;
+        resolvedItem.maxEpisodes = tvData.maxEpisodes;
+      }
+    }
+    return resolvedItem;
+  }
+
+  if (fallback) {
+    if (import.meta.env.DEV) console.log(`[TV] local fallback: ${title}`);
+    return fallback;
+  }
+  return null;
 }
 
-function buildPlayableItem(item) {
+function buildPlayableItem(item, forcedSeason = null, forcedEpisode = null) {
   const isTv = item.type === 'tv';
-  const season = isTv ? Math.floor(Math.random() * 3) + 1 : null;
-  const episode = isTv ? Math.floor(Math.random() * 10) + 1 : null;
+  let season = forcedSeason;
+  let episode = forcedEpisode;
+
+  if (isTv && (season === null || episode === null)) {
+    if (item.seasons && item.seasons.length > 0 && item.maxEpisodes) {
+      season = item.seasons[Math.floor(Math.random() * item.seasons.length)];
+      const maxEp = item.maxEpisodes[season] || 1;
+      episode = Math.floor(Math.random() * maxEp) + 1;
+    } else {
+      season = Math.floor(Math.random() * 3) + 1;
+      episode = Math.floor(Math.random() * 10) + 1;
+    }
+  }
+
   const base = isTv
     ? `https://vaplayer.ru/embed/tv/${item.id}/${season}/${episode}`
     : `https://vaplayer.ru/embed/movie/${item.id}`;
@@ -162,12 +224,84 @@ function buildPlayableItem(item) {
   };
 }
 
+function generateConsecutiveEpisodes(tvShow) {
+  const episodes = [];
+  let season = null;
+  let maxEp = 10;
+  
+  if (tvShow.seasons && tvShow.seasons.length > 0 && tvShow.maxEpisodes) {
+    season = tvShow.seasons[Math.floor(Math.random() * tvShow.seasons.length)];
+    maxEp = tvShow.maxEpisodes[season] || 1;
+  } else {
+    season = Math.floor(Math.random() * 3) + 1;
+  }
+  
+  const numEps = Math.floor(Math.random() * 3) + 1;
+  let currentEp = Math.floor(Math.random() * maxEp) + 1;
+  let currentSeason = season;
+  
+  for (let i = 0; i < numEps; i++) {
+    let currentSeasonMax = tvShow.maxEpisodes ? (tvShow.maxEpisodes[currentSeason] || 1) : 10;
+    
+    if (currentEp > currentSeasonMax) {
+      if (tvShow.seasons) {
+        const idx = tvShow.seasons.indexOf(currentSeason);
+        if (idx !== -1 && idx < tvShow.seasons.length - 1) {
+          currentSeason = tvShow.seasons[idx + 1];
+          currentEp = 1;
+        } else {
+          break; // No more seasons available
+        }
+      } else {
+        currentSeason++;
+        currentEp = 1;
+        if (currentSeason > 3) break; // fallback boundary
+      }
+    }
+    
+    episodes.push(buildPlayableItem(tvShow, currentSeason, currentEp));
+    currentEp++;
+  }
+  return episodes;
+}
+
 export async function fetchChannelContent(channel) {
   const localChannelData = db[channel.id] || [];
   const titleList = channel.curatedTitles || shuffle(localChannelData).map((item) => item.title);
   const selectedTitles = shuffle(titleList).slice(0, BATCH_SIZE);
   const resolved = await Promise.all(selectedTitles.map((title) => resolveTitle(title, channel.id)));
-  const playable = resolved.filter(Boolean).map(buildPlayableItem);
+  
+  const validResolved = resolved.filter(Boolean);
+  
+  const movies = validResolved.filter(i => i.type === 'movie');
+  const tvShows = validResolved.filter(i => i.type === 'tv');
+  
+  const isMixed = movies.length > 0 && tvShows.length > 0;
+  
+  const playable = [];
+  
+  if (isMixed) {
+    let tvIndex = 0;
+    let movieIndex = 0;
+    
+    while (tvIndex < tvShows.length || movieIndex < movies.length) {
+      if (tvIndex < tvShows.length) {
+        playable.push(...generateConsecutiveEpisodes(tvShows[tvIndex++]));
+      }
+      
+      if (movieIndex < movies.length) {
+        playable.push(buildPlayableItem(movies[movieIndex++]));
+      }
+    }
+  } else if (tvShows.length > 0) {
+    for (const tvShow of validResolved) {
+      playable.push(...generateConsecutiveEpisodes(tvShow));
+    }
+  } else {
+    for (const item of validResolved) {
+      playable.push(buildPlayableItem(item));
+    }
+  }
 
   return playable;
 }
