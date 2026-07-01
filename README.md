@@ -1,70 +1,61 @@
-# Broadcast 📺
+# Broadcast TV App 📺
 
-Broadcast is a web-based retro television simulator designed to recreate the tactile feeling, serendipity, and cozy aesthetic of late-night channel surfing on an old cathode-ray tube (CRT) television.
+A modern, immersive web application that simulates a classic television broadcast experience. Instead of endlessly scrolling through on-demand menus, users can simply "tune in" to continuous, curated channels (like Action, Comedy, Netflix Originals, or HBO Max) that are algorithmically scheduled and always running—just like real TV.
 
-In a world dominated by highly polished, algorithmically-curated streaming platforms, Broadcast offers a nostalgic detour. By entering any topic, the application dynamically generates a set of thematic "channels" using YouTube search results (queried privately via the Invidious API), allowing you to flip through content complete with CRT curvature, scanlines, static noise, glitchy transitions, and analog audio effects.
+## 🌟 Brief Introduction
 
----
+The Broadcast TV App brings the lean-back experience of traditional television to the modern streaming era. It features a sleek, glassmorphic UI, an authentic on-screen display (OSD) HUD, and dynamic channel grids. When a user selects a channel, they drop right into the middle of a continuous marathon of shows or movies, complete with static overlay noise and retro channel-switching animations.
 
-## The Concept: Why Broadcast?
+## ⚙️ How the Solution Works
 
-The goal of Broadcast is to bring back the magic of *discovery* through channel surfing. 
-* **Serendipity over Algorithms:** Instead of infinite scroll, you surf channels. You don't choose exactly what video to play next; you tune in to what is currently "airing."
-* **Tactile Feedback:** Every interaction is designed to feel physical—from the satisfying click of the channel knob and the hum of static, to the physical toggle of the power button.
-* **Atmosphere:** The application simulates realistic phosphor glow, scanline overlay, vignette shadow, screen jitter, and static noise transitions to transport you back to the era of analog television.
+At its core, the app operates as a **virtual programming scheduler**. It doesn't host video files. Instead:
+1. It loads a static, pre-compiled database of movies and TV shows assigned to specific channels.
+2. It uses a custom scheduling algorithm to generate a 24/7 timeline of programming for every channel.
+3. Based on the user's local real-world time, it determines exactly what show/movie and what specific episode should be playing *right now*.
+4. It dynamically searches and plays the corresponding content using the YouTube iFrame API, seamlessly syncing the video to the calculated broadcast timestamp.
 
----
+## 🔌 APIs We Are Using
 
-## Key Features
+The project relies on a combination of metadata APIs and streaming APIs:
 
-* **Dynamic Channel Generation:** Search for any subject (e.g., *90s commercial compile*, *retro gaming*, *lo-fi beats*, *space documentaries*) to instantly spin up a custom TV network with multiple active stations.
-* **Authentic CRT Simulation:**
-  * **Visual Filters:** Toggle between classic Color CRT, Green Phosphor, Amber Phosphor, and high-contrast Black & White modes.
-  * **Screen Artifacts:** Curved screen simulation, subtle flicker, scanlines, and vignette shadows.
-  * **Static Noise:** Realistic video static and white noise audio transitions when tuning or changing channels.
-* **Tactile HUD Controls:** A side control panel featuring a physical rotary channel selector, volumetric dials, theme selector, power button, and a digital channel readout.
-* **Save Networks:** Bookmark your favorite search terms as custom presets, allowing you to quickly return to your favorite topics.
-* **Keyboard Shortcuts:** Full keyboard mapping for a seamless desktop experience:
-  * `Arrow Up` / `Arrow Down` — Surf channels
-  * `S` — Focus search box
-  * `Space` — Toggle mute
-  * `C` — Cycle color themes
-  * `P` — Power on/off
-  * `H` — Toggle HUD visibility
+- **IMDb Suggestion API** (`v3.sg.media-imdb.com`): Used during the database build step to quickly resolve string titles (e.g., "Breaking Bad") into canonical `tt` IDs and classify them accurately as either a `movie` or `tvSeries`.
+- **TVMaze API** (`api.tvmaze.com`): Used to fetch the internal structure of TV shows. It determines exactly how many seasons a show has, and the maximum number of episodes in each specific season.
+- **YouTube iFrame Player API** (via `react-youtube`): Used as the actual video rendering engine. The app dynamically passes search queries (e.g., "The Sopranos S02E04") to the player to simulate the broadcast.
 
----
+## 🔇 Tackling Challenges: Autoplay & Mute/Unmute
 
-## Tech Stack
+Modern web browsers enforce strict **Autoplay Policies**, meaning video cannot automatically play with sound unless the user has explicitly interacted with the webpage. 
 
-* **Frontend:** React + Vite
-* **Styling:** Vanilla CSS (custom CRT filter system, animations, and responsive flex grid)
-* **Video Engine:** YouTube IFrame Player API
-* **Search Backend:** Invidious API (for private, lightweight search indexing without direct YouTube API keys)
+To create a seamless "turn on the TV" experience without the browser blocking playback:
+1. **Muted Autoplay:** The YouTube iFrame is initialized with `player.mute()`. Browsers always allow muted video to autoplay.
+2. **First-Click Interception:** The app listens for the user's very first click anywhere on the interface (such as opening the Explore menu or clicking the screen). 
+3. **Seamless Unmute:** Upon that first interaction, the app immediately calls `player.unMute()`. This perfectly satisfies the browser's interaction requirement while feeling completely natural to the user.
 
----
+## 📡 Creating the Channels
 
-## Development & Setup
+Channels are defined in a static configuration file (`src/constants/channels.js`). They are categorized into distinct groups:
+- **Core:** Standard genres (Action, Comedy, Drama).
+- **Moods:** Thematic channels (Nostalgia, Romance, Musicals, Marvel, DC).
+- **Streaming Platforms:** Network-specific channels featuring exact SVG brand logos and colors (Netflix, HBO, Disney+, Prime Video, Apple TV+, Hulu, Paramount+, Peacock).
 
-If you want to run this application locally:
+Each channel is assigned a curated array of string titles representing the shows and movies that belong on that network.
 
-### Prerequisites
-Make sure you have Node.js installed on your machine.
+## 🗄️ Fetching & Storing Shows and Movies
 
-### Installation & Launch
+To avoid rate-limiting and ensure lightning-fast load times, the app uses a **Static Pre-fetching Architecture**:
 
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-4. Open the link displayed in the terminal (usually `http://localhost:5173`) in your web browser.
+1. **`fetch_db.js` (The Scraper):** A Node.js utility script reads the raw titles from the channel configuration.
+2. **Metadata Enrichment:** For every title, it hits the IMDb API to get the ID/Type. If it's a TV show, it subsequently hits the TVMaze API to map out its entire season and episode architecture.
+3. **`database.json` (The Storage):** The script writes all this rich, nested metadata into `src/constants/database.json`.
+4. **Runtime Access:** The React application imports `database.json` directly. This means the app has an instantaneous, local database of thousands of episodes and movies without ever needing to make slow network requests on initial load.
 
----
+*(Note: If a dynamically requested title is missing from the JSON, `src/api/channels.js` features a fallback mechanism to fetch the metadata on-the-fly and cache it in the browser's `localStorage`.)*
 
-## License
+## ⏱️ The Scheduling Algorithm
 
-This project is licensed under the MIT License.
+The heart of the broadcast simulation is the `generateConsecutiveEpisodes` algorithm:
+
+- **Shuffling & Interleaving:** It takes the channel's local database and shuffles it. It seamlessly interleaves singular movie blocks with multi-episode TV show blocks.
+- **Anti-Monotony Grouping:** To prevent a channel from playing 10 episodes of the same show in a row, the algorithm limits TV show blocks to **1 to 3 consecutive episodes** at a time.
+- **State Tracking:** The scheduler keeps a running memory of exactly where it left off for every TV show. If it plays *Season 1, Episodes 1-3* of a show, the next time that show appears in the shuffled marathon, it will intelligently pick up at *Season 1, Episode 4*, carrying over into the next season automatically when necessary. 
+- **Live Syncing:** The generated schedule is mapped against the current `Date.now()`, ensuring that if you tune away and tune back an hour later, the programming has progressed exactly as it would on real television.
