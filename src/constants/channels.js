@@ -148,17 +148,43 @@ export const CHANNELS = [
     name: 'Marvel (Live Action)',
     group: 'BINGE & FRANCHISES',
     curatedTitles: [
+      // Sony Spider-Man (Tobey Maguire)
+      'Spider-Man',
+      'Spider-Man 2',
+      'Spider-Man 3',
+      // Amazing Spider-Man (Andrew Garfield)
+      'The Amazing Spider-Man',
+      'The Amazing Spider-Man 2',
+      // Fox X-Men Universe
+      'X-Men',
+      'X2',
+      'X-Men: The Last Stand',
+      'X-Men Origins: Wolverine',
+      'X-Men: First Class',
+      'The Wolverine',
+      'X-Men: Days of Future Past',
+      'X-Men: Apocalypse',
+      'Logan',
+      'X-Men: Dark Phoenix',
+      'The New Mutants',
+      // Fox Deadpool
+      'Deadpool',
+      'Deadpool 2',
+      // MCU Phase 1 – The Infinity Saga
+      'Iron Man',
       'The Incredible Hulk',
       'Iron Man 2',
       'Thor',
       'Captain America: The First Avenger',
       'The Avengers',
+      // MCU Phase 2
       'Iron Man 3',
       'Thor: The Dark World',
       'Captain America: The Winter Soldier',
       'Guardians of the Galaxy',
       'Avengers: Age of Ultron',
       'Ant-Man',
+      // MCU Phase 3
       'Captain America: Civil War',
       'Doctor Strange',
       'Guardians of the Galaxy Vol. 2',
@@ -170,6 +196,7 @@ export const CHANNELS = [
       'Captain Marvel',
       'Avengers: Endgame',
       'Spider-Man: Far From Home',
+      // MCU Phase 4
       'Black Widow',
       'Shang-Chi and the Legend of the Ten Rings',
       'Eternals',
@@ -177,10 +204,12 @@ export const CHANNELS = [
       'Doctor Strange in the Multiverse of Madness',
       'Thor: Love and Thunder',
       'Black Panther: Wakanda Forever',
+      // MCU Phase 5
       'Ant-Man and the Wasp: Quantumania',
       'Guardians of the Galaxy Vol. 3',
       'The Marvels',
       'Deadpool & Wolverine',
+      // MCU Phase 6
       'Captain America: Brave New World',
       'Thunderbolts*',
       'The Fantastic Four: First Steps',
@@ -191,27 +220,30 @@ export const CHANNELS = [
     name: 'DC (Live Action)',
     group: 'BINGE & FRANCHISES',
     curatedTitles: [
-      // Classic era
-      'Superman (1978)',
+      // Classic era (1978–2005)
+      'Superman',
       'Superman II',
       'Superman III',
-      'Supergirl (1984)',
+      'Supergirl',
       'Superman IV: The Quest for Peace',
-      'Batman (1989)',
+      'Batman',
       'Batman Returns',
       'Batman Forever',
       'Batman & Robin',
+      'Steel',
       'Catwoman',
       'Constantine',
+      'V for Vendetta',
       'Superman Returns',
-      'Watchmen',
-      'Jonah Hex',
-      'Green Lantern',
-      // Nolan Batman trilogy
+      // Nolan Batman Trilogy (2005–2012)
       'Batman Begins',
       'The Dark Knight',
       'The Dark Knight Rises',
-      // DCEU
+      // Watchmen era (2009–2010)
+      'Watchmen',
+      'Jonah Hex',
+      'Green Lantern',
+      // DC Extended Universe (DCEU) – release order (2013–2023)
       'Man of Steel',
       'Batman v Superman: Dawn of Justice',
       'Suicide Squad',
@@ -221,19 +253,19 @@ export const CHANNELS = [
       'Shazam!',
       'Birds of Prey',
       'Wonder Woman 1984',
+      "Zack Snyder's Justice League",
       'The Suicide Squad',
-      'Zack Snyder\'s Justice League',
       'Black Adam',
       'Shazam! Fury of the Gods',
       'The Flash',
       'Blue Beetle',
       'Aquaman and the Lost Kingdom',
-      // Standalone / elseworlds
+      // Elseworlds / Standalone
       'Joker',
-      'Joker: Folie à Deux',
       'The Batman',
-      // New DCU (Gunn era)
-      'Superman (2025)'
+      "Joker: Folie à Deux",
+      // New DCU (Gunn era – 2025+)
+      'Superman (2025)',
     ],
   },
 

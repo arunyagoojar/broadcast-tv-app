@@ -1,8 +1,12 @@
 import db from '../constants/database.json';
+import logos from '../constants/logos.json';
 
 const TITLE_CACHE_KEY = 'broadcastTV_titleSearchCache';
+const TVMAZE_CACHE_KEY = 'broadcastTV_tvmazeCacheV2';
 const TITLE_CACHE_TTL = 24 * 60 * 60 * 1000;
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 20;
+// Per-channel played title tracking for exhausted-pool reset
+const channelPlayedSets = {};
 
 const localItems = Object.values(db).flat();
 const KNOWN_TITLES = {
@@ -56,7 +60,12 @@ function normalizeTitle(title) {
 }
 
 function shuffle(items) {
-  return [...items].sort(() => Math.random() - 0.5);
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 function readCache() {
@@ -98,6 +107,14 @@ function pickSuggestion(title, suggestions) {
 }
 
 async function fetchTvMazeData(imdbId) {
+  const cache = readCache();
+  const tvmazeCache = cache.tvmaze || {};
+  const cached = tvmazeCache[imdbId];
+  if (cached && (Date.now() - cached.savedAt < TITLE_CACHE_TTL)) {
+    return cached.data;
+  }
+
+
   try {
     const lookupRes = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${imdbId}`);
     if (!lookupRes.ok) return null;
@@ -107,22 +124,69 @@ async function fetchTvMazeData(imdbId) {
     const epRes = await fetch(`https://api.tvmaze.com/shows/${tvmazeId}/episodes`);
     if (!epRes.ok) return null;
     const episodes = await epRes.json();
+
+    let logoUrl = null;
+    if (showData.name === "The Office") {
+      logoUrl = 'https://static.tvmaze.com/uploads/images/original_untouched/624/1562240.jpg';
+    }
     
     const maxEpisodes = {};
+    const episodeTitles = {};
     for (const ep of episodes) {
       if (ep.season && ep.number) {
         maxEpisodes[ep.season] = Math.max(maxEpisodes[ep.season] || 0, ep.number);
+        episodeTitles[`${ep.season}-${ep.number}`] = ep.name;
       }
     }
     
     const validSeasons = Object.keys(maxEpisodes).map(Number).sort((a,b) => a - b);
     if (validSeasons.length === 0) return null;
     
-    return { seasons: validSeasons, maxEpisodes };
+    const result = { seasons: validSeasons, maxEpisodes, episodeTitles, logoUrl };
+    
+    tvmazeCache[imdbId] = { savedAt: Date.now(), data: result };
+    cache.tvmaze = tvmazeCache;
+    writeCache(cache);
+
+    return result;
   } catch (err) {
     if (import.meta.env.DEV) console.warn(`[TV] TVMaze fetch failed for ${imdbId}`, err);
     return null;
   }
+}
+const TMDB_API_KEY = '1c29feb59f90480282165ab1fdee190f';
+
+async function fetchTmdbLogo(imdbId) {
+  if (!imdbId) return null;
+  try {
+    const findRes = await fetch(`https://api.themoviedb.org/3/find/${imdbId}?external_source=imdb_id&api_key=${TMDB_API_KEY}`);
+    const findData = await findRes.json();
+    
+    let tmdbId, type;
+    if (findData.movie_results && findData.movie_results.length > 0) {
+      tmdbId = findData.movie_results[0].id;
+      type = 'movie';
+    } else if (findData.tv_results && findData.tv_results.length > 0) {
+      tmdbId = findData.tv_results[0].id;
+      type = 'tv';
+    }
+    
+    if (!tmdbId) return null;
+    
+    const imgRes = await fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}/images?api_key=${TMDB_API_KEY}&include_image_language=en,null`);
+    const imgData = await imgRes.json();
+    
+    if (imgData.logos && imgData.logos.length > 0) {
+      imgData.logos.sort((a, b) => b.vote_average - a.vote_average);
+      const bestLogo = imgData.logos.find(l => l.iso_639_1 === 'en') || imgData.logos[0];
+      if (bestLogo && bestLogo.file_path) {
+        return `https://image.tmdb.org/t/p/w500${bestLogo.file_path}`;
+      }
+    }
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn(`[TV] TMDB logo fetch failed for ${imdbId}`, err);
+  }
+  return null;
 }
 
 async function searchTitle(title) {
@@ -173,26 +237,38 @@ async function resolveTitle(title, channelId) {
   }
 
   const fallback = findLocalTitle(title, channelId);
+  const activeItem = resolvedItem || fallback;
 
-  if (resolvedItem) {
-    const localDbItem = localItems.find(i => i.id === resolvedItem.id) || fallback;
-    if (localDbItem && localDbItem.seasons) {
-      resolvedItem.seasons = localDbItem.seasons;
-      resolvedItem.maxEpisodes = localDbItem.maxEpisodes;
-    } else if (resolvedItem.type === 'tv') {
-      const tvData = await fetchTvMazeData(resolvedItem.id);
+  if (activeItem) {
+    if (activeItem.type === 'tv') {
+      const tvData = await fetchTvMazeData(activeItem.id);
       if (tvData) {
-        resolvedItem.seasons = tvData.seasons;
-        resolvedItem.maxEpisodes = tvData.maxEpisodes;
+        activeItem.seasons = tvData.seasons;
+        activeItem.maxEpisodes = tvData.maxEpisodes;
+        activeItem.episodeTitles = tvData.episodeTitles;
+        activeItem.logoUrl = tvData.logoUrl;
       }
     }
-    return resolvedItem;
+
+    // Use pre-fetched TMDB logos or fetch them dynamically
+    if (logos[activeItem.id]) {
+      activeItem.logoUrl = logos[activeItem.id];
+    } else if (activeItem.type === 'movie' || !activeItem.logoUrl) {
+      const dynamicLogo = await fetchTmdbLogo(activeItem.id);
+      if (dynamicLogo) {
+        activeItem.logoUrl = dynamicLogo;
+      }
+    }
+    
+    // Local DB overrides for seasons/maxEpisodes
+    const localDbItem = localItems.find(i => i.id === activeItem.id) || fallback;
+    if (localDbItem && localDbItem.seasons) {
+      activeItem.seasons = localDbItem.seasons;
+      activeItem.maxEpisodes = localDbItem.maxEpisodes;
+    }
+    return activeItem;
   }
 
-  if (fallback) {
-    if (import.meta.env.DEV) console.log(`[TV] local fallback: ${title}`);
-    return fallback;
-  }
   return null;
 }
 
@@ -216,9 +292,16 @@ function buildPlayableItem(item, forcedSeason = null, forcedEpisode = null) {
     ? `https://vaplayer.ru/embed/tv/${item.id}/${season}/${episode}`
     : `https://vaplayer.ru/embed/movie/${item.id}`;
 
+  const epKey = `${season}-${episode}`;
+  const epTitle = item.episodeTitles && item.episodeTitles[epKey] 
+    ? item.episodeTitles[epKey]
+    : `(S${season}E${episode})`;
+
   return {
     id: `${item.id}-${Math.random().toString(36).slice(2, 9)}`,
-    title: isTv ? `${item.title} (S${season}E${episode})` : item.title,
+    title: item.title,
+    epTitle: isTv ? epTitle : '',
+    logoUrl: item.logoUrl || logos[item.id] || null,
     embedUrl: `${base}?autoplay=1&hd=1&quality=1080p`,
     dur: isTv ? 1320 : 5400,
   };
@@ -267,8 +350,23 @@ function generateConsecutiveEpisodes(tvShow) {
 
 export async function fetchChannelContent(channel) {
   const localChannelData = db[channel.id] || [];
-  const titleList = channel.curatedTitles || shuffle(localChannelData).map((item) => item.title);
-  const selectedTitles = shuffle(titleList).slice(0, BATCH_SIZE);
+  const allTitles = channel.curatedTitles || shuffle(localChannelData).map((item) => item.title);
+
+  // Exhausted-pool reset: track which titles have been played per channel
+  if (!channelPlayedSets[channel.id]) channelPlayedSets[channel.id] = new Set();
+  const played = channelPlayedSets[channel.id];
+
+  let pool = allTitles.filter(t => !played.has(t));
+  // If the pool is exhausted (or nearly so), reset and reshuffle the whole catalog
+  if (pool.length < BATCH_SIZE) {
+    channelPlayedSets[channel.id] = new Set();
+    pool = [...allTitles];
+  }
+
+  const selectedTitles = shuffle(pool).slice(0, BATCH_SIZE);
+  // Mark selected titles as played
+  selectedTitles.forEach(t => channelPlayedSets[channel.id].add(t));
+
   const resolved = await Promise.all(selectedTitles.map((title) => resolveTitle(title, channel.id)));
   
   const validResolved = resolved.filter(Boolean);

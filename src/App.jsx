@@ -4,14 +4,15 @@ import { createNoiseController } from './components/NoiseCanvasController';
 import { useWakeLock } from './hooks/useWakeLock';
 import PlayerStage from './components/PlayerStage';
 import HUD from './components/HUD';
-import ChannelModal from './components/ChannelModal';
+import SettingsMenu from './components/SettingsMenu';
+import LeftMenu from './components/LeftMenu';
 import Overlays from './components/Overlays';
 
 import { CHANNELS } from './constants/channels';
 import { fetchChannelContent } from './api/channels';
 
 const SETTINGS_KEY = 'broadcastTV_settings';
-const CHANNEL_STATES_KEY = 'broadcastTV_channelStates';
+const CHANNEL_STATES_KEY = 'broadcastTV_channelStates_v10';
 const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan'];
 const MIN_REPORTED_DURATION_SECONDS = 300;
 const MAX_REPORTED_DURATION_SECONDS = 12 * 60 * 60;
@@ -24,6 +25,8 @@ const DEFAULT_SETTINGS = {
   vignette: true,
   theme: '',
   muted: true,
+  logoMode: true,
+  aspectRatio: '16-9',
 };
 
 function loadSettingsSnapshot() {
@@ -437,9 +440,12 @@ export default function App() {
   const [networkFadeOut, setNetworkFadeOut] = useState(false);
   const [networkActive, setNetworkActive] = useState(false);
   const [currentTitle, setCurrentTitle] = useState('');
+  const [currentEpTitle, setCurrentEpTitle] = useState('');
+  const [currentLogoUrl, setCurrentLogoUrl] = useState(null);
   const [playbackTimeStr, setPlaybackTimeStr] = useState('');
 
-  const [channelModalOpen, setChannelModalOpen] = useState(false);
+  const [leftMenuOpen, setLeftMenuOpen] = useState(false);
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
   const [channelLabel, setChannelLabel] = useState('CH 1');
   const [toastMsg, setToastMsg] = useState('');
   const [toastShow, setToastShow] = useState(false);
@@ -466,8 +472,18 @@ export default function App() {
   }, [settings]);
 
   useEffect(() => {
+    const arClasses = ['ar-16-9', 'ar-4-3', 'ar-21-9', 'ar-full'];
+    document.body.classList.remove(...arClasses);
+    if (settings.aspectRatio) document.body.classList.add(`ar-${settings.aspectRatio}`);
+  }, [settings.aspectRatio]);
+
+  useEffect(() => {
+    // Apply theme class, preserving ar-* classes
+    const arClass = [...document.body.classList].find(c => c.startsWith('ar-'));
     document.body.className = settings.theme;
+    if (arClass) document.body.classList.add(arClass);
   }, [settings.theme]);
+
 
   useEffect(() => {
     document.documentElement.style.setProperty('--overlay-opacity', String(settings.overlayOpacity));
@@ -761,6 +777,8 @@ export default function App() {
       currentProgressRef.current = null;
       activePlaybackRef.current = { channelId: channel.id, itemId: currentItem.id, resumeAt };
       setCurrentTitle(currentItem.title);
+      setCurrentEpTitle(currentItem.epTitle || '');
+      setCurrentLogoUrl(currentItem.logoUrl || null);
       setPlaybackTimeStr(`${formatTime(resumeAt)} / -${formatTime(Math.max(0, currentItem.dur - resumeAt))}`);
       const finalEmbedUrl = buildPlaybackUrl(currentItem.embedUrl, resumeAt);
       playerLoadStartedAtRef.current = Date.now();
@@ -964,25 +982,40 @@ export default function App() {
   }, [handlePlay, handleEnded]);
 
 
-  /* ── Open / Close Channel Modal ── */
-  const openChannelModal = useCallback(() => {
-    setChannelModalOpen(true);
+  /* ── Open / Close Settings Menu ── */
+  const openSettingsMenu = useCallback(() => {
+    setSettingsMenuOpen(true);
+    setLeftMenuOpen(false);
     setHudFadeOut(false);
     setNetworkFadeOut(false);
     clearTimeout(hudTimerRef.current);
   }, []);
-  const closeChannelModal = useCallback(() => {
-    setChannelModalOpen(false);
+  const closeSettingsMenu = useCallback(() => {
+    setSettingsMenuOpen(false);
     resetHudIdle();
+  }, [resetHudIdle]);
+
+  const toggleLeftMenu = useCallback(() => {
+    setLeftMenuOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        setHudFadeOut(false);
+        setNetworkFadeOut(false);
+        clearTimeout(hudTimerRef.current);
+      } else {
+        resetHudIdle();
+      }
+      return next;
+    });
   }, [resetHudIdle]);
 
   const handleSelectChannel = useCallback((id) => {
     const index = CHANNELS.findIndex(ch => ch.id === id);
     if (index !== -1) {
-      closeChannelModal();
+      setLeftMenuOpen(false);
       switchTo(index, 'forward');
     }
-  }, [closeChannelModal, switchTo]);
+  }, [switchTo]);
 
   /* ── Fullscreen toggle ── */
   useEffect(() => {
@@ -1048,8 +1081,8 @@ export default function App() {
   /* ── Keyboard shortcuts ── */
   useEffect(() => {
     function onKeyDown(e) {
-      if (channelModalOpen) {
-        if (e.key === 'Escape') closeChannelModal();
+      if (settingsMenuOpen) {
+        if (e.key === 'Escape') closeSettingsMenu();
         return;
       }
       if (
@@ -1071,7 +1104,7 @@ export default function App() {
         setOverlayEnabled((prev) => !prev);
       } else if (e.key === '/' || e.key.toLowerCase() === 's') {
         e.preventDefault();
-        openChannelModal();
+        openSettingsMenu();
       } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
         e.preventDefault();
         switchTo(s.activeChannelIndex + 1, 'forward');
@@ -1083,7 +1116,7 @@ export default function App() {
 
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [channelModalOpen, closeChannelModal, openChannelModal, switchTo, cycleTheme, toggleFullscreen]);
+  }, [settingsMenuOpen, closeSettingsMenu, openSettingsMenu, switchTo, cycleTheme, toggleFullscreen]);
 
   /* ── Time & Title Tracker ── */
   useEffect(() => {
@@ -1121,6 +1154,8 @@ export default function App() {
 
       setPlaybackTimeStr(`${formatTime(currentSeconds)} / -${formatTime(remainingSeconds)}`);
       setCurrentTitle(currentItem.title);
+      setCurrentEpTitle(currentItem.epTitle || '');
+      setCurrentLogoUrl(currentItem.logoUrl || null);
     }, 1000);
     return () => clearInterval(interval);
   }, [handleEnded]);
@@ -1220,20 +1255,32 @@ export default function App() {
       />
 
       <HUD
-        hudFadeOut={hudFadeOut}
+        hudFadeOut={hudFadeOut && !leftMenuOpen && !settingsMenuOpen}
         channelLabel={channelLabel}
-        openChannelModal={openChannelModal}
+        showTitle={currentTitle}
+        epTitle={currentEpTitle}
+        logoUrl={settings.logoMode !== false ? currentLogoUrl : null}
+
         switchToNext={() => switchTo(S.current.activeChannelIndex + 1)}
         switchToPrev={() => switchTo(S.current.activeChannelIndex - 1)}
         toggleFullscreen={toggleFullscreen}
         refreshVideo={skipCurrentVideo}
+        leftMenuOpen={leftMenuOpen || settingsMenuOpen}
+        toggleLeftMenu={toggleLeftMenu}
       />
 
-      <ChannelModal
-        isOpen={channelModalOpen}
-        onClose={closeChannelModal}
-        onSelect={handleSelectChannel}
+      <LeftMenu
+        isOpen={leftMenuOpen}
+        onClose={() => setLeftMenuOpen(false)}
         channels={CHANNELS}
+        activeChannelId={CHANNELS[S.current.activeChannelIndex]?.id}
+        onSelect={handleSelectChannel}
+        openSettings={openSettingsMenu}
+      />
+
+      <SettingsMenu
+        isOpen={settingsMenuOpen}
+        onClose={closeSettingsMenu}
         settings={settings}
         updateSetting={updateSetting}
         themes={THEMES}

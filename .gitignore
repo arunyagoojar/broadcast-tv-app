@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+health-report.json
+*.orig
+*.rej
+test_fetch.js
+.env
+.env.local
+.env.*.local
