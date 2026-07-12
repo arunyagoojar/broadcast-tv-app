@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import logos from '../constants/logos.json';
+import channelPosters from '../constants/channelPosters.json';
 
 // IMDb IDs for specific TV shows so we can use their TMDB clearlogos
 const CHANNEL_LOGO_IMDB = {
@@ -7,12 +8,52 @@ const CHANNEL_LOGO_IMDB = {
   'Friends (24/7)': 'tt0108778',
   'Everybody Loves Raymond': 'tt0115167',
   'The Big Bang Theory': 'tt0898266',
-  'Game of Thrones': 'tt0944947',
-  'The Vampire Diaries': 'tt1405406',
   'Impractical Jokers': 'tt2100976',
-  'Louis C.K.': 'tt1492966',   // Louie
   'Family Guy': 'tt0182576',
   'The Simpsons': 'tt0096697',
+  'Mr. Bean': 'tt0096657',
+  'Brooklyn Nine-Nine': 'tt2467372',
+  'Parks and Recreation': 'tt1266020',
+  'Modern Family': 'tt1442437',
+  'How I Met Your Mother': 'tt0460649',
+  'Seinfeld': 'tt0098904',
+  'Malcolm in the Middle': 'tt0212671',
+  'Community': 'tt1439629',
+  'Two and a Half Men': 'tt0369179',
+  'Fresh Prince of Bel-Air': 'tt0098800',
+  'Louie': 'tt1492966',
+  'Key & Peele': 'tt1981558',
+  'Saturday Night Live': 'tt0072562',
+  'Whose Line Is It Anyway?': 'tt2919910',
+  "Monty Python's Flying Circus": 'tt0063929',
+  "Chappelle's Show": 'tt0353049',
+  'I Think You Should Leave with Tim Robinson': 'tt10050772',
+  'Tom & Jerry': 'tt3559124',
+  'Looney Tunes': 'tt1726839',
+  'Scooby-Doo': 'tt0063950',
+  'Popeye': 'tt0145628',
+  'Futurama': 'tt0149460',
+  "Bob's Burgers": 'tt1561755',
+  'King of the Hill': 'tt0118375',
+  'Adventure Time': 'tt1305826',
+  'Courage the Cowardly Dog': 'tt0220880',
+  'Pokemon': 'tt0168366',
+  'Dragon Ball': 'tt0121220',
+  'Invincible': 'tt6741278',
+  'The Boys': 'tt1190634',
+  'Watchmen': 'tt7049682',
+  'Planet Earth': 'tt0795176',
+  'Blue Planet': 'tt0296310',
+  'Prehistoric Planet': 'tt10324164',
+  'Frozen Planet': 'tt2092588',
+  'Cosmos': 'tt2395695',
+  'NOVA': 'tt0206501',
+  'Modern Marvels': 'tt0199248',
+  'Universe': 'tt1051155',
+  'MythBusters': 'tt0383126',
+  'Kitchen Nightmares': 'tt0983514',
+  "Hell's Kitchen": 'tt0437005',
+  'Top Gear': 'tt1628033',
 };
 
 // Map channel name → horizontal logo image url (for franchise channels)
@@ -25,11 +66,6 @@ const FRANCHISE_LOGOS = {
 
 // Category icon SVGs (premium, themed icons)
 const CATEGORY_ICONS = {
-  Featured: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  ),
   Movies: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
@@ -41,27 +77,35 @@ const CATEGORY_ICONS = {
       <polyline points="17 2 12 7 7 2" />
     </svg>
   ),
+  'Sketch & Stand': (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  ),
   Animation: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
       <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-      <line x1="9" y1="9" x2="9.01" y2="9" strokeWidth="2.5"/>
-      <line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="2.5"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/>
+      <line x1="15" y1="9" x2="15.01" y2="9"/>
     </svg>
   ),
-  'Heroes & Universes': (
+  Heroes: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   ),
-  Hindi: (
+  Documentaries: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10"/>
-      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M2 12h20"/>
       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
     </svg>
   ),
-  'Streaming Services': (
+  Networks: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
       <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
@@ -85,66 +129,114 @@ const STREAMING_LOGOS = {
 
 const CATEGORIES = [
   {
-    name: 'Featured',
-    channels: ['Recents']
-  },
-  {
     name: 'Movies',
     channels: [
-      'Blockbuster Action',
-      'Sci-Fi & Fantasy Epics',
-      'Premium Drama',
-      'Horror & Thriller',
-      'Crime & Mystery',
+      'Action',
+      'Adventure',
+      'Comedy',
       'Romance',
+      'Horror & Thriller',
+      'Crime',
+      'Sci-Fi',
+      'Fantasy',
       'Musicals',
       'Nostalgia',
-      'Superhero Cinema'
-    ]
-  },
-  {
-    name: 'TV Shows',
-    channels: [
-      'The Office (24/7)',
-      'Friends (24/7)',
-      'Everybody Loves Raymond',
-      'The Big Bang Theory',
-      'Game of Thrones',
-      'The Vampire Diaries',
-      'Impractical Jokers',
-      'Louis C.K.'
-    ]
-  },
-  {
-    name: 'Animation',
-    channels: [
-      'Animation Giants',
-      'Adult Animation',
-      'Family Guy',
-      'The Simpsons',
-      'Marvel Animation',
-      'DC Animation'
-    ]
-  },
-  {
-    name: 'Heroes & Universes',
-    channels: [
-      'Marvel (Live Action)',
-      'DC (Live Action)',
-      'Marvel Animation',
-      'DC Animation'
-    ]
-  },
-  {
-    name: 'Hindi',
-    channels: [
+      'Family',
+      'Mystery',
+      'Superhero Cinema',
       'Hindi Comedy',
       'Hindi OG Movies',
       'Hindi Nostalgia'
     ]
   },
   {
-    name: 'Streaming Services',
+    name: 'TV Shows',
+    channels: [
+      'Friends (24/7)',
+      'The Office (24/7)',
+      'Everybody Loves Raymond',
+      'The Big Bang Theory',
+      'Impractical Jokers',
+      'Mr. Bean',
+      'Brooklyn Nine-Nine',
+      'Parks and Recreation',
+      'Modern Family',
+      'How I Met Your Mother',
+      'Seinfeld',
+      'Malcolm in the Middle',
+      'Community',
+      'Two and a Half Men',
+      'Fresh Prince of Bel-Air',
+      'Louie'
+    ]
+  },
+  {
+    name: 'Sketch & Stand',
+    channels: [
+      'Stand-Up',
+      'Key & Peele',
+      'Saturday Night Live',
+      'Whose Line Is It Anyway?',
+      "Monty Python's Flying Circus",
+      "Chappelle's Show",
+      'I Think You Should Leave with Tim Robinson'
+    ]
+  },
+  {
+    name: 'Animation',
+    channels: [
+      'Animation Giants',
+      'Family Guy',
+      'The Simpsons',
+      'Tom & Jerry',
+      'Looney Tunes',
+      'Scooby-Doo',
+      'Popeye',
+      'Futurama',
+      "Bob's Burgers",
+      'King of the Hill',
+      'Adventure Time',
+      'Courage the Cowardly Dog',
+      'Pokemon',
+      'Dragon Ball'
+    ]
+  },
+  {
+    name: 'Heroes',
+    channels: [
+      'Marvel (Live Action)',
+      'DC (Live Action)',
+      'Marvel Animation',
+      'DC Animation',
+      'Invincible',
+      'The Boys',
+      'Watchmen'
+    ]
+  },
+  {
+    name: 'Documentaries',
+    channels: [
+      'Planet Earth',
+      'Blue Planet',
+      'Prehistoric Planet',
+      'Frozen Planet',
+      'Cosmos',
+      'NOVA',
+      'History Channel',
+      'BBC History',
+      'Mega Builds',
+      'Modern Marvels',
+      'Crime Documentaries',
+      'Universe',
+      'NASA',
+      'MythBusters',
+      'Kitchen Nightmares',
+      "Hell's Kitchen",
+      'Top Gear'
+    ]
+  },
+  {
+    name: 'Networks',
     channels: [
       'Netflix',
       'HBO',
@@ -219,7 +311,7 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
   };
 
   const getChannelByName = (name) => {
-    return channels.find(c => c.name === name || c.name.startsWith(name));
+    return channels.find(c => c.name === name) || channels.find(c => c.name.startsWith(name));
   };
 
   return (
@@ -304,7 +396,8 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
                       
                       const isActive = channel.id === activeChannelId;
                       const logoUrl = getChannelLogoUrl(channelName);
-                      
+                      const posterUrl = channelPosters[channelName];
+
                       return (
                         <button
                           key={channel.id}
@@ -313,20 +406,39 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
                         >
                           {logoUrl ? (
                             <div className="channel-icon" style={{ background: 'transparent', overflow: 'visible', flexShrink: 0 }}>
-                              <img 
-                                src={logoUrl} 
+                              <img
+                                src={logoUrl}
                                 alt={channelName}
                                 loading="lazy"
                                 decoding="async"
-                                style={{ 
-                                  width: '100%', 
-                                  height: '100%', 
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
                                   objectFit: 'contain',
                                   filter: 'brightness(0) invert(1)',
                                   opacity: isActive ? 1 : 0.75
                                 }}
                                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'flex'); }}
                               />
+                            </div>
+                          ) : posterUrl ? (
+                            <div className="channel-icon" style={{ background: 'transparent', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                              <img
+                                src={posterUrl}
+                                alt={channelName}
+                                loading="lazy"
+                                decoding="async"
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                  opacity: isActive ? 1 : 0.85
+                                }}
+                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'flex'); }}
+                              />
+                              <div className="channel-icon" style={{ display: 'none', position: 'absolute', inset: 0 }}>
+                                {channel.name.charAt(0).toUpperCase()}
+                              </div>
                             </div>
                           ) : (
                             <div className="channel-icon">
