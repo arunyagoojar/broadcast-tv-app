@@ -139,7 +139,8 @@ body.ar-full #player-wrap {
   inset: 0;
   z-index: 1;
   background: transparent;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: default;
 }
 
 .play-prompt {

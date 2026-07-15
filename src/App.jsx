@@ -531,12 +531,21 @@ export default function App() {
   }, []);
 
   const rewriteCurrentEmbedAudio = useCallback((muted) => {
+    const channel = CHANNELS[S.current.activeChannelIndex];
+    const state = channel ? S.current.channelStates[channel.id] : null;
+    const snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
+    const reportedProgress = Number(currentProgressRef.current);
+    const resumeAt = Number.isFinite(reportedProgress) && reportedProgress >= 0
+      ? reportedProgress
+      : Math.max(0, Number(snapshot.resumeAt) || 0);
+
     setCurrentEmbedUrl((currentUrl) => {
       if (!currentUrl) return currentUrl;
       try {
         const urlObj = new URL(currentUrl);
         urlObj.searchParams.set('autoplay', '1');
         urlObj.searchParams.set('muted', muted ? '1' : '0');
+        urlObj.searchParams.set('resumeAt', String(Math.floor(resumeAt)));
         const nextUrl = urlObj.toString();
         return nextUrl === currentUrl ? currentUrl : nextUrl;
       } catch (error) {
@@ -585,6 +594,12 @@ export default function App() {
       showToast('AUDIO ENABLED');
     }
   }, [postPlayerCommand, rewriteCurrentEmbedAudio, showToast, updateSetting]);
+
+  const handlePlayerShieldClick = useCallback(() => {
+    if (!audioUnlockedRef.current || settingsRef.current.muted) {
+      unlockAudio(true);
+    }
+  }, [unlockAudio]);
 
   /* ── Status helpers ── */
   const setStatus = useCallback((label) => {
@@ -833,19 +848,6 @@ export default function App() {
     return () => clearTimeout(initialTimerRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /* ── Iframe click audio unlock ── */
-  useEffect(() => {
-    const handleBlur = () => {
-      setTimeout(() => {
-        if (document.activeElement === playerRef.current) {
-          unlockAudio(true);
-        }
-      }, 0);
-    };
-    window.addEventListener('blur', handleBlur);
-    return () => window.removeEventListener('blur', handleBlur);
-  }, [unlockAudio]);
 
   /* ── Handle channel failure ── */
   const handleChannelFailure = useCallback(() => {
@@ -1304,10 +1306,10 @@ export default function App() {
         onEnded={handleEnded}
         onError={handleError}
         embedUrl={isPoweredOff ? '' : currentEmbedUrl}
-        hasUnmuted={audioUnlocked}
         isMuted={effectiveMuted}
         playPromptVisible={playPromptVisible}
         onPromptClick={retryPlayback}
+        onShieldClick={handlePlayerShieldClick}
       />
 
       <Overlays

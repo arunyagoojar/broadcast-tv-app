@@ -5,10 +5,10 @@ export default function PlayerStage({
   onEnded,
   onError,
   embedUrl,
-  hasUnmuted,
   isMuted,
   playPromptVisible,
   onPromptClick,
+  onShieldClick,
 }) {
   return (
     <div className="player-stage">
@@ -48,8 +48,8 @@ export default function PlayerStage({
             CLICK TO PLAY
           </button>
         )}
-        {/* Shield blocks interactions ONLY after audio is unmuted */}
-        <div className="player-shield" style={{ pointerEvents: hasUnmuted ? 'auto' : 'none' }}></div>
+        {/* Always intercept player input: first click unlocks audio, later clicks are inert. */}
+        <div className="player-shield" onClick={onShieldClick}></div>
       </div>
     </div>
   );
