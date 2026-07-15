@@ -1,20 +1,8 @@
 import { useEffect, useState } from 'react';
 
 function UpNextCard({ nextUp }) {
-  const [logoFailed, setLogoFailed] = useState(false);
-  const showLogo = Boolean(nextUp.logoUrl && !logoFailed);
-
   return (
     <div className="hud-next-up">
-      {showLogo && (
-        <div className="hud-next-up-logo">
-          <img
-            src={nextUp.logoUrl}
-            alt={nextUp.title}
-            onError={() => setLogoFailed(true)}
-          />
-        </div>
-      )}
       <div className="hud-next-up-copy">
         <span>UP NEXT</span>
         <strong>{nextUp.epTitle?.replace(/^[-]\s*/, '') || nextUp.title}</strong>

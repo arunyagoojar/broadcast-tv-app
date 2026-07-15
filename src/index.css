@@ -917,10 +917,9 @@ body.ar-full #player-wrap {
 .hud-next-up {
   display: flex;
   align-items: center;
-  gap: 14px;
   max-width: min(42vw, 360px);
-  min-height: 68px;
-  padding: 11px 22px 11px 17px;
+  min-height: 54px;
+  padding: 10px 22px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.035)), rgba(8, 8, 8, 0.48);
@@ -940,21 +939,6 @@ body.ar-full #player-wrap {
   z-index: 6;
   max-width: min(42vw, 360px);
   pointer-events: none;
-}
-
-.hud-next-up-logo {
-  display: grid;
-  width: 92px;
-  height: 42px;
-  flex: 0 0 92px;
-  place-items: center;
-}
-
-.hud-next-up-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.55));
 }
 
 .hud-next-up-copy {
