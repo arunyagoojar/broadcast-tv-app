@@ -66,6 +66,13 @@ const FRANCHISE_LOGOS = {
 
 // Category icon SVGs (premium, themed icons)
 const CATEGORY_ICONS = {
+  'Recently Watched': (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12a9 9 0 1 0 3-6.7" />
+      <polyline points="3 3 3 9 9 9" />
+      <polyline points="12 7 12 12 15 14" />
+    </svg>
+  ),
   Movies: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
@@ -261,10 +268,30 @@ function getChannelLogoUrl(channelName) {
   return null;
 }
 
-export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, onSelect, openSettings }) {
+export default function LeftMenu({
+  isOpen,
+  onClose,
+  channels,
+  activeChannelId,
+  onSelect,
+  openSettings,
+  recentChannelIds,
+  sleepTimerMinutes,
+  sleepTimerDuration,
+  onSetSleepTimer,
+  onCancelSleepTimer,
+}) {
   const menuRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const [displayCategory, setDisplayCategory] = useState(null);
+  const [sleepMenuOpen, setSleepMenuOpen] = useState(false);
+
+  const recentChannels = (recentChannelIds || [])
+    .map((id) => channels.find((channel) => channel.id === id))
+    .filter(Boolean);
+  const menuCategories = recentChannels.length
+    ? [{ name: 'Recently Watched', channels: recentChannels.map((channel) => channel.name) }, ...CATEGORIES]
+    : CATEGORIES;
 
   // Reset category view when menu closes
   useEffect(() => {
@@ -272,6 +299,7 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
       setTimeout(() => {
         setActiveCategory(null);
         setDisplayCategory(null);
+        setSleepMenuOpen(false);
       }, 300);
     }
   }, [isOpen]);
@@ -335,6 +363,8 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
             
             {/* Categories View */}
             <div 
+              data-menu-page={activeCategory ? 'inactive' : 'active'}
+              data-menu-level="categories"
               style={{ 
                 transition: 'transform 300ms ease, opacity 300ms ease',
                 transform: activeCategory ? 'translateX(-100%)' : 'translateX(0)',
@@ -345,7 +375,7 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
               }}
             >
               <div className="left-menu-list">
-                {CATEGORIES.map((category) => (
+                {menuCategories.map((category) => (
                   <button
                     key={category.name}
                     className="left-menu-item"
@@ -362,6 +392,8 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
 
             {/* Channels View */}
             <div 
+              data-menu-page={activeCategory ? 'active' : 'inactive'}
+              data-menu-level="channels"
               style={{ 
                 transition: 'transform 300ms ease, opacity 300ms ease',
                 transform: activeCategory ? 'translateX(0)' : 'translateX(100%)',
@@ -415,10 +447,12 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
                                   width: '100%',
                                   height: '100%',
                                   objectFit: 'contain',
-                                  filter: 'brightness(0) invert(1)',
+                                  filter: isActive ? 'brightness(0)' : 'brightness(0) invert(1)',
                                   opacity: isActive ? 1 : 0.75
                                 }}
-                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'flex'); }}
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
                               />
                             </div>
                           ) : posterUrl ? (
@@ -434,16 +468,11 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
                                   objectFit: 'cover',
                                   opacity: isActive ? 1 : 0.85
                                 }}
-                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'flex'); }}
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                               />
-                              <div className="channel-icon" style={{ display: 'none', position: 'absolute', inset: 0 }}>
-                                {channel.name.charAt(0).toUpperCase()}
-                              </div>
                             </div>
                           ) : (
-                            <div className="channel-icon">
-                              {channel.name.charAt(0).toUpperCase()}
-                            </div>
+                            <div className="channel-icon channel-icon-empty" aria-hidden="true" />
                           )}
                           <span className="channel-name">{channel.name.replace(' (24/7)', '')}</span>
                         </button>
@@ -456,8 +485,8 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
 
           </div>
 
-          <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <button className="left-menu-item" onClick={openSettings} style={{ width: '100%' }}>
+          <div className="left-menu-footer">
+            <button className="left-menu-item" onClick={openSettings}>
               <div className="channel-icon" style={{ background: 'transparent' }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="3"></circle>
@@ -466,6 +495,50 @@ export default function LeftMenu({ isOpen, onClose, channels, activeChannelId, o
               </div>
               <span className="channel-name">Settings</span>
             </button>
+            <div className="sleep-timer-wrap">
+              <button
+                className={`sleep-timer-trigger${sleepTimerMinutes ? ' active' : ''}${sleepMenuOpen ? ' open' : ''}`}
+                aria-label={sleepTimerMinutes ? `Sleep timer, ${sleepTimerMinutes} minutes remaining` : 'Sleep timer'}
+                aria-expanded={sleepMenuOpen}
+                onClick={() => setSleepMenuOpen((open) => !open)}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <polyline points="12 7 12 12 16 14" />
+                </svg>
+                {sleepTimerMinutes && <span key={sleepTimerMinutes}>{sleepTimerMinutes}</span>}
+              </button>
+              {sleepMenuOpen && (
+                <div className="sleep-timer-menu" role="menu" aria-label="Sleep timer duration">
+                  {[30, 60, 90, 120].map((minutes) => (
+                    <button
+                      key={minutes}
+                      role="menuitem"
+                      className={sleepTimerDuration === minutes ? 'active' : ''}
+                      onClick={() => {
+                        onSetSleepTimer(minutes);
+                        setSleepMenuOpen(false);
+                      }}
+                    >
+                      {minutes} MIN
+                    </button>
+                  ))}
+                  {sleepTimerMinutes && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="sleep-timer-remove"
+                      onClick={() => {
+                        onCancelSleepTimer();
+                        setSleepMenuOpen(false);
+                      }}
+                    >
+                      REMOVE TIMER
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

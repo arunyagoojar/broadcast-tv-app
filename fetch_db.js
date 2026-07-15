@@ -45,7 +45,7 @@ async function fetchTvMazeData(imdbId) {
     if (validSeasons.length === 0) return null;
     
     return { seasons: validSeasons, maxEpisodes };
-  } catch (err) {
+  } catch {
     console.error(`TVMaze fetch failed for ${imdbId}`);
     return null;
   }

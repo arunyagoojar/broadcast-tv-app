@@ -1,6 +1,5 @@
 export default function Overlays({
   canvasRef,
-  overlayEnabled,
   scanlinesEnabled,
   vignetteEnabled,
   glitchRef,
@@ -8,32 +7,29 @@ export default function Overlays({
   glitchBg,
   statusVisible,
   statusText,
-  networkActive,
-  networkFadeOut,
-  currentTitle,
-  playbackTimeStr,
   toastShow,
   toastMsg,
-  togglePower,
   audioUnlocked,
 }) {
   return (
     <>
-      {/* Noise Canvas */}
-      <canvas ref={canvasRef} className="noise-canvas" />
+      <div className="crt-overlays">
+        {/* Noise Canvas */}
+        <canvas ref={canvasRef} className="noise-canvas" />
 
-      {/* Overlay layers */}
-      {scanlinesEnabled && <div className="scanlines"></div>}
-      {vignetteEnabled && <div className="vignette"></div>}
-      <div
-        ref={glitchRef}
-        className={`glitch${glitchActive ? ' active' : ''}`}
-        style={{ background: glitchBg }}
-      ></div>
+        {/* Overlay layers */}
+        {scanlinesEnabled && <div className="scanlines"></div>}
+        {vignetteEnabled && <div className="vignette"></div>}
+        <div
+          ref={glitchRef}
+          className={`glitch${glitchActive ? ' active' : ''}`}
+          style={{ background: glitchBg }}
+        ></div>
 
-      {/* Status */}
-      <div className={`status-layer${statusVisible ? ' visible' : ''}`}>
-        <span className="status-label">{statusText}</span>
+        {/* Status */}
+        <div className={`status-layer${statusVisible ? ' visible' : ''}`}>
+          <span className="status-label">{statusText}</span>
+        </div>
       </div>
 
       {/* Toast */}

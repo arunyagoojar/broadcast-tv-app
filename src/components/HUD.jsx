@@ -1,11 +1,56 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+function UpNextCard({ nextUp }) {
+  const [logoFailed, setLogoFailed] = useState(false);
+  const showLogo = Boolean(nextUp.logoUrl && !logoFailed);
+
+  return (
+    <div className="hud-next-up">
+      {showLogo && (
+        <div className="hud-next-up-logo">
+          <img
+            src={nextUp.logoUrl}
+            alt={nextUp.title}
+            onError={() => setLogoFailed(true)}
+          />
+        </div>
+      )}
+      <div className="hud-next-up-copy">
+        <span>UP NEXT</span>
+        <strong>{nextUp.epTitle?.replace(/^[-]\s*/, '') || nextUp.title}</strong>
+      </div>
+    </div>
+  );
+}
+
+function UpNextNotice({ nextUp }) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    let hideTimer;
+    const reveal = () => {
+      setVisible(true);
+      window.clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => setVisible(false), 10_000);
+    };
+    const revealInterval = window.setInterval(reveal, 10 * 60 * 1000);
+    return () => {
+      window.clearTimeout(hideTimer);
+      window.clearInterval(revealInterval);
+    };
+  }, []);
+
+  if (!visible) return null;
+  return <UpNextCard nextUp={nextUp} />;
+}
 
 export default function HUD({
   hudFadeOut,
-  channelLabel,
   showTitle,
   epTitle,
   logoUrl,
+  nextUp,
+  upNextMode,
   switchToNext,
   switchToPrev,
   toggleFullscreen,
@@ -13,8 +58,13 @@ export default function HUD({
   leftMenuOpen,
   toggleLeftMenu,
 }) {
+  const [failedLogoUrl, setFailedLogoUrl] = useState(null);
+
+  const showLogo = Boolean(logoUrl && failedLogoUrl !== logoUrl);
+
   return (
-    <div className={`hud${hudFadeOut ? ' fade-out' : ''}`}>
+    <>
+      <div className={`hud${hudFadeOut ? ' fade-out' : ''}`}>
       {/* LEFT COMPONENT */}
       <div className={`hud-left${leftMenuOpen ? ' shifted' : ''}`}>
         <button
@@ -37,7 +87,8 @@ export default function HUD({
 
         <div className="hud-ch-container">
           <span
-            className="channel-name"
+            key={showTitle}
+            className="channel-name hud-title-fallback"
             style={{ 
               fontWeight: 'bold', 
               color: '#fff', 
@@ -46,19 +97,22 @@ export default function HUD({
               overflow: 'visible',
             }}
           >
-            {!logoUrl && showTitle}
+            {!showLogo && showTitle}
           </span>
-          {logoUrl && (
+          {showLogo && (
             <img 
+              key={logoUrl}
               src={logoUrl} 
               alt={showTitle} 
               className="hud-logo"
               fetchPriority="high"
               decoding="async"
+              onError={() => setFailedLogoUrl(logoUrl)}
             />
           )}
           {epTitle && (
             <span
+              key={epTitle}
               className="channel-name"
               style={{
                 textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 2px rgba(0,0,0,1)',
@@ -76,7 +130,9 @@ export default function HUD({
       </div>
 
       {/* RIGHT COMPONENT */}
-      <div className="hud-right">
+      <div className="hud-right-stack">
+        {nextUp && upNextMode === 'with-hud' && <UpNextCard key={nextUp.id} nextUp={nextUp} />}
+        <div className="hud-right">
         <button className="hud-btn" aria-label="Refresh Video" onClick={refreshVideo}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
             <polyline points="23 4 23 10 17 10"></polyline>
@@ -139,8 +195,15 @@ export default function HUD({
             <line x1="3" y1="21" x2="10" y2="14" />
           </svg>
         </button>
+        </div>
       </div>
 
-    </div>
+      </div>
+      {nextUp && upNextMode !== 'with-hud' && (
+        <div className="hud-next-up-occasional">
+          <UpNextNotice key={nextUp.id} nextUp={nextUp} />
+        </div>
+      )}
+    </>
   );
 }

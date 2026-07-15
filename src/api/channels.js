@@ -2,7 +2,6 @@ import db from '../constants/database.json';
 import logos from '../constants/logos.json';
 
 const TITLE_CACHE_KEY = 'broadcastTV_titleSearchCache';
-const TVMAZE_CACHE_KEY = 'broadcastTV_tvmazeCacheV2';
 const TITLE_CACHE_TTL = 24 * 60 * 60 * 1000;
 const BATCH_SIZE = 20;
 // Per-channel played title tracking for exhausted-pool reset
@@ -208,17 +207,22 @@ async function fetchTvMazeData(imdbId) {
     
     const maxEpisodes = {};
     const episodeTitles = {};
+    const episodeDurations = {};
     for (const ep of episodes) {
       if (ep.season && ep.number) {
         maxEpisodes[ep.season] = Math.max(maxEpisodes[ep.season] || 0, ep.number);
         episodeTitles[`${ep.season}-${ep.number}`] = ep.name;
+        const runtimeMinutes = Number(ep.runtime || showData.averageRuntime || showData.runtime);
+        if (Number.isFinite(runtimeMinutes) && runtimeMinutes > 0) {
+          episodeDurations[`${ep.season}-${ep.number}`] = runtimeMinutes * 60;
+        }
       }
     }
     
     const validSeasons = Object.keys(maxEpisodes).map(Number).sort((a,b) => a - b);
     if (validSeasons.length === 0) return null;
     
-    const result = { seasons: validSeasons, maxEpisodes, episodeTitles, logoUrl };
+    const result = { seasons: validSeasons, maxEpisodes, episodeTitles, episodeDurations, logoUrl };
     
     tvmazeCache[imdbId] = { savedAt: Date.now(), data: result };
     cache.tvmaze = tvmazeCache;
@@ -232,7 +236,7 @@ async function fetchTvMazeData(imdbId) {
 }
 const TMDB_API_KEY = '1c29feb59f90480282165ab1fdee190f';
 
-async function fetchTmdbLogo(imdbId) {
+async function fetchTmdbMetadata(imdbId) {
   if (!imdbId) return null;
   try {
     const findRes = await fetch(`https://api.themoviedb.org/3/find/${imdbId}?external_source=imdb_id&api_key=${TMDB_API_KEY}`);
@@ -249,18 +253,33 @@ async function fetchTmdbLogo(imdbId) {
     
     if (!tmdbId) return null;
     
-    const imgRes = await fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}/images?api_key=${TMDB_API_KEY}&include_image_language=en,null`);
-    const imgData = await imgRes.json();
+    const [imgRes, detailsRes] = await Promise.all([
+      fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}/images?api_key=${TMDB_API_KEY}&include_image_language=en,null`),
+      fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${TMDB_API_KEY}`),
+    ]);
+    const imgData = imgRes.ok ? await imgRes.json() : {};
+    const details = detailsRes.ok ? await detailsRes.json() : {};
+    let logoUrl = null;
     
     if (imgData.logos && imgData.logos.length > 0) {
       imgData.logos.sort((a, b) => b.vote_average - a.vote_average);
       const bestLogo = imgData.logos.find(l => l.iso_639_1 === 'en') || imgData.logos[0];
       if (bestLogo && bestLogo.file_path) {
-        return `https://image.tmdb.org/t/p/w500${bestLogo.file_path}`;
+        logoUrl = `https://image.tmdb.org/t/p/w500${bestLogo.file_path}`;
       }
     }
+
+    const runtimeMinutes = type === 'movie'
+      ? Number(details.runtime)
+      : Number(details.episode_run_time?.[0]);
+    return {
+      logoUrl,
+      duration: Number.isFinite(runtimeMinutes) && runtimeMinutes > 0
+        ? runtimeMinutes * 60
+        : null,
+    };
   } catch (err) {
-    if (import.meta.env.DEV) console.warn(`[TV] TMDB logo fetch failed for ${imdbId}`, err);
+    if (import.meta.env.DEV) console.warn(`[TV] TMDB metadata fetch failed for ${imdbId}`, err);
   }
   return null;
 }
@@ -322,18 +341,19 @@ async function resolveTitle(title, channelId) {
         activeItem.seasons = tvData.seasons;
         activeItem.maxEpisodes = tvData.maxEpisodes;
         activeItem.episodeTitles = tvData.episodeTitles;
+        activeItem.episodeDurations = tvData.episodeDurations;
         activeItem.logoUrl = tvData.logoUrl;
       }
     }
 
-    // Use pre-fetched TMDB logos or fetch them dynamically
+    // Use pre-fetched TMDB logos and fetch runtime metadata when needed.
     if (logos[activeItem.id]) {
       activeItem.logoUrl = logos[activeItem.id];
-    } else if (activeItem.type === 'movie' || !activeItem.logoUrl) {
-      const dynamicLogo = await fetchTmdbLogo(activeItem.id);
-      if (dynamicLogo) {
-        activeItem.logoUrl = dynamicLogo;
-      }
+    }
+    if (activeItem.type === 'movie' || !activeItem.logoUrl) {
+      const metadata = await fetchTmdbMetadata(activeItem.id);
+      if (metadata?.logoUrl && !activeItem.logoUrl) activeItem.logoUrl = metadata.logoUrl;
+      if (metadata?.duration) activeItem.duration = metadata.duration;
     }
     
     // Local DB overrides for seasons/maxEpisodes
@@ -374,33 +394,37 @@ function buildPlayableItem(item, forcedSeason = null, forcedEpisode = null) {
     : `(S${season}E${episode})`;
 
   return {
-    id: `${item.id}-${Math.random().toString(36).slice(2, 9)}`,
+    id: isTv ? `${item.id}-s${season}e${episode}` : `${item.id}-movie`,
+    seriesId: isTv ? item.id : null,
+    season: isTv ? season : null,
+    episode: isTv ? episode : null,
     title: item.title,
     epTitle: isTv ? epTitle : '',
     logoUrl: item.logoUrl || logos[item.id] || null,
     embedUrl: `${base}?autoplay=1&hd=1&quality=1080p`,
-    dur: isTv ? 1320 : 5400,
+    dur: isTv
+      ? Number(item.episodeDurations?.[epKey]) || 0
+      : Number(item.duration) || 0,
+    durationTrusted: isTv
+      ? Number(item.episodeDurations?.[epKey]) > 0
+      : Number(item.duration) > 0,
   };
 }
 
-function generateConsecutiveEpisodes(tvShow) {
+function generateConsecutiveEpisodes(tvShow, { count = 3, afterItem = null } = {}) {
   const episodes = [];
-  let season = null;
-  let maxEp = 10;
+  const hasSeasonData = Boolean(tvShow.seasons?.length && tvShow.maxEpisodes);
+  const initialSeason = hasSeasonData
+    ? tvShow.seasons[Math.floor(Math.random() * tvShow.seasons.length)]
+    : Math.floor(Math.random() * 3) + 1;
+  const maxEp = hasSeasonData ? (tvShow.maxEpisodes[initialSeason] || 1) : 10;
   
-  if (tvShow.seasons && tvShow.seasons.length > 0 && tvShow.maxEpisodes) {
-    season = tvShow.seasons[Math.floor(Math.random() * tvShow.seasons.length)];
-    maxEp = tvShow.maxEpisodes[season] || 1;
-  } else {
-    season = Math.floor(Math.random() * 3) + 1;
-  }
+  const continuing = afterItem?.seriesId === tvShow.id && Number(afterItem.season) > 0 && Number(afterItem.episode) > 0;
+  let currentEp = continuing ? Number(afterItem.episode) + 1 : Math.floor(Math.random() * maxEp) + 1;
+  let currentSeason = continuing ? Number(afterItem.season) : initialSeason;
   
-  const numEps = Math.floor(Math.random() * 3) + 1;
-  let currentEp = Math.floor(Math.random() * maxEp) + 1;
-  let currentSeason = season;
-  
-  for (let i = 0; i < numEps; i++) {
-    let currentSeasonMax = tvShow.maxEpisodes ? (tvShow.maxEpisodes[currentSeason] || 1) : 10;
+  for (let i = 0; i < count; i++) {
+    const currentSeasonMax = tvShow.maxEpisodes ? (tvShow.maxEpisodes[currentSeason] || 1) : 10;
     
     if (currentEp > currentSeasonMax) {
       if (tvShow.seasons) {
@@ -424,7 +448,7 @@ function generateConsecutiveEpisodes(tvShow) {
   return episodes;
 }
 
-export async function fetchChannelContent(channel) {
+export async function fetchChannelContent(channel, { afterItem = null } = {}) {
   const localChannelData = db[channel.id] || [];
   const allTitles = channel.curatedTitles || shuffle(localChannelData).map((item) => item.title);
 
@@ -453,23 +477,27 @@ export async function fetchChannelContent(channel) {
   const isMixed = movies.length > 0 && tvShows.length > 0;
   
   const playable = [];
+
+  if (tvShows.length === 1 && movies.length === 0 && allTitles.length === 1) {
+    return generateConsecutiveEpisodes(tvShows[0], { count: 40, afterItem });
+  }
   
   if (isMixed) {
     let tvIndex = 0;
     let movieIndex = 0;
     
     while (tvIndex < tvShows.length || movieIndex < movies.length) {
-      if (tvIndex < tvShows.length) {
-        playable.push(...generateConsecutiveEpisodes(tvShows[tvIndex++]));
-      }
-      
       if (movieIndex < movies.length) {
         playable.push(buildPlayableItem(movies[movieIndex++]));
+      }
+
+      if (tvIndex < tvShows.length) {
+        playable.push(...generateConsecutiveEpisodes(tvShows[tvIndex++], { count: 3 }));
       }
     }
   } else if (tvShows.length > 0) {
     for (const tvShow of validResolved) {
-      playable.push(...generateConsecutiveEpisodes(tvShow));
+      playable.push(...generateConsecutiveEpisodes(tvShow, { count: 3 }));
     }
   } else {
     for (const item of validResolved) {

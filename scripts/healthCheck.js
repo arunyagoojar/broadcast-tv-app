@@ -1,3 +1,4 @@
+/* global process */
 /**
  * API Health Check Script
  * ========================

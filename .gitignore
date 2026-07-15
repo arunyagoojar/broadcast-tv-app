@@ -8,3 +8,4 @@ test_fetch.js
 .env
 .env.local
 .env.*.local
+.vite/

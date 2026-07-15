@@ -25,6 +25,7 @@ export default function PlayerStage({
               frameBorder="0"
               allowFullScreen
               allow="autoplay; encrypted-media"
+              onError={onError}
               style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
             />
           ) : (

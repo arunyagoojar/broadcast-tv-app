@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function PlatformLogo({ name, className = '' }) {
   const getLogo = () => {
     switch (name) {

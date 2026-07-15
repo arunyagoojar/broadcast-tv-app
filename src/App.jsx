@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 
 import { createNoiseController } from './components/NoiseCanvasController';
 import { useWakeLock } from './hooks/useWakeLock';
+import { useGamepadNavigation } from './hooks/useGamepadNavigation';
 import PlayerStage from './components/PlayerStage';
 import HUD from './components/HUD';
 import SettingsMenu from './components/SettingsMenu';
@@ -9,32 +10,44 @@ import LeftMenu from './components/LeftMenu';
 import Overlays from './components/Overlays';
 
 import { CHANNELS } from './constants/channels';
+import logos from './constants/logos.json';
 import { fetchChannelContent } from './api/channels';
 
 const SETTINGS_KEY = 'broadcastTV_settings';
-const CHANNEL_STATES_KEY = 'broadcastTV_channelStates_v10';
+const SETTINGS_SCHEMA_VERSION = 2;
+const CHANNEL_STATES_KEY = 'broadcastTV_channelStates_v11';
+const RECENT_CHANNELS_KEY = 'broadcastTV_recentChannels';
 const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan'];
-const MIN_REPORTED_DURATION_SECONDS = 300;
+const MIN_REPORTED_DURATION_SECONDS = 60;
 const MAX_REPORTED_DURATION_SECONDS = 12 * 60 * 60;
 const COMPLETION_LOAD_GRACE_MS = 3000;
 const TRUSTED_END_EPSILON_SECONDS = 0.5;
 const TRUSTED_TIMELINE_CATCHUP_SECONDS = 1;
 const DEFAULT_SETTINGS = {
-  overlayOpacity: 0.88,
+  schemaVersion: SETTINGS_SCHEMA_VERSION,
   scanlines: true,
   vignette: true,
   theme: '',
   muted: true,
   logoMode: true,
   aspectRatio: '16-9',
+  upNextMode: 'with-hud',
 };
 
 function loadSettingsSnapshot() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return { settings: DEFAULT_SETTINGS, hasSavedSettings: false };
+    const savedSettings = JSON.parse(raw);
+    const needsUpNextDefaultMigration = Number(savedSettings.schemaVersion || 0) < SETTINGS_SCHEMA_VERSION;
     return {
-      settings: { ...DEFAULT_SETTINGS, ...JSON.parse(raw) },
+      settings: {
+        ...DEFAULT_SETTINGS,
+        ...savedSettings,
+        ...(needsUpNextDefaultMigration
+          ? { schemaVersion: SETTINGS_SCHEMA_VERSION, upNextMode: 'with-hud' }
+          : {}),
+      },
       hasSavedSettings: true,
     };
   } catch {
@@ -43,10 +56,27 @@ function loadSettingsSnapshot() {
 }
 
 function getRandomStartOffset(item) {
-  if (item.dur >= 5400) {
-    return Math.floor(Math.random() * (1500 - 900 + 1) + 900);
+  const duration = Number(item?.dur);
+  if (!Number.isFinite(duration) || duration <= 120) return 0;
+  const minimum = Math.min(180, Math.floor(duration * 0.1));
+  const maximum = Math.max(minimum, Math.floor(duration - 90));
+  return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+}
+
+function getPlayableLogoUrl(item) {
+  if (!item) return null;
+  if (item.logoUrl) return item.logoUrl;
+  const catalogId = item.seriesId || String(item.id || '').match(/^(tt\d+)/)?.[1];
+  return catalogId ? logos[catalogId] || null : null;
+}
+
+function loadRecentChannelIds() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RECENT_CHANNELS_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed.filter((id) => Number.isFinite(Number(id))).slice(0, 8) : [];
+  } catch {
+    return [];
   }
-  return Math.floor(Math.random() * (600 - 180 + 1) + 180);
 }
 
 function loadChannelStatesSnapshot() {
@@ -69,7 +99,9 @@ function loadChannelStatesSnapshot() {
             : state.lockedItem
               ? [state.lockedItem]
               : [];
-          const playlist = playlistSource.filter((item) => !isOldNoSignalFallback(item));
+          const playlist = playlistSource
+            .filter((item) => !isOldNoSignalFallback(item))
+            .map((item) => ({ ...item, logoUrl: getPlayableLogoUrl(item) }));
           if (!playlist.length) return null;
           return [id, {
             playlist,
@@ -86,13 +118,21 @@ function loadChannelStatesSnapshot() {
 function persistChannelStatesSnapshot(channelStates) {
   try {
     const serializable = Object.fromEntries(
-      Object.entries(channelStates).map(([id, state]) => [
-        id,
-        {
-          startedAt: state.startedAt,
-          playlist: Array.isArray(state.playlist) ? state.playlist.slice(0, 40) : [],
-        },
-      ])
+      Object.entries(channelStates).map(([id, state]) => {
+        const playlist = Array.isArray(state.playlist) ? state.playlist : [];
+        const snapshot = getTimelineSnapshot(state);
+        const windowStart = snapshot.itemIndex >= 0
+          ? Math.max(0, snapshot.itemIndex - 5)
+          : Math.max(0, playlist.length - 80);
+        const removedDuration = playlist
+          .slice(0, windowStart)
+          .reduce((total, item) => total + (Number(item.dur) || 0), 0);
+
+        return [id, {
+          startedAt: state.startedAt + (removedDuration * 1000),
+          playlist: playlist.slice(windowStart, windowStart + 80),
+        }];
+      })
     );
     localStorage.setItem(CHANNEL_STATES_KEY, JSON.stringify(serializable));
   } catch (error) {
@@ -117,7 +157,16 @@ function getTimelineSnapshot(state) {
   for (let i = 0; i < state.playlist.length; i++) {
     const item = state.playlist[i];
     const dur = Number(item.dur) || 0;
-    if (dur <= 0) continue;
+    if (dur <= 0) {
+      return {
+        currentItem: item,
+        resumeAt: Math.max(0, elapsed - accumulated),
+        elapsed,
+        accumulatedBefore: accumulated,
+        itemIndex: i,
+        totalDuration: accumulated,
+      };
+    }
     if (elapsed < accumulated + dur) {
       return {
         currentItem: item,
@@ -363,27 +412,6 @@ function syncReportedDuration(state, snapshot, reportedDuration) {
   return true;
 }
 
-function getDisplayProgressSeconds(snapshot, activePlayback, playerProgress) {
-  const duration = Number(snapshot?.currentItem?.dur) || 0;
-  const initialProgress = Number(activePlayback?.resumeAt);
-  const progress = Number.isFinite(playerProgress)
-    ? playerProgress
-    : Number.isFinite(initialProgress)
-      ? initialProgress
-      : snapshot?.resumeAt;
-  const seconds = Number.isFinite(Number(progress)) ? Number(progress) : 0;
-  return duration > 0 ? Math.min(Math.max(0, seconds), duration) : Math.max(0, seconds);
-}
-
-function formatTime(secs) {
-  const s = Math.floor(Math.max(0, secs));
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
-  const sec = Math.floor(s % 60).toString().padStart(2, '0');
-  if (h > 0) return `${h}:${m}:${sec}`;
-  return `${m}:${sec}`;
-}
-
 function getPlayableKey(item) {
   if (!item) return '';
   try {
@@ -411,6 +439,8 @@ export default function App() {
   const toastTimerRef = useRef(null);
   const promptTimerRef = useRef(null);
   const initialTimerRef = useRef(null);
+  const sleepTimerRef = useRef(null);
+  const sleepCountdownRef = useRef(null);
   const lastPersistRef = useRef(0);
   const playerRef = useRef(null);
   const noiseRef = useRef(null);
@@ -437,22 +467,22 @@ export default function App() {
   const [statusText, setStatusText] = useState('SCANNING');
   const [statusVisible, setStatusVisible] = useState(true);
   const [hudFadeOut, setHudFadeOut] = useState(false);
-  const [networkFadeOut, setNetworkFadeOut] = useState(false);
-  const [networkActive, setNetworkActive] = useState(false);
   const [currentTitle, setCurrentTitle] = useState('');
   const [currentEpTitle, setCurrentEpTitle] = useState('');
   const [currentLogoUrl, setCurrentLogoUrl] = useState(null);
-  const [playbackTimeStr, setPlaybackTimeStr] = useState('');
+  const [nextUp, setNextUp] = useState(null);
+  const [activeChannelId, setActiveChannelId] = useState(CHANNELS[0]?.id ?? null);
 
   const [leftMenuOpen, setLeftMenuOpen] = useState(false);
   const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
-  const [channelLabel, setChannelLabel] = useState('CH 1');
+  const [recentChannelIds, setRecentChannelIds] = useState(loadRecentChannelIds);
+  const [sleepTimerMinutes, setSleepTimerMinutes] = useState(null);
+  const [sleepTimerDuration, setSleepTimerDuration] = useState(null);
   const [toastMsg, setToastMsg] = useState('');
   const [toastShow, setToastShow] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
   const [glitchBg, setGlitchBg] = useState('');
   const [isPoweredOff, setIsPoweredOff] = useState(false);
-  const [overlayEnabled, setOverlayEnabled] = useState(true);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [settings, setSettings] = useState(settingsSeed.settings);
   const [playPromptVisible, setPlayPromptVisible] = useState(false);
@@ -484,10 +514,6 @@ export default function App() {
     if (arClass) document.body.classList.add(arClass);
   }, [settings.theme]);
 
-
-  useEffect(() => {
-    document.documentElement.style.setProperty('--overlay-opacity', String(settings.overlayOpacity));
-  }, [settings.overlayOpacity]);
 
   const updateSetting = useCallback((key, value) => {
     hasSavedSettingsRef.current = true;
@@ -534,18 +560,7 @@ export default function App() {
   }, [isPlaybackMuted]);
 
   const commitActiveProgress = useCallback(() => {
-    const s = S.current;
-    const channel = CHANNELS[s.activeChannelIndex];
-    const state = channel ? s.channelStates[channel.id] : null;
-    const progress = currentProgressRef.current;
-    const snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
-    if (!snapshot.currentItem || !Number.isFinite(progress) || progress < 0) return;
-
-    const boundedProgress = snapshot.currentItem.dur
-      ? Math.min(progress, Math.max(0, snapshot.currentItem.dur - 1))
-      : progress;
-    state.startedAt = Date.now() - ((snapshot.accumulatedBefore + boundedProgress) * 1000);
-    persistChannelStatesSnapshot(s.channelStates);
+    persistChannelStatesSnapshot(S.current.channelStates);
   }, []);
 
   /* ── Toast helper ── */
@@ -583,16 +598,6 @@ export default function App() {
     if (noiseRef.current) noiseRef.current.stop();
   }, []);
 
-  /* ── Channel label sync ── */
-  const syncLabels = useCallback(() => {
-    const s = S.current;
-    const channel = CHANNELS[s.activeChannelIndex];
-    if (channel) {
-      setChannelLabel(channel.name.replace(' (24/7)', '').toUpperCase());
-      setNetworkActive(true);
-    }
-  }, []);
-
   /* ── Glitch flash ── */
   const flashGlitch = useCallback(() => {
     setGlitchActive(false);
@@ -606,12 +611,10 @@ export default function App() {
   /* ── HUD auto-hide ── */
   const resetHudIdle = useCallback(() => {
     setHudFadeOut(false);
-    setNetworkFadeOut(false);
     clearTimeout(hudTimerRef.current);
     if (document.querySelector('.search-modal.open')) return;
     hudTimerRef.current = setTimeout(() => {
       setHudFadeOut(true);
-      setNetworkFadeOut(true);
     }, 3000);
   }, []);
 
@@ -644,6 +647,19 @@ export default function App() {
     };
   }, [resetHudIdle]);
 
+  const recordRecentChannel = useCallback((channelId) => {
+    if (channelId === 0) return;
+    setRecentChannelIds((current) => {
+      const next = [channelId, ...current.filter((id) => id !== channelId)].slice(0, 8);
+      try {
+        localStorage.setItem(RECENT_CHANNELS_KEY, JSON.stringify(next));
+      } catch (error) {
+        console.warn('[TV] Recent channels save failed:', error);
+      }
+      return next;
+    });
+  }, []);
+
   /* ── Switch channel ── */
   const switchTo = useCallback(async (index, options = {}) => {
     const s = S.current;
@@ -666,7 +682,8 @@ export default function App() {
 
     const channel = CHANNELS[index];
     s.activeChannelIndex = index;
-    syncLabels();
+    setActiveChannelId(channel.id);
+    recordRecentChannel(channel.id);
 
     // Save to local storage for persistent session
     localStorage.setItem('ytTV_lastChannel', index);
@@ -733,7 +750,8 @@ export default function App() {
     while (!currentItem && !refreshItem && fetchAttempts < 8) {
       fetchAttempts++;
       setStatus('SCANNING');
-      const newItems = await fetchChannelContent(channel);
+      const afterItem = advanceItem ? completedItem : state.playlist.at(-1);
+      const newItems = await fetchChannelContent(channel, { afterItem });
       if (tok !== s.switchToken) return;
 
       if (!newItems?.length) break;
@@ -778,8 +796,7 @@ export default function App() {
       activePlaybackRef.current = { channelId: channel.id, itemId: currentItem.id, resumeAt };
       setCurrentTitle(currentItem.title);
       setCurrentEpTitle(currentItem.epTitle || '');
-      setCurrentLogoUrl(currentItem.logoUrl || null);
-      setPlaybackTimeStr(`${formatTime(resumeAt)} / -${formatTime(Math.max(0, currentItem.dur - resumeAt))}`);
+      setCurrentLogoUrl(getPlayableLogoUrl(currentItem));
       const finalEmbedUrl = buildPlaybackUrl(currentItem.embedUrl, resumeAt);
       playerLoadStartedAtRef.current = Date.now();
       setPlayerLoadKey((key) => key + 1);
@@ -793,7 +810,7 @@ export default function App() {
         if (s.switchToken === tok) clearStatusFn();
       }, 1800);
     }
-  }, [buildPlaybackUrl, clearStatusFn, commitActiveProgress, flashGlitch, isPlaybackMuted, setStatus, syncLabels]);
+  }, [buildPlaybackUrl, clearStatusFn, commitActiveProgress, flashGlitch, isPlaybackMuted, recordRecentChannel, setStatus]);
 
   /* ── Initial Load Logic ── */
   useEffect(() => {
@@ -921,20 +938,27 @@ export default function App() {
   // Listen for iframe player events via postMessage
   useEffect(() => {
     function handleMessage(e) {
+      const player = playerRef.current;
+      if (
+        !player ||
+        player.tagName !== 'IFRAME' ||
+        !player.contentWindow ||
+        e.source !== player.contentWindow
+      ) {
+        return;
+      }
+
       const eventPayload = readPlayerEventPayload(e.data);
 
       if (eventPayload) {
         const { player_status, player_progress } = eventPayload;
         const progressSeconds = readProgressSeconds(player_progress);
         const reportedDuration = readProgressDurationSeconds(player_progress);
-        const player = playerRef.current;
         const activePlayback = activePlaybackRef.current;
         const channel = CHANNELS[S.current.activeChannelIndex];
         const hasCompletionStatus = isCompletionStatus(player_status);
 
         if (
-          !player ||
-          player.tagName !== 'IFRAME' ||
           !activePlayback ||
           !channel ||
           activePlayback.channelId !== channel.id
@@ -957,10 +981,6 @@ export default function App() {
         if (progressSeconds !== null && progressSeconds >= 0) {
           currentProgressRef.current = progressSeconds;
           if (snapshot.currentItem) {
-            const boundedProgress = snapshot.currentItem.dur
-              ? Math.min(progressSeconds, Math.max(0, snapshot.currentItem.dur - 1))
-              : progressSeconds;
-            state.startedAt = Date.now() - ((snapshot.accumulatedBefore + boundedProgress) * 1000);
             if (durationChanged || Date.now() - lastPersistRef.current > 5000) {
               lastPersistRef.current = Date.now();
               persistChannelStatesSnapshot(s.channelStates);
@@ -987,20 +1007,24 @@ export default function App() {
     setSettingsMenuOpen(true);
     setLeftMenuOpen(false);
     setHudFadeOut(false);
-    setNetworkFadeOut(false);
     clearTimeout(hudTimerRef.current);
   }, []);
   const closeSettingsMenu = useCallback(() => {
     setSettingsMenuOpen(false);
     resetHudIdle();
   }, [resetHudIdle]);
+  const backToMainMenu = useCallback(() => {
+    setSettingsMenuOpen(false);
+    setLeftMenuOpen(true);
+    setHudFadeOut(false);
+    clearTimeout(hudTimerRef.current);
+  }, []);
 
   const toggleLeftMenu = useCallback(() => {
     setLeftMenuOpen((prev) => {
       const next = !prev;
       if (next) {
         setHudFadeOut(false);
-        setNetworkFadeOut(false);
         clearTimeout(hudTimerRef.current);
       } else {
         resetHudIdle();
@@ -1059,30 +1083,81 @@ export default function App() {
     showToast(nextTheme ? nextTheme.replace('theme-', '').toUpperCase() : 'CLASSIC', 1200);
   }, [showToast, updateSetting]);
 
-  /* ── Power toggle ── */
-  const togglePower = useCallback(() => {
-    setIsPoweredOff((prev) => {
-      const next = !prev;
-      if (next) {
-        if (playerRef.current && playerRef.current.tagName === 'VIDEO') playerRef.current.pause();
-        if (noiseRef.current) noiseRef.current.stop();
-      } else {
-        if (playerRef.current && playerRef.current.tagName === 'VIDEO') {
-          playerRef.current.play().catch(err => console.warn('[TV] Play blocked:', err));
-        }
-        if (document.querySelector('.status-layer.visible')) {
-          if (noiseRef.current) noiseRef.current.start();
-        }
-      }
-      return next;
-    });
-  }, []);
+  /* ── Wake from sleep timer ── */
+  const wakePower = useCallback(() => {
+    setIsPoweredOff(false);
+    switchTo(S.current.activeChannelIndex);
+  }, [switchTo]);
+
+  const scheduleSleepTimer = useCallback((minutes) => {
+    clearTimeout(sleepTimerRef.current);
+    clearInterval(sleepCountdownRef.current);
+    const endsAt = Date.now() + (minutes * 60 * 1000);
+    setSleepTimerDuration(minutes);
+    setSleepTimerMinutes(minutes);
+    sleepCountdownRef.current = setInterval(() => {
+      const remaining = Math.max(1, Math.ceil((endsAt - Date.now()) / 60_000));
+      setSleepTimerMinutes(remaining);
+    }, 1000);
+    sleepTimerRef.current = setTimeout(() => {
+      sleepTimerRef.current = null;
+      clearInterval(sleepCountdownRef.current);
+      sleepCountdownRef.current = null;
+      setSleepTimerMinutes(null);
+      setSleepTimerDuration(null);
+      if (playerRef.current?.tagName === 'VIDEO') playerRef.current.pause();
+      setLeftMenuOpen(false);
+      setSettingsMenuOpen(false);
+      setIsPoweredOff(true);
+      if (noiseRef.current) noiseRef.current.stop();
+    }, minutes * 60 * 1000);
+    showToast(`SLEEP TIMER ${minutes} MIN`, 1800);
+  }, [showToast]);
+
+  const cancelSleepTimer = useCallback(() => {
+    clearTimeout(sleepTimerRef.current);
+    clearInterval(sleepCountdownRef.current);
+    sleepTimerRef.current = null;
+    sleepCountdownRef.current = null;
+    setSleepTimerMinutes(null);
+    setSleepTimerDuration(null);
+    showToast('SLEEP TIMER REMOVED', 1800);
+  }, [showToast]);
+
+  const gamepadNextChannel = useCallback(() => {
+    switchTo(S.current.activeChannelIndex + 1);
+  }, [switchTo]);
+
+  const gamepadPreviousChannel = useCallback(() => {
+    switchTo(S.current.activeChannelIndex - 1);
+  }, [switchTo]);
+
+  const closeActiveMenu = useCallback(() => {
+    if (settingsMenuOpen) closeSettingsMenu();
+    else if (leftMenuOpen) setLeftMenuOpen(false);
+  }, [closeSettingsMenu, leftMenuOpen, settingsMenuOpen]);
+
+  const toggleMenuFromController = useCallback(() => {
+    if (settingsMenuOpen) closeSettingsMenu();
+    else toggleLeftMenu();
+  }, [closeSettingsMenu, settingsMenuOpen, toggleLeftMenu]);
+
+  useGamepadNavigation({
+    disabled: isPoweredOff,
+    menuOpen: leftMenuOpen || settingsMenuOpen,
+    onNextChannel: gamepadNextChannel,
+    onPreviousChannel: gamepadPreviousChannel,
+    onFullscreen: toggleFullscreen,
+    onRefresh: skipCurrentVideo,
+    onToggleMenu: toggleMenuFromController,
+    onBack: closeActiveMenu,
+  });
 
   /* ── Keyboard shortcuts ── */
   useEffect(() => {
     function onKeyDown(e) {
-      if (settingsMenuOpen) {
-        if (e.key === 'Escape') closeSettingsMenu();
+      if (isPoweredOff) return;
+      if (settingsMenuOpen || leftMenuOpen) {
         return;
       }
       if (
@@ -1099,9 +1174,6 @@ export default function App() {
       } else if (e.key.toLowerCase() === 'c') {
         e.preventDefault();
         cycleTheme();
-      } else if (e.key.toLowerCase() === 'o') {
-        e.preventDefault();
-        setOverlayEnabled((prev) => !prev);
       } else if (e.key === '/' || e.key.toLowerCase() === 's') {
         e.preventDefault();
         openSettingsMenu();
@@ -1116,7 +1188,7 @@ export default function App() {
 
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [settingsMenuOpen, closeSettingsMenu, openSettingsMenu, switchTo, cycleTheme, toggleFullscreen]);
+  }, [isPoweredOff, leftMenuOpen, settingsMenuOpen, openSettingsMenu, switchTo, cycleTheme, toggleFullscreen]);
 
   /* ── Time & Title Tracker ── */
   useEffect(() => {
@@ -1128,7 +1200,10 @@ export default function App() {
       const activePlayback = activePlaybackRef.current;
       const snapshot = getActivePlaybackSnapshot(state, activePlaybackRef.current);
       const currentItem = snapshot.currentItem;
-      if (!currentItem) return;
+      if (!currentItem) {
+        setNextUp(null);
+        return;
+      }
 
       const timelineSnapshot = getTimelineSnapshot(state);
       const timelineMovedPastActive =
@@ -1145,17 +1220,16 @@ export default function App() {
         return;
       }
 
-      const currentSeconds = getDisplayProgressSeconds(
-        snapshot,
-        activePlaybackRef.current,
-        currentProgressRef.current
-      );
-      const remainingSeconds = Math.max(0, currentItem.dur - currentSeconds);
-
-      setPlaybackTimeStr(`${formatTime(currentSeconds)} / -${formatTime(remainingSeconds)}`);
       setCurrentTitle(currentItem.title);
       setCurrentEpTitle(currentItem.epTitle || '');
-      setCurrentLogoUrl(currentItem.logoUrl || null);
+      setCurrentLogoUrl(getPlayableLogoUrl(currentItem));
+      const nextItem = state?.playlist?.[snapshot.itemIndex + 1] || null;
+      setNextUp(nextItem ? {
+        id: nextItem.id,
+        title: nextItem.title,
+        epTitle: nextItem.epTitle || '',
+        logoUrl: getPlayableLogoUrl(nextItem),
+      } : null);
     }, 1000);
     return () => clearInterval(interval);
   }, [handleEnded]);
@@ -1184,6 +1258,8 @@ export default function App() {
       clearTimeout(toastTimerRef.current);
       clearTimeout(promptTimerRef.current);
       clearTimeout(initialTimerRef.current);
+      clearTimeout(sleepTimerRef.current);
+      clearInterval(sleepCountdownRef.current);
     };
   }, []);
 
@@ -1218,8 +1294,8 @@ export default function App() {
       </div>
       <div
         className={`app${isPoweredOff ? ' power-off' : ''}`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={isPoweredOff ? undefined : handleTouchStart}
+        onTouchEnd={isPoweredOff ? undefined : handleTouchEnd}
       >
         <PlayerStage
         playerRef={playerRef}
@@ -1236,7 +1312,6 @@ export default function App() {
 
       <Overlays
         canvasRef={canvasRef}
-        overlayEnabled={overlayEnabled}
         scanlinesEnabled={settings.scanlines}
         vignetteEnabled={settings.vignette}
         glitchRef={glitchRef}
@@ -1244,22 +1319,18 @@ export default function App() {
         glitchBg={glitchBg}
         statusVisible={statusVisible}
         statusText={statusText}
-        networkActive={networkActive}
-        networkFadeOut={networkFadeOut}
-        currentTitle={currentTitle}
-        playbackTimeStr={playbackTimeStr}
         toastShow={toastShow}
         toastMsg={toastMsg}
-        togglePower={togglePower}
         audioUnlocked={audioUnlocked}
       />
 
       <HUD
         hudFadeOut={hudFadeOut && !leftMenuOpen && !settingsMenuOpen}
-        channelLabel={channelLabel}
         showTitle={currentTitle}
         epTitle={currentEpTitle}
         logoUrl={settings.logoMode !== false ? currentLogoUrl : null}
+        nextUp={nextUp}
+        upNextMode={settings.upNextMode || 'with-hud'}
 
         switchToNext={() => switchTo(S.current.activeChannelIndex + 1)}
         switchToPrev={() => switchTo(S.current.activeChannelIndex - 1)}
@@ -1273,18 +1344,35 @@ export default function App() {
         isOpen={leftMenuOpen}
         onClose={() => setLeftMenuOpen(false)}
         channels={CHANNELS}
-        activeChannelId={CHANNELS[S.current.activeChannelIndex]?.id}
+        activeChannelId={activeChannelId}
         onSelect={handleSelectChannel}
         openSettings={openSettingsMenu}
+        recentChannelIds={recentChannelIds}
+        sleepTimerMinutes={sleepTimerMinutes}
+        sleepTimerDuration={sleepTimerDuration}
+        onSetSleepTimer={scheduleSleepTimer}
+        onCancelSleepTimer={cancelSleepTimer}
       />
 
       <SettingsMenu
+        key={settingsMenuOpen ? 'settings-open' : 'settings-closed'}
         isOpen={settingsMenuOpen}
         onClose={closeSettingsMenu}
+        onBackToMenu={backToMainMenu}
         settings={settings}
         updateSetting={updateSetting}
         themes={THEMES}
       />
+      {isPoweredOff && (
+        <div className="power-off-screen">
+          <button className="power-on-button" type="button" onClick={wakePower} aria-label="Power on TV">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 2v10" />
+              <path d="M6.35 5.65a8 8 0 1 0 11.3 0" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
     </>
   );
