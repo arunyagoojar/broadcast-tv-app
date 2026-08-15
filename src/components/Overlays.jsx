@@ -10,12 +10,14 @@ export default function Overlays({
   toastShow,
   toastMsg,
   audioUnlocked,
+  updateAvailable,
+  onApplyUpdate,
 }) {
   return (
     <>
       <div className="crt-overlays">
         {/* Noise Canvas */}
-        <canvas ref={canvasRef} className="noise-canvas" />
+        <canvas ref={canvasRef} className="noise-canvas" aria-hidden="true" />
 
         {/* Overlay layers */}
         {scanlinesEnabled && <div className="scanlines"></div>}
@@ -27,13 +29,20 @@ export default function Overlays({
         ></div>
 
         {/* Status */}
-        <div className={`status-layer${statusVisible ? ' visible' : ''}`}>
+        <div className={`status-layer${statusVisible ? ' visible' : ''}`} role="status" aria-live="polite">
           <span className="status-label">{statusText}</span>
         </div>
       </div>
 
       {/* Toast */}
-      <div className={`toast${toastShow ? ' show' : ''}`}>{toastMsg}</div>
+      <div className={`toast${toastShow ? ' show' : ''}`} role="status" aria-live="polite">{toastMsg}</div>
+
+      {updateAvailable && (
+        <div className="update-ready" role="status">
+          <span>UPDATE READY</span>
+          <button type="button" onClick={onApplyUpdate}>RESTART</button>
+        </div>
+      )}
 
       {!audioUnlocked && (
         <div className="unmute-hint">

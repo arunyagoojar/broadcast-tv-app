@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import logos from '../constants/logos.json';
+import logos from '../constants/channelLogos.json';
 import channelPosters from '../constants/channelPosters.json';
+import { optimizeImageUrl } from '../utils/imageUrl';
 
 // IMDb IDs for specific TV shows so we can use their TMDB clearlogos
 const CHANNEL_LOGO_IMDB = {
@@ -213,6 +214,7 @@ const CATEGORIES = [
     channels: [
       'Marvel (Live Action)',
       'DC (Live Action)',
+      'Sony Superheroes',
       'Marvel Animation',
       'DC Animation',
       'Invincible',
@@ -259,13 +261,33 @@ const CATEGORIES = [
 
 function getChannelLogoUrl(channelName) {
   // Check franchise logos first (Marvel, DC)
-  if (FRANCHISE_LOGOS[channelName]) return FRANCHISE_LOGOS[channelName];
+  if (FRANCHISE_LOGOS[channelName]) return optimizeImageUrl(FRANCHISE_LOGOS[channelName], 320);
   // Check streaming logos
   if (STREAMING_LOGOS[channelName]) return STREAMING_LOGOS[channelName];
   // Check TV show TMDB logos
   const imdbId = CHANNEL_LOGO_IMDB[channelName];
-  if (imdbId && logos[imdbId]) return logos[imdbId];
+  if (imdbId && logos[imdbId]) return optimizeImageUrl(logos[imdbId], 300);
   return null;
+}
+
+function ChannelFallbackIcon({ group }) {
+  const common = {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.8,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    'aria-hidden': true,
+  };
+
+  if (group === 'MOVIES') return <svg {...common}><path d="M4 7h16v12H4zM4 11h16M8 7l2-3M13 7l2-3M18 7l2-3" /></svg>;
+  if (group === 'SKETCH & STAND') return <svg {...common}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" /></svg>;
+  if (group === 'ANIMATION') return <svg {...common}><path d="m12 3 2.2 5.2L20 9l-4.2 3.8L17 18l-5-2.8L7 18l1.2-5.2L4 9l5.8-.8z" /></svg>;
+  if (group === 'HEROES') return <svg {...common}><path d="M12 3 5 6v5c0 4.6 2.8 7.8 7 10 4.2-2.2 7-5.4 7-10V6z" /><path d="m9 12 2 2 4-5" /></svg>;
+  if (group === 'DOCUMENTARIES') return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" /></svg>;
+  if (group === 'CORE') return <svg {...common}><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6M12 7v5l3 2" /></svg>;
+  return <svg {...common}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m9 2 3 3 3-3M8 16h8" /></svg>;
 }
 
 export default function LeftMenu({
@@ -343,7 +365,13 @@ export default function LeftMenu({
   };
 
   return (
-    <div className={`left-menu-container ${isOpen ? 'open' : ''}`}>
+    <div
+      className={`left-menu-container ${isOpen ? 'open' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Channel browser"
+      aria-hidden={!isOpen}
+    >
       <div className="left-menu-perspective">
         <div className="left-menu" ref={menuRef}>
           <div className="left-menu-header">
@@ -428,7 +456,8 @@ export default function LeftMenu({
                       
                       const isActive = channel.id === activeChannelId;
                       const logoUrl = getChannelLogoUrl(channelName);
-                      const posterUrl = channelPosters[channelName];
+                      const posterUrl = optimizeImageUrl(channelPosters[channelName], 185);
+                      const artworkUrl = logoUrl || posterUrl;
 
                       return (
                         <button
@@ -436,44 +465,27 @@ export default function LeftMenu({
                           className={`left-menu-item ${isActive ? 'active' : ''}`}
                           onClick={() => onSelect(channel.id)}
                         >
-                          {logoUrl ? (
-                            <div className="channel-icon" style={{ background: 'transparent', overflow: 'visible', flexShrink: 0 }}>
+                          <div className="channel-icon channel-icon-art" style={{ flexShrink: 0 }}>
+                            <ChannelFallbackIcon group={channel.group} />
+                            {artworkUrl && (
                               <img
-                                src={logoUrl}
+                                src={artworkUrl}
                                 alt={channelName}
                                 loading="lazy"
                                 decoding="async"
                                 style={{
                                   width: '100%',
                                   height: '100%',
-                                  objectFit: 'contain',
-                                  filter: isActive ? 'brightness(0)' : 'brightness(0) invert(1)',
-                                  opacity: isActive ? 1 : 0.75
+                                  objectFit: logoUrl ? 'contain' : 'cover',
+                                  filter: logoUrl ? (isActive ? 'brightness(0)' : 'brightness(0) invert(1)') : 'none',
+                                  opacity: isActive ? 1 : 0.85,
                                 }}
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none';
                                 }}
                               />
-                            </div>
-                          ) : posterUrl ? (
-                            <div className="channel-icon" style={{ background: 'transparent', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
-                              <img
-                                src={posterUrl}
-                                alt={channelName}
-                                loading="lazy"
-                                decoding="async"
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: 'cover',
-                                  opacity: isActive ? 1 : 0.85
-                                }}
-                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                              />
-                            </div>
-                          ) : (
-                            <div className="channel-icon channel-icon-empty" aria-hidden="true" />
-                          )}
+                            )}
+                          </div>
                           <span className="channel-name">{channel.name.replace(' (24/7)', '')}</span>
                         </button>
                       );

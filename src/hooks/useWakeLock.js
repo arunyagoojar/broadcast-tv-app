@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
-export function useWakeLock() {
+export function useWakeLock(enabled = true) {
   useEffect(() => {
     let wakeLock = null;
 
     const requestWakeLock = async () => {
       try {
-        if ('wakeLock' in navigator) {
+        if (enabled && 'wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
         }
       } catch (err) {
@@ -15,17 +15,17 @@ export function useWakeLock() {
     };
 
     const handleVisibilityChange = () => {
-      if (wakeLock !== null && document.visibilityState === 'visible') {
+      if (enabled && wakeLock !== null && document.visibilityState === 'visible') {
         requestWakeLock();
       }
     };
 
-    requestWakeLock();
+    if (enabled) requestWakeLock();
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       if (wakeLock) wakeLock.release().catch(() => {});
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [enabled]);
 }

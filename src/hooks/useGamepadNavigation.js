@@ -111,6 +111,7 @@ export function useGamepadNavigation({ disabled, menuOpen, onNextChannel, onPrev
 
   useEffect(() => {
     let animationFrame = null;
+    let idlePollTimer = null;
 
     const moveMenuFocus = (direction, withSound = false) => {
       const buttons = getNavigableMenuButtons();
@@ -167,7 +168,7 @@ export function useGamepadNavigation({ disabled, menuOpen, onNextChannel, onPrev
       if (disabled) {
         previousButtonsRef.current = {};
         previousAxesRef.current = { horizontal: 0, vertical: 0 };
-        animationFrame = requestAnimationFrame(poll);
+        idlePollTimer = window.setTimeout(poll, 500);
         return;
       }
       const gamepad = [...(navigator.getGamepads?.() || [])].find(Boolean);
@@ -215,7 +216,11 @@ export function useGamepadNavigation({ disabled, menuOpen, onNextChannel, onPrev
         previousAxesRef.current = { horizontal: 0, vertical: 0 };
       }
 
-      animationFrame = requestAnimationFrame(poll);
+      if (gamepad && document.visibilityState === 'visible') {
+        animationFrame = requestAnimationFrame(poll);
+      } else {
+        idlePollTimer = window.setTimeout(poll, 500);
+      }
     };
 
     const handleKeyDown = (event) => {
@@ -242,6 +247,7 @@ export function useGamepadNavigation({ disabled, menuOpen, onNextChannel, onPrev
     animationFrame = requestAnimationFrame(poll);
     return () => {
       cancelAnimationFrame(animationFrame);
+      clearTimeout(idlePollTimer);
       document.removeEventListener('keydown', handleKeyDown);
       document.querySelectorAll('.menu-nav-selected').forEach((element) => element.classList.remove('menu-nav-selected'));
     };

@@ -4,10 +4,10 @@ export default function PlayerStage({
   onPlay,
   onEnded,
   onError,
+  onLoad,
   embedUrl,
   isMuted,
-  playPromptVisible,
-  onPromptClick,
+  playerReady,
   onShieldClick,
 }) {
   return (
@@ -20,11 +20,13 @@ export default function PlayerStage({
               id="player"
               ref={playerRef}
               src={embedUrl}
+              title="Broadcast TV player"
               width="100%"
               height="100%"
               frameBorder="0"
               allowFullScreen
               allow="autoplay; encrypted-media"
+              onLoad={onLoad}
               onError={onError}
               style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
             />
@@ -43,11 +45,7 @@ export default function PlayerStage({
             />
           )}
         </div>
-        {playPromptVisible && (
-          <button className="play-prompt" onClick={onPromptClick}>
-            CLICK TO PLAY
-          </button>
-        )}
+        <div className={`player-loading-cover${playerReady ? ' hidden' : ''}`} aria-hidden="true" />
         {/* Always intercept player input: first click unlocks audio, later clicks are inert. */}
         <div className="player-shield" onClick={onShieldClick}></div>
       </div>

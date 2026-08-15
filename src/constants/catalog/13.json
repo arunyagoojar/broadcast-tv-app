@@ -1,0 +1,252 @@
+[
+  {
+    "id": "tt0107290",
+    "title": "Jurassic Park",
+    "type": "movie"
+  },
+  {
+    "id": "tt0119567",
+    "title": "The Lost World: Jurassic Park",
+    "type": "movie"
+  },
+  {
+    "id": "tt0088763",
+    "title": "Back to the Future",
+    "type": "movie"
+  },
+  {
+    "id": "tt0096874",
+    "title": "Back to the Future Part II",
+    "type": "movie"
+  },
+  {
+    "id": "tt0099088",
+    "title": "Back to the Future Part III",
+    "type": "movie"
+  },
+  {
+    "id": "tt0082971",
+    "title": "Raiders of the Lost Ark",
+    "type": "movie"
+  },
+  {
+    "id": "tt0087469",
+    "title": "Indiana Jones and the Temple of Doom",
+    "type": "movie"
+  },
+  {
+    "id": "tt0097576",
+    "title": "Indiana Jones and the Last Crusade",
+    "type": "movie"
+  },
+  {
+    "id": "tt0087332",
+    "title": "Ghostbusters",
+    "type": "movie"
+  },
+  {
+    "id": "tt0097428",
+    "title": "Ghostbusters II",
+    "type": "movie"
+  },
+  {
+    "id": "tt0088247",
+    "title": "The Terminator",
+    "type": "movie"
+  },
+  {
+    "id": "tt0103064",
+    "title": "Terminator 2: Judgment Day",
+    "type": "movie"
+  },
+  {
+    "id": "tt0083866",
+    "title": "E.T. the Extra-Terrestrial",
+    "type": "movie"
+  },
+  {
+    "id": "tt0073195",
+    "title": "Jaws",
+    "type": "movie"
+  },
+  {
+    "id": "tt0089218",
+    "title": "The Goonies",
+    "type": "movie"
+  },
+  {
+    "id": "tt0087363",
+    "title": "Gremlins",
+    "type": "movie"
+  },
+  {
+    "id": "tt0092005",
+    "title": "Stand by Me",
+    "type": "movie"
+  },
+  {
+    "id": "tt0087538",
+    "title": "The Karate Kid",
+    "type": "movie"
+  },
+  {
+    "id": "tt0088847",
+    "title": "The Breakfast Club",
+    "type": "movie"
+  },
+  {
+    "id": "tt0091042",
+    "title": "Ferris Bueller's Day Off",
+    "type": "movie"
+  },
+  {
+    "id": "tt0088128",
+    "title": "Sixteen Candles",
+    "type": "movie"
+  },
+  {
+    "id": "tt0090305",
+    "title": "Weird Science",
+    "type": "movie"
+  },
+  {
+    "id": "tt0093779",
+    "title": "The Princess Bride",
+    "type": "movie"
+  },
+  {
+    "id": "tt0088323",
+    "title": "The NeverEnding Story",
+    "type": "movie"
+  },
+  {
+    "id": "tt0091369",
+    "title": "Labyrinth",
+    "type": "movie"
+  },
+  {
+    "id": "tt0067992",
+    "title": "Willy Wonka & the Chocolate Factory",
+    "type": "movie"
+  },
+  {
+    "id": "tt0099785",
+    "title": "Home Alone",
+    "type": "movie"
+  },
+  {
+    "id": "tt0104431",
+    "title": "Home Alone 2: Lost in New York",
+    "type": "movie"
+  },
+  {
+    "id": "tt0107614",
+    "title": "Mrs. Doubtfire",
+    "type": "movie"
+  },
+  {
+    "id": "tt0113497",
+    "title": "Jumanji",
+    "type": "movie"
+  },
+  {
+    "id": "tt0117705",
+    "title": "Space Jam",
+    "type": "movie"
+  },
+  {
+    "id": "tt0106965",
+    "title": "Free Willy",
+    "type": "movie"
+  },
+  {
+    "id": "tt0094721",
+    "title": "Beetlejuice",
+    "type": "movie"
+  },
+  {
+    "id": "tt0099487",
+    "title": "Edward Scissorhands",
+    "type": "movie"
+  },
+  {
+    "id": "tt0112697",
+    "title": "Clueless",
+    "type": "movie"
+  },
+  {
+    "id": "tt0147800",
+    "title": "10 Things I Hate About You",
+    "type": "movie"
+  },
+  {
+    "id": "tt0377092",
+    "title": "Mean Girls",
+    "type": "movie"
+  },
+  {
+    "id": "tt0250494",
+    "title": "Legally Blonde",
+    "type": "movie"
+  },
+  {
+    "id": "tt0133093",
+    "title": "The Matrix",
+    "type": "movie"
+  },
+  {
+    "id": "tt0137523",
+    "title": "Fight Club",
+    "type": "movie"
+  },
+  {
+    "id": "tt0110912",
+    "title": "Pulp Fiction",
+    "type": "movie"
+  },
+  {
+    "id": "tt0109830",
+    "title": "Forrest Gump",
+    "type": "movie"
+  },
+  {
+    "id": "tt0111161",
+    "title": "The Shawshank Redemption",
+    "type": "movie"
+  },
+  {
+    "id": "tt0119217",
+    "title": "Good Will Hunting",
+    "type": "movie"
+  },
+  {
+    "id": "tt0120338",
+    "title": "Titanic",
+    "type": "movie"
+  },
+  {
+    "id": "tt0112384",
+    "title": "Apollo 13",
+    "type": "movie"
+  },
+  {
+    "id": "tt0116629",
+    "title": "Independence Day",
+    "type": "movie"
+  },
+  {
+    "id": "tt0119654",
+    "title": "Men in Black",
+    "type": "movie"
+  },
+  {
+    "id": "tt0117998",
+    "title": "Twister",
+    "type": "movie"
+  },
+  {
+    "id": "tt32612507",
+    "title": "Lee Cronin's The Mummy",
+    "type": "movie"
+  }
+]

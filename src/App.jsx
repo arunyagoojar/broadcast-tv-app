@@ -10,16 +10,23 @@ import LeftMenu from './components/LeftMenu';
 import Overlays from './components/Overlays';
 
 import { CHANNELS } from './constants/channels';
-import logos from './constants/logos.json';
 import { fetchChannelContent } from './api/channels';
+import {
+  isCompletionStatus,
+  isPlayingStatus,
+  normalizeDurationSeconds,
+  readPlayerEventPayload,
+  readProgressDurationSeconds,
+  readProgressSeconds,
+} from './utils/playerEvents';
+import { moveFreshItemFirst } from './utils/playlist';
+import { optimizeImageUrl } from './utils/imageUrl';
 
 const SETTINGS_KEY = 'broadcastTV_settings';
 const SETTINGS_SCHEMA_VERSION = 2;
 const CHANNEL_STATES_KEY = 'broadcastTV_channelStates_v11';
 const RECENT_CHANNELS_KEY = 'broadcastTV_recentChannels';
 const THEMES = ['', 'theme-green', 'theme-amber', 'theme-bw', 'theme-blue', 'theme-purple', 'theme-red', 'theme-cyan'];
-const MIN_REPORTED_DURATION_SECONDS = 60;
-const MAX_REPORTED_DURATION_SECONDS = 12 * 60 * 60;
 const COMPLETION_LOAD_GRACE_MS = 3000;
 const TRUSTED_END_EPSILON_SECONDS = 0.5;
 const TRUSTED_TIMELINE_CATCHUP_SECONDS = 1;
@@ -63,11 +70,17 @@ function getRandomStartOffset(item) {
   return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
 }
 
+function getRandomPlayableChannelIndex() {
+  const playableIndexes = CHANNELS
+    .map((channel, index) => ({ channel, index }))
+    .filter(({ channel }) => channel.id !== 0)
+    .map(({ index }) => index);
+  return playableIndexes[Math.floor(Math.random() * playableIndexes.length)] ?? 1;
+}
+
 function getPlayableLogoUrl(item) {
   if (!item) return null;
-  if (item.logoUrl) return item.logoUrl;
-  const catalogId = item.seriesId || String(item.id || '').match(/^(tt\d+)/)?.[1];
-  return catalogId ? logos[catalogId] || null : null;
+  return optimizeImageUrl(item.logoUrl, 300);
 }
 
 function loadRecentChannelIds() {
@@ -106,6 +119,9 @@ function loadChannelStatesSnapshot() {
           return [id, {
             playlist,
             startedAt: Number.isFinite(Number(state.startedAt)) ? Number(state.startedAt) : Date.now(),
+            recentPlayableKeys: Array.isArray(state.recentPlayableKeys)
+              ? state.recentPlayableKeys.slice(0, 8)
+              : [],
           }];
         })
         .filter(Boolean)
@@ -131,6 +147,9 @@ function persistChannelStatesSnapshot(channelStates) {
         return [id, {
           startedAt: state.startedAt + (removedDuration * 1000),
           playlist: playlist.slice(windowStart, windowStart + 80),
+          recentPlayableKeys: Array.isArray(state.recentPlayableKeys)
+            ? state.recentPlayableKeys.slice(0, 8)
+            : [],
         }];
       })
     );
@@ -217,178 +236,6 @@ function getActivePlaybackSnapshot(state, activePlayback) {
   return getTimelineSnapshot(state);
 }
 
-function parseSecondsValue(value) {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
-  if (typeof value !== 'string') return null;
-
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  if (/^\d+(?::\d{1,2}){1,2}(?:\.\d+)?$/.test(trimmed)) {
-    const parts = trimmed.split(':').map(Number);
-    if (parts.some((part) => !Number.isFinite(part))) return null;
-    return parts.reduce((total, part) => (total * 60) + part, 0);
-  }
-
-  const parsed = Number(trimmed);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function normalizeProgressSeconds(value) {
-  if (!Number.isFinite(value) || value < 0) return null;
-  return value > MAX_REPORTED_DURATION_SECONDS ? value / 1000 : value;
-}
-
-function readProgressSeconds(progress) {
-  const directSeconds = parseSecondsValue(progress);
-  if (directSeconds !== null) return normalizeProgressSeconds(directSeconds);
-
-  if (!progress || typeof progress !== 'object') return null;
-  if (
-    Number.isFinite(Number(progress.played)) &&
-    Number(progress.played) > 0 &&
-    Number(progress.played) <= 1 &&
-    normalizeDurationSeconds(progress.duration) !== null
-  ) {
-    return Number(progress.played) * normalizeDurationSeconds(progress.duration);
-  }
-
-  const candidates = [
-    progress.currentTime,
-    progress.current_time,
-    progress.current,
-    progress.position,
-    progress.seconds,
-    progress.time,
-    progress.elapsed,
-    progress.currentTimeText,
-    progress.current_time_text,
-    progress.positionText,
-    Number(progress.played) > 1 ? progress.played : undefined,
-  ];
-  const found = candidates.map(parseSecondsValue).find((value) => value !== null);
-  return found === undefined ? null : normalizeProgressSeconds(found);
-}
-
-function normalizeDurationSeconds(value) {
-  const duration = parseSecondsValue(value);
-  if (!Number.isFinite(duration) || duration <= 0) return null;
-  const seconds = duration > MAX_REPORTED_DURATION_SECONDS
-    ? duration / 1000
-    : duration;
-  if (
-    !Number.isFinite(seconds) ||
-    seconds < MIN_REPORTED_DURATION_SECONDS ||
-    seconds > MAX_REPORTED_DURATION_SECONDS
-  ) {
-    return null;
-  }
-  return Math.round(seconds);
-}
-
-function readProgressDurationSeconds(progress) {
-  if (!progress || typeof progress !== 'object') return null;
-
-  const candidates = [
-    progress.duration,
-    progress.dur,
-    progress.totalDuration,
-    progress.total_duration,
-    progress.length,
-    progress.total,
-    progress.totalTime,
-    progress.total_time,
-    progress.durationText,
-    progress.duration_text,
-    progress.lengthText,
-  ];
-  const found = candidates.find((value) => normalizeDurationSeconds(value) !== null);
-  return found === undefined ? null : normalizeDurationSeconds(found);
-}
-
-function parseMaybeJson(value) {
-  if (typeof value !== 'string') return value;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
-}
-
-function normalizePlayerStatus(value) {
-  if (value === 0 || value === '0') return 'ended';
-  if (value === 1 || value === '1') return 'playing';
-  if (value === 2 || value === '2') return 'paused';
-  return String(value || '').toLowerCase().trim();
-}
-
-function isPlayingStatus(status) {
-  return status === 'playing' || status === 'play';
-}
-
-function isCompletionStatus(status) {
-  return [
-    'completed',
-    'complete',
-    'ended',
-    'end',
-    'finished',
-    'finish',
-  ].includes(status);
-}
-
-function hasProgressShape(value) {
-  if (!value || typeof value !== 'object') return false;
-  return [
-    'currentTime',
-    'current_time',
-    'current',
-    'position',
-    'seconds',
-    'time',
-    'played',
-    'duration',
-    'dur',
-    'totalDuration',
-    'total_duration',
-    'length',
-  ].some((key) => value[key] !== undefined);
-}
-
-function readPlayerEventPayload(message) {
-  const parsed = parseMaybeJson(message);
-  if (!parsed || typeof parsed !== 'object') return null;
-
-  const candidates = [
-    parsed,
-    parseMaybeJson(parsed.data),
-    parseMaybeJson(parsed.detail),
-    parseMaybeJson(parsed.payload),
-  ].filter((item) => item && typeof item === 'object');
-
-  for (const candidate of candidates) {
-    const progress = candidate.player_progress ?? candidate.progress ?? candidate.currentProgress;
-    const eventName = normalizePlayerStatus(candidate.type ?? candidate.event ?? candidate.name);
-    const isPlayerEvent = eventName.includes('player') || eventName.includes('playback');
-    const eventStatus = isPlayingStatus(eventName) || isCompletionStatus(eventName) ? eventName : undefined;
-    const status = candidate.player_status ?? candidate.status ?? candidate.state ?? candidate.playerState ?? eventStatus;
-
-    if (status !== undefined || progress !== undefined || hasProgressShape(candidate)) {
-      return {
-        player_status: normalizePlayerStatus(status),
-        player_progress: progress ?? candidate,
-      };
-    }
-
-    if (isPlayerEvent && candidate.data && typeof candidate.data === 'object') {
-      const nested = readPlayerEventPayload(candidate.data);
-      if (nested) return nested;
-    }
-  }
-
-  return null;
-}
-
 function syncReportedDuration(state, snapshot, reportedDuration) {
   const duration = normalizeDurationSeconds(reportedDuration);
   const index = snapshot?.itemIndex;
@@ -437,12 +284,13 @@ export default function App() {
   const glitchRef = useRef(null);
   const hudTimerRef = useRef(null);
   const toastTimerRef = useRef(null);
-  const promptTimerRef = useRef(null);
+  const playerRevealTimerRef = useRef(null);
   const initialTimerRef = useRef(null);
   const sleepTimerRef = useRef(null);
   const sleepCountdownRef = useRef(null);
   const lastPersistRef = useRef(0);
   const playerRef = useRef(null);
+  const contentRequestRef = useRef(null);
   const noiseRef = useRef(null);
   const currentProgressRef = useRef(null);
   const activePlaybackRef = useRef(null);
@@ -485,12 +333,13 @@ export default function App() {
   const [isPoweredOff, setIsPoweredOff] = useState(false);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [settings, setSettings] = useState(settingsSeed.settings);
-  const [playPromptVisible, setPlayPromptVisible] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState('');
   const [playerLoadKey, setPlayerLoadKey] = useState(0);
+  const [activateUpdate, setActivateUpdate] = useState(null);
 
   /* ── Screen Wake Lock ── */
-  useWakeLock();
+  useWakeLock(!isPoweredOff);
 
   useEffect(() => {
     settingsRef.current = settings;
@@ -502,10 +351,50 @@ export default function App() {
   }, [settings]);
 
   useEffect(() => {
-    const arClasses = ['ar-16-9', 'ar-4-3', 'ar-21-9', 'ar-full'];
+    let applyingUpdate = false;
+    const handleUpdateReady = (event) => {
+      const activate = event.detail?.activate;
+      if (typeof activate === 'function') setActivateUpdate(() => activate);
+    };
+    const handleControllerChange = () => {
+      if (applyingUpdate) window.location.reload();
+    };
+    const applyUpdate = () => {
+      applyingUpdate = true;
+      activateUpdate?.();
+    };
+
+    window.addEventListener('broadcast-tv:update-ready', handleUpdateReady);
+    navigator.serviceWorker?.addEventListener('controllerchange', handleControllerChange);
+    window.broadcastTvApplyUpdate = applyUpdate;
+    return () => {
+      window.removeEventListener('broadcast-tv:update-ready', handleUpdateReady);
+      navigator.serviceWorker?.removeEventListener('controllerchange', handleControllerChange);
+      delete window.broadcastTvApplyUpdate;
+    };
+  }, [activateUpdate]);
+
+  useEffect(() => {
+    const arClasses = ['ar-16-9', 'ar-4-3', 'ar-21-9', 'ar-fit', 'ar-full', 'ar-stretch'];
     document.body.classList.remove(...arClasses);
     if (settings.aspectRatio) document.body.classList.add(`ar-${settings.aspectRatio}`);
   }, [settings.aspectRatio]);
+
+  useEffect(() => {
+    const updateStretchScale = () => {
+      const baseHeight = window.innerWidth * (9 / 16);
+      const scaleY = baseHeight > 0 ? window.innerHeight / baseHeight : 1;
+      document.documentElement.style.setProperty('--screen-stretch-y', String(scaleY));
+    };
+    updateStretchScale();
+    window.addEventListener('resize', updateStretchScale);
+    window.addEventListener('orientationchange', updateStretchScale);
+    return () => {
+      window.removeEventListener('resize', updateStretchScale);
+      window.removeEventListener('orientationchange', updateStretchScale);
+      document.documentElement.style.removeProperty('--screen-stretch-y');
+    };
+  }, []);
 
   useEffect(() => {
     // Apply theme class, preserving ar-* classes
@@ -689,11 +578,14 @@ export default function App() {
 
     s.switchToken++;
     const tok = s.switchToken;
+    contentRequestRef.current?.abort();
+    const contentController = new AbortController();
+    contentRequestRef.current = contentController;
 
     flashGlitch();
     setStatus('TUNING');
-    setPlayPromptVisible(false);
-    clearTimeout(promptTimerRef.current);
+    clearTimeout(playerRevealTimerRef.current);
+    setPlayerReady(false);
 
     const channel = CHANNELS[index];
     s.activeChannelIndex = index;
@@ -701,13 +593,18 @@ export default function App() {
     recordRecentChannel(channel.id);
 
     // Save to local storage for persistent session
-    localStorage.setItem('ytTV_lastChannel', index);
+    try {
+      localStorage.setItem('ytTV_lastChannel', index);
+    } catch (error) {
+      if (import.meta.env.DEV) console.warn('[TV] Last channel save failed:', error);
+    }
 
     // Initialize continuous timeline state for this channel if missing
     if (!s.channelStates[channel.id]) {
       s.channelStates[channel.id] = {
         playlist: [],
         startedAt: Date.now(),
+        recentPlayableKeys: [],
       };
     }
 
@@ -719,12 +616,27 @@ export default function App() {
 
     if (refreshItem) {
       setStatus('SCANNING');
-      const newItems = await fetchChannelContent(channel);
+      const previousItem = currentItem;
+      const newItems = await fetchChannelContent(channel, {
+        afterItem: previousItem,
+        signal: contentController.signal,
+      });
       if (tok !== s.switchToken) return;
 
       if (newItems?.length) {
-        state.playlist = newItems;
-        state.startedAt = Date.now() - (getRandomStartOffset(newItems[0]) * 1000);
+        const previousKey = getPlayableKey(previousItem);
+        state.recentPlayableKeys = [
+          previousKey,
+          ...(state.recentPlayableKeys || []).filter((key) => key !== previousKey),
+        ].filter(Boolean).slice(0, 8);
+        state.playlist = moveFreshItemFirst(
+          newItems,
+          previousItem,
+          state.recentPlayableKeys,
+          isSamePlayableItem,
+          getPlayableKey,
+        );
+        state.startedAt = Date.now() - (getRandomStartOffset(state.playlist[0]) * 1000);
         snapshot = getTimelineSnapshot(state);
         currentItem = snapshot.currentItem;
         resumeAt = snapshot.resumeAt;
@@ -766,7 +678,10 @@ export default function App() {
       fetchAttempts++;
       setStatus('SCANNING');
       const afterItem = advanceItem ? completedItem : state.playlist.at(-1);
-      const newItems = await fetchChannelContent(channel, { afterItem });
+      const newItems = await fetchChannelContent(channel, {
+        afterItem,
+        signal: contentController.signal,
+      });
       if (tok !== s.switchToken) return;
 
       if (!newItems?.length) break;
@@ -804,8 +719,6 @@ export default function App() {
       return;
     }
 
-    s.failChainCount = 0;
-
     if (currentItem.embedUrl) {
       currentProgressRef.current = null;
       activePlaybackRef.current = { channelId: channel.id, itemId: currentItem.id, resumeAt };
@@ -817,25 +730,22 @@ export default function App() {
       setPlayerLoadKey((key) => key + 1);
       setCurrentEmbedUrl(finalEmbedUrl);
 
-      promptTimerRef.current = setTimeout(() => {
-        if (S.current.switchToken === tok && !isPlaybackMuted()) setPlayPromptVisible(true);
-      }, 5500);
-
       setTimeout(() => {
         if (s.switchToken === tok) clearStatusFn();
       }, 1800);
     }
-  }, [buildPlaybackUrl, clearStatusFn, commitActiveProgress, flashGlitch, isPlaybackMuted, recordRecentChannel, setStatus]);
+  }, [buildPlaybackUrl, clearStatusFn, commitActiveProgress, flashGlitch, recordRecentChannel, setStatus]);
 
   /* ── Initial Load Logic ── */
   useEffect(() => {
     const saved = localStorage.getItem('ytTV_lastChannel');
     let startIndex = 0;
-    if (saved !== null && !isNaN(saved)) {
-      startIndex = parseInt(saved, 10);
+    const savedIndex = saved !== null && !isNaN(saved) ? parseInt(saved, 10) : null;
+    if (savedIndex !== null && CHANNELS[savedIndex]?.id !== 0) {
+      startIndex = savedIndex;
     } else {
-      // First time visitor gets a random channel
-      startIndex = Math.floor(Math.random() * CHANNELS.length);
+      // First-time visitors always start on a real playable channel.
+      startIndex = getRandomPlayableChannelIndex();
     }
 
     // Ensure index is within bounds
@@ -852,22 +762,29 @@ export default function App() {
   /* ── Handle channel failure ── */
   const handleChannelFailure = useCallback(() => {
     const s = S.current;
-    if (s.failChainCount > 10) {
-      showToast('SIGNAL LOSS DETECTED');
-      s.failChainCount = 0;
-      setStatus('NO SIGNAL');
+    s.failChainCount++;
+    if (s.failChainCount <= 3) {
+      showToast('RECOVERING SIGNAL');
+      switchTo(s.activeChannelIndex, { refreshItem: true, skipCommit: true });
       return;
     }
+    showToast('SWITCHING FROM WEAK SIGNAL');
+    s.failChainCount = 0;
     switchTo(s.activeChannelIndex + 1);
-  }, [showToast, setStatus, switchTo]);
+  }, [showToast, switchTo]);
 
   // HTML5 Video Handlers
   const handlePlay = useCallback(() => {
     S.current.failChainCount = 0;
-    setPlayPromptVisible(false);
-    clearTimeout(promptTimerRef.current);
+    clearTimeout(playerRevealTimerRef.current);
+    setPlayerReady(true);
     clearStatusFn();
   }, [clearStatusFn]);
+
+  const handlePlayerLoad = useCallback(() => {
+    clearTimeout(playerRevealTimerRef.current);
+    playerRevealTimerRef.current = setTimeout(() => setPlayerReady(true), 600);
+  }, []);
 
   const skipCurrentVideo = useCallback(() => {
     const s = S.current;
@@ -902,20 +819,13 @@ export default function App() {
     handleChannelFailure();
   }, [handleChannelFailure]);
 
-  const retryPlayback = useCallback(() => {
-    unlockAudio(true);
-    setPlayPromptVisible(false);
-    clearTimeout(promptTimerRef.current);
-    switchTo(S.current.activeChannelIndex);
-  }, [switchTo, unlockAudio]);
-
   useEffect(() => {
     const player = playerRef.current;
     const muted = isPlaybackMuted();
 
     if (player?.tagName === 'VIDEO') {
       player.muted = muted;
-      if (!isPoweredOff) player.play?.().catch(() => setPlayPromptVisible(true));
+      if (!isPoweredOff) player.play?.().catch(() => undefined);
     } else if (player?.tagName === 'IFRAME') {
       postPlayerCommand(muted ? 'mute' : 'unMute');
     }
@@ -950,12 +860,19 @@ export default function App() {
         return;
       }
 
+      try {
+        if (e.origin !== new URL(player.src).origin) return;
+      } catch {
+        return;
+      }
+
       const eventPayload = readPlayerEventPayload(e.data);
 
       if (eventPayload) {
-        const { player_status, player_progress } = eventPayload;
+        const { player_status, player_progress, player_duration } = eventPayload;
         const progressSeconds = readProgressSeconds(player_progress);
-        const reportedDuration = readProgressDurationSeconds(player_progress);
+        const reportedDuration = normalizeDurationSeconds(player_duration)
+          ?? readProgressDurationSeconds(player_progress);
         const activePlayback = activePlaybackRef.current;
         const channel = CHANNELS[S.current.activeChannelIndex];
         const hasCompletionStatus = isCompletionStatus(player_status);
@@ -1100,7 +1017,7 @@ export default function App() {
     sleepCountdownRef.current = setInterval(() => {
       const remaining = Math.max(1, Math.ceil((endsAt - Date.now()) / 60_000));
       setSleepTimerMinutes(remaining);
-    }, 1000);
+    }, 30_000);
     sleepTimerRef.current = setTimeout(() => {
       sleepTimerRef.current = null;
       clearInterval(sleepCountdownRef.current);
@@ -1226,12 +1143,24 @@ export default function App() {
       setCurrentEpTitle(currentItem.epTitle || '');
       setCurrentLogoUrl(getPlayableLogoUrl(currentItem));
       const nextItem = state?.playlist?.[snapshot.itemIndex + 1] || null;
-      setNextUp(nextItem ? {
+      const nextValue = nextItem ? {
         id: nextItem.id,
         title: nextItem.title,
         epTitle: nextItem.epTitle || '',
         logoUrl: getPlayableLogoUrl(nextItem),
-      } : null);
+      } : null;
+      setNextUp((current) => {
+        if (!current && !nextValue) return current;
+        if (
+          current?.id === nextValue?.id &&
+          current?.title === nextValue?.title &&
+          current?.epTitle === nextValue?.epTitle &&
+          current?.logoUrl === nextValue?.logoUrl
+        ) {
+          return current;
+        }
+        return nextValue;
+      });
     }, 1000);
     return () => clearInterval(interval);
   }, [handleEnded]);
@@ -1258,10 +1187,11 @@ export default function App() {
   useEffect(() => {
     return () => {
       clearTimeout(toastTimerRef.current);
-      clearTimeout(promptTimerRef.current);
+      clearTimeout(playerRevealTimerRef.current);
       clearTimeout(initialTimerRef.current);
       clearTimeout(sleepTimerRef.current);
       clearInterval(sleepCountdownRef.current);
+      contentRequestRef.current?.abort();
     };
   }, []);
 
@@ -1305,10 +1235,10 @@ export default function App() {
         onPlay={handlePlay}
         onEnded={handleEnded}
         onError={handleError}
+        onLoad={handlePlayerLoad}
         embedUrl={isPoweredOff ? '' : currentEmbedUrl}
         isMuted={effectiveMuted}
-        playPromptVisible={playPromptVisible}
-        onPromptClick={retryPlayback}
+        playerReady={playerReady}
         onShieldClick={handlePlayerShieldClick}
       />
 
@@ -1324,6 +1254,8 @@ export default function App() {
         toastShow={toastShow}
         toastMsg={toastMsg}
         audioUnlocked={audioUnlocked}
+        updateAvailable={Boolean(activateUpdate)}
+        onApplyUpdate={() => window.broadcastTvApplyUpdate?.()}
       />
 
       <HUD

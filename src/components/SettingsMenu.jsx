@@ -80,7 +80,13 @@ export default function SettingsMenu({
   const logoMode = settings.logoMode !== false; // default true = show logo
 
   return (
-    <div className={`left-menu-container ${isOpen ? 'open' : ''}`}>
+    <div
+      className={`left-menu-container ${isOpen ? 'open' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="TV settings"
+      aria-hidden={!isOpen}
+    >
       <div className="left-menu-perspective">
         <div className="left-menu" ref={menuRef}>
           
@@ -152,7 +158,9 @@ export default function SettingsMenu({
                   { value: '16-9', label: '16 : 9', sub: 'Widescreen (default)' },
                   { value: '4-3',  label: '4 : 3',  sub: 'Classic TV' },
                   { value: '21-9', label: '21 : 9', sub: 'Cinematic' },
-                  { value: 'full', label: 'Full',   sub: 'Stretch to fill' },
+                  { value: 'fit', label: 'Fit', sub: 'Show everything with possible bars' },
+                  { value: 'full', label: 'Full', sub: 'Fill screen with possible cropping' },
+                  { value: 'stretch', label: 'Stretch', sub: 'Fill screen without preserving shape' },
                 ].map(({ value, label, sub }) => {
                   const active = (settings.aspectRatio || '16-9') === value;
                   return (

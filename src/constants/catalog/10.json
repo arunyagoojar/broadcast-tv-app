@@ -1,0 +1,252 @@
+[
+  {
+    "id": "tt1485796",
+    "title": "The Greatest Showman",
+    "type": "movie"
+  },
+  {
+    "id": "tt3783958",
+    "title": "La La Land",
+    "type": "movie"
+  },
+  {
+    "id": "tt0795421",
+    "title": "Mamma Mia!",
+    "type": "movie"
+  },
+  {
+    "id": "tt1707386",
+    "title": "Les Misérables",
+    "type": "movie"
+  },
+  {
+    "id": "tt0475293",
+    "title": "High School Musical",
+    "type": "movie"
+  },
+  {
+    "id": "tt0810900",
+    "title": "High School Musical 2",
+    "type": "movie"
+  },
+  {
+    "id": "tt0962726",
+    "title": "High School Musical 3: Senior Year",
+    "type": "movie"
+  },
+  {
+    "id": "tt0077631",
+    "title": "Grease",
+    "type": "movie"
+  },
+  {
+    "id": "tt0059742",
+    "title": "The Sound of Music",
+    "type": "movie"
+  },
+  {
+    "id": "tt3581652",
+    "title": "West Side Story",
+    "type": "movie"
+  },
+  {
+    "id": "tt0299658",
+    "title": "Chicago",
+    "type": "movie"
+  },
+  {
+    "id": "tt0203009",
+    "title": "Moulin Rouge!",
+    "type": "movie"
+  },
+  {
+    "id": "tt0427327",
+    "title": "Hairspray",
+    "type": "movie"
+  },
+  {
+    "id": "tt1981677",
+    "title": "Pitch Perfect",
+    "type": "movie"
+  },
+  {
+    "id": "tt2848292",
+    "title": "Pitch Perfect 2",
+    "type": "movie"
+  },
+  {
+    "id": "tt8721424",
+    "title": "tick, tick... BOOM!",
+    "type": "movie"
+  },
+  {
+    "id": "tt1321510",
+    "title": "In the Heights",
+    "type": "movie"
+  },
+  {
+    "id": "tt0058331",
+    "title": "Mary Poppins",
+    "type": "movie"
+  },
+  {
+    "id": "tt5028340",
+    "title": "Mary Poppins Returns",
+    "type": "movie"
+  },
+  {
+    "id": "tt0408236",
+    "title": "Sweeney Todd: The Demon Barber of Fleet Street",
+    "type": "movie"
+  },
+  {
+    "id": "tt2180411",
+    "title": "Into the Woods",
+    "type": "movie"
+  },
+  {
+    "id": "tt0083564",
+    "title": "Annie",
+    "type": "movie"
+  },
+  {
+    "id": "tt0293508",
+    "title": "The Phantom of the Opera",
+    "type": "movie"
+  },
+  {
+    "id": "tt0443489",
+    "title": "Dreamgirls",
+    "type": "movie"
+  },
+  {
+    "id": "tt0045152",
+    "title": "Singin' in the Rain",
+    "type": "movie"
+  },
+  {
+    "id": "tt0032138",
+    "title": "The Wizard of Oz",
+    "type": "movie"
+  },
+  {
+    "id": "tt1517451",
+    "title": "A Star Is Born",
+    "type": "movie"
+  },
+  {
+    "id": "tt2066051",
+    "title": "Rocketman",
+    "type": "movie"
+  },
+  {
+    "id": "tt1727824",
+    "title": "Bohemian Rhapsody",
+    "type": "movie"
+  },
+  {
+    "id": "tt3704428",
+    "title": "Elvis",
+    "type": "movie"
+  },
+  {
+    "id": "tt8503618",
+    "title": "Hamilton",
+    "type": "movie"
+  },
+  {
+    "id": "tt0073629",
+    "title": "The Rocky Horror Picture Show",
+    "type": "movie"
+  },
+  {
+    "id": "tt0068327",
+    "title": "Cabaret",
+    "type": "movie"
+  },
+  {
+    "id": "tt0062994",
+    "title": "Funny Girl",
+    "type": "movie"
+  },
+  {
+    "id": "tt0058385",
+    "title": "My Fair Lady",
+    "type": "movie"
+  },
+  {
+    "id": "tt0294870",
+    "title": "Rent",
+    "type": "movie"
+  },
+  {
+    "id": "tt1742044",
+    "title": "Jersey Boys",
+    "type": "movie"
+  },
+  {
+    "id": "tt1336608",
+    "title": "Rock of Ages",
+    "type": "movie"
+  },
+  {
+    "id": "tt1126591",
+    "title": "Burlesque",
+    "type": "movie"
+  },
+  {
+    "id": "tt1055366",
+    "title": "Camp Rock",
+    "type": "movie"
+  },
+  {
+    "id": "tt0338852",
+    "title": "The Cheetah Girls",
+    "type": "movie"
+  },
+  {
+    "id": "tt0461770",
+    "title": "Enchanted",
+    "type": "movie"
+  },
+  {
+    "id": "tt0067992",
+    "title": "Willy Wonka & the Chocolate Factory",
+    "type": "movie"
+  },
+  {
+    "id": "tt0367594",
+    "title": "Charlie and the Chocolate Factory",
+    "type": "movie"
+  },
+  {
+    "id": "tt14668630",
+    "title": "Lyle, Lyle, Crocodile",
+    "type": "movie"
+  },
+  {
+    "id": "tt0104990",
+    "title": "Newsies",
+    "type": "movie"
+  },
+  {
+    "id": "tt5697572",
+    "title": "Cats",
+    "type": "movie"
+  },
+  {
+    "id": "tt0445922",
+    "title": "Across the Universe",
+    "type": "movie"
+  },
+  {
+    "id": "tt0067093",
+    "title": "Fiddler on the Roof",
+    "type": "movie"
+  },
+  {
+    "id": "tt0080455",
+    "title": "The Blues Brothers",
+    "type": "movie"
+  }
+]

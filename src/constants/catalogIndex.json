@@ -1,0 +1,5340 @@
+{
+  "24": {
+    "id": "tt0285331",
+    "title": "24",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "maxEpisodes": {
+      "1": 24,
+      "2": 24,
+      "3": 24,
+      "4": 24,
+      "5": 24,
+      "6": 24,
+      "7": 24,
+      "8": 24,
+      "9": 12
+    }
+  },
+  "the avengers": {
+    "id": "tt0848228",
+    "title": "The Avengers",
+    "type": "movie"
+  },
+  "avengers age of ultron": {
+    "id": "tt2395427",
+    "title": "Avengers: Age of Ultron",
+    "type": "movie"
+  },
+  "avengers infinity war": {
+    "id": "tt4154756",
+    "title": "Avengers: Infinity War",
+    "type": "movie"
+  },
+  "avengers endgame": {
+    "id": "tt4154796",
+    "title": "Avengers: Endgame",
+    "type": "movie"
+  },
+  "mission impossible the final reckoning": {
+    "id": "tt9603208",
+    "title": "Mission: Impossible - The Final Reckoning",
+    "type": "movie"
+  },
+  "mission impossible fallout": {
+    "id": "tt4912910",
+    "title": "Mission: Impossible - Fallout",
+    "type": "movie"
+  },
+  "mission impossible ghost protocol": {
+    "id": "tt1229238",
+    "title": "Mission: Impossible - Ghost Protocol",
+    "type": "movie"
+  },
+  "mission impossible rogue nation": {
+    "id": "tt2381249",
+    "title": "Mission: Impossible - Rogue Nation",
+    "type": "movie"
+  },
+  "fast furious": {
+    "id": "tt1013752",
+    "title": "Fast & Furious",
+    "type": "movie"
+  },
+  "fast five": {
+    "id": "tt1596343",
+    "title": "Fast Five",
+    "type": "movie"
+  },
+  "furious 7": {
+    "id": "tt2820852",
+    "title": "Furious 7",
+    "type": "movie"
+  },
+  "the fate of the furious": {
+    "id": "tt4630562",
+    "title": "The Fate of the Furious",
+    "type": "movie"
+  },
+  "casino royale": {
+    "id": "tt0381061",
+    "title": "Casino Royale",
+    "type": "movie"
+  },
+  "skyfall": {
+    "id": "tt1074638",
+    "title": "Skyfall",
+    "type": "movie"
+  },
+  "spectre": {
+    "id": "tt2379713",
+    "title": "Spectre",
+    "type": "movie"
+  },
+  "no time to die": {
+    "id": "tt2382320",
+    "title": "No Time to Die",
+    "type": "movie"
+  },
+  "transformers": {
+    "id": "tt0418279",
+    "title": "Transformers",
+    "type": "movie"
+  },
+  "transformers dark of the moon": {
+    "id": "tt1399103",
+    "title": "Transformers: Dark of the Moon",
+    "type": "movie"
+  },
+  "transformers age of extinction": {
+    "id": "tt2109248",
+    "title": "Transformers: Age of Extinction",
+    "type": "movie"
+  },
+  "die hard": {
+    "id": "tt0095016",
+    "title": "Die Hard",
+    "type": "movie"
+  },
+  "die hard with a vengeance": {
+    "id": "tt0112864",
+    "title": "Die Hard with a Vengeance",
+    "type": "movie"
+  },
+  "mad max fury road": {
+    "id": "tt1392190",
+    "title": "Mad Max: Fury Road",
+    "type": "movie"
+  },
+  "gladiator": {
+    "id": "tt0172495",
+    "title": "Gladiator",
+    "type": "movie"
+  },
+  "terminator 2 judgment day": {
+    "id": "tt0103064",
+    "title": "Terminator 2: Judgment Day",
+    "type": "movie"
+  },
+  "the dark knight": {
+    "id": "tt0468569",
+    "title": "The Dark Knight",
+    "type": "movie"
+  },
+  "inception": {
+    "id": "tt1375666",
+    "title": "Inception",
+    "type": "movie"
+  },
+  "the matrix": {
+    "id": "tt0133093",
+    "title": "The Matrix",
+    "type": "movie"
+  },
+  "john wick": {
+    "id": "tt2911666",
+    "title": "John Wick",
+    "type": "movie"
+  },
+  "john wick chapter 2": {
+    "id": "tt4425200",
+    "title": "John Wick: Chapter 2",
+    "type": "movie"
+  },
+  "john wick chapter 3 parabellum": {
+    "id": "tt6146586",
+    "title": "John Wick: Chapter 3 - Parabellum",
+    "type": "movie"
+  },
+  "lethal weapon": {
+    "id": "tt0093409",
+    "title": "Lethal Weapon",
+    "type": "movie"
+  },
+  "speed": {
+    "id": "tt0111257",
+    "title": "Speed",
+    "type": "movie"
+  },
+  "true lies": {
+    "id": "tt0111503",
+    "title": "True Lies",
+    "type": "movie"
+  },
+  "air force one": {
+    "id": "tt0118571",
+    "title": "Air Force One",
+    "type": "movie"
+  },
+  "the rock": {
+    "id": "tt0117500",
+    "title": "The Rock",
+    "type": "movie"
+  },
+  "con air": {
+    "id": "tt0118880",
+    "title": "Con Air",
+    "type": "movie"
+  },
+  "face off": {
+    "id": "tt0119094",
+    "title": "Face/Off",
+    "type": "movie"
+  },
+  "armageddon": {
+    "id": "tt0120591",
+    "title": "Armageddon",
+    "type": "movie"
+  },
+  "independence day": {
+    "id": "tt0116629",
+    "title": "Independence Day",
+    "type": "movie"
+  },
+  "jurassic park": {
+    "id": "tt0107290",
+    "title": "Jurassic Park",
+    "type": "movie"
+  },
+  "jurassic world": {
+    "id": "tt0369610",
+    "title": "Jurassic World",
+    "type": "movie"
+  },
+  "top gun": {
+    "id": "tt0092099",
+    "title": "Top Gun",
+    "type": "movie"
+  },
+  "top gun maverick": {
+    "id": "tt1745960",
+    "title": "Top Gun: Maverick",
+    "type": "movie"
+  },
+  "avatar fire and ash": {
+    "id": "tt1757678",
+    "title": "Avatar: Fire and Ash",
+    "type": "movie"
+  },
+  "avatar the way of water": {
+    "id": "tt1630029",
+    "title": "Avatar: The Way of Water",
+    "type": "movie"
+  },
+  "the bourne identity": {
+    "id": "tt0258463",
+    "title": "The Bourne Identity",
+    "type": "movie"
+  },
+  "the bourne ultimatum": {
+    "id": "tt0440963",
+    "title": "The Bourne Ultimatum",
+    "type": "movie"
+  },
+  "taken": {
+    "id": "tt0936501",
+    "title": "Taken",
+    "type": "movie"
+  },
+  "rambo first blood part ii": {
+    "id": "tt0089880",
+    "title": "Rambo: First Blood Part II",
+    "type": "movie"
+  },
+  "the equalizer": {
+    "id": "tt0455944",
+    "title": "The Equalizer",
+    "type": "movie"
+  },
+  "nobody": {
+    "id": "tt7888964",
+    "title": "Nobody",
+    "type": "movie"
+  },
+  "bullet train": {
+    "id": "tt12593682",
+    "title": "Bullet Train",
+    "type": "movie"
+  },
+  "extraction": {
+    "id": "tt8936646",
+    "title": "Extraction",
+    "type": "movie"
+  },
+  "the expendables": {
+    "id": "tt1320253",
+    "title": "The Expendables",
+    "type": "movie"
+  },
+  "red notice": {
+    "id": "tt7991608",
+    "title": "Red Notice",
+    "type": "movie"
+  },
+  "l on the professional": {
+    "id": "tt0110413",
+    "title": "Léon: The Professional",
+    "type": "movie"
+  },
+  "kill bill vol 1": {
+    "id": "tt0266697",
+    "title": "Kill Bill: Vol. 1",
+    "type": "movie"
+  },
+  "kill bill vol 2": {
+    "id": "tt0378194",
+    "title": "Kill Bill: Vol. 2",
+    "type": "movie"
+  },
+  "rush hour": {
+    "id": "tt0120812",
+    "title": "Rush Hour",
+    "type": "movie"
+  },
+  "bad boys": {
+    "id": "tt0112442",
+    "title": "Bad Boys",
+    "type": "movie"
+  },
+  "bad boys for life": {
+    "id": "tt1502397",
+    "title": "Bad Boys for Life",
+    "type": "movie"
+  },
+  "crank": {
+    "id": "tt0479884",
+    "title": "Crank",
+    "type": "movie"
+  },
+  "crouching tiger hidden dragon": {
+    "id": "tt0190332",
+    "title": "Crouching Tiger, Hidden Dragon",
+    "type": "movie"
+  },
+  "enter the dragon": {
+    "id": "tt0070034",
+    "title": "Enter the Dragon",
+    "type": "movie"
+  },
+  "the raid redemption": {
+    "id": "tt1899353",
+    "title": "The Raid: Redemption",
+    "type": "movie"
+  },
+  "ip man": {
+    "id": "tt1220719",
+    "title": "Ip Man",
+    "type": "movie"
+  },
+  "star wars episode iv a new hope": {
+    "id": "tt0076759",
+    "title": "Star Wars: Episode IV - A New Hope",
+    "type": "movie"
+  },
+  "star wars episode v the empire strikes back": {
+    "id": "tt0080684",
+    "title": "Star Wars: Episode V - The Empire Strikes Back",
+    "type": "movie"
+  },
+  "star wars episode vi return of the jedi": {
+    "id": "tt0086190",
+    "title": "Star Wars: Episode VI - Return of the Jedi",
+    "type": "movie"
+  },
+  "star wars episode ii attack of the clones": {
+    "id": "tt0121765",
+    "title": "Star Wars: Episode II - Attack of the Clones",
+    "type": "movie"
+  },
+  "star wars episode iii revenge of the sith": {
+    "id": "tt0121766",
+    "title": "Star Wars: Episode III - Revenge of the Sith",
+    "type": "movie"
+  },
+  "harry potter and the sorcerer s stone": {
+    "id": "tt0241527",
+    "title": "Harry Potter and the Sorcerer's Stone",
+    "type": "movie"
+  },
+  "harry potter and the chamber of secrets": {
+    "id": "tt0295297",
+    "title": "Harry Potter and the Chamber of Secrets",
+    "type": "movie"
+  },
+  "harry potter and the prisoner of azkaban": {
+    "id": "tt0304141",
+    "title": "Harry Potter and the Prisoner of Azkaban",
+    "type": "movie"
+  },
+  "harry potter and the goblet of fire": {
+    "id": "tt0330373",
+    "title": "Harry Potter and the Goblet of Fire",
+    "type": "movie"
+  },
+  "harry potter and the order of the phoenix": {
+    "id": "tt0373889",
+    "title": "Harry Potter and the Order of the Phoenix",
+    "type": "movie"
+  },
+  "harry potter and the half blood prince": {
+    "id": "tt0417741",
+    "title": "Harry Potter and the Half-Blood Prince",
+    "type": "movie"
+  },
+  "harry potter and the deathly hallows part 1": {
+    "id": "tt0926084",
+    "title": "Harry Potter and the Deathly Hallows: Part 1",
+    "type": "movie"
+  },
+  "harry potter and the deathly hallows part 2": {
+    "id": "tt1201607",
+    "title": "Harry Potter and the Deathly Hallows: Part 2",
+    "type": "movie"
+  },
+  "the lord of the rings the fellowship of the ring": {
+    "id": "tt0120737",
+    "title": "The Lord of the Rings: The Fellowship of the Ring",
+    "type": "movie"
+  },
+  "the lord of the rings the two towers": {
+    "id": "tt0167261",
+    "title": "The Lord of the Rings: The Two Towers",
+    "type": "movie"
+  },
+  "the lord of the rings the return of the king": {
+    "id": "tt0167260",
+    "title": "The Lord of the Rings: The Return of the King",
+    "type": "movie"
+  },
+  "the hobbit an unexpected journey": {
+    "id": "tt0903624",
+    "title": "The Hobbit: An Unexpected Journey",
+    "type": "movie"
+  },
+  "the hobbit the desolation of smaug": {
+    "id": "tt1170358",
+    "title": "The Hobbit: The Desolation of Smaug",
+    "type": "movie"
+  },
+  "the hobbit the battle of the five armies": {
+    "id": "tt2310332",
+    "title": "The Hobbit: The Battle of the Five Armies",
+    "type": "movie"
+  },
+  "the matrix reloaded": {
+    "id": "tt0234215",
+    "title": "The Matrix Reloaded",
+    "type": "movie"
+  },
+  "the matrix revolutions": {
+    "id": "tt0242653",
+    "title": "The Matrix Revolutions",
+    "type": "movie"
+  },
+  "dune part two": {
+    "id": "tt15239678",
+    "title": "Dune: Part Two",
+    "type": "movie"
+  },
+  "blade runner": {
+    "id": "tt0083658",
+    "title": "Blade Runner",
+    "type": "movie"
+  },
+  "blade runner 2049": {
+    "id": "tt1856101",
+    "title": "Blade Runner 2049",
+    "type": "movie"
+  },
+  "interstellar": {
+    "id": "tt0816692",
+    "title": "Interstellar",
+    "type": "movie"
+  },
+  "arrival": {
+    "id": "tt2543164",
+    "title": "Arrival",
+    "type": "movie"
+  },
+  "the martian": {
+    "id": "tt3659388",
+    "title": "The Martian",
+    "type": "movie"
+  },
+  "gravity": {
+    "id": "tt1454468",
+    "title": "Gravity",
+    "type": "movie"
+  },
+  "e t the extra terrestrial": {
+    "id": "tt0083866",
+    "title": "E.T. the Extra-Terrestrial",
+    "type": "movie"
+  },
+  "close encounters of the third kind": {
+    "id": "tt0075860",
+    "title": "Close Encounters of the Third Kind",
+    "type": "movie"
+  },
+  "alien": {
+    "id": "tt0078748",
+    "title": "Alien",
+    "type": "movie"
+  },
+  "aliens": {
+    "id": "tt0090605",
+    "title": "Aliens",
+    "type": "movie"
+  },
+  "prometheus": {
+    "id": "tt1446714",
+    "title": "Prometheus",
+    "type": "movie"
+  },
+  "pan s labyrinth": {
+    "id": "tt0457430",
+    "title": "Pan's Labyrinth",
+    "type": "movie"
+  },
+  "the shape of water": {
+    "id": "tt5580390",
+    "title": "The Shape of Water",
+    "type": "movie"
+  },
+  "pirates of the caribbean the curse of the black pearl": {
+    "id": "tt0325980",
+    "title": "Pirates of the Caribbean: The Curse of the Black Pearl",
+    "type": "movie"
+  },
+  "the chronicles of narnia the lion the witch and the wardrobe": {
+    "id": "tt0363771",
+    "title": "The Chronicles of Narnia: The Lion, the Witch and the Wardrobe",
+    "type": "movie"
+  },
+  "the golden compass": {
+    "id": "tt0385752",
+    "title": "The Golden Compass",
+    "type": "movie"
+  },
+  "stardust": {
+    "id": "tt0486655",
+    "title": "Stardust",
+    "type": "movie"
+  },
+  "warcraft": {
+    "id": "tt0803096",
+    "title": "Warcraft",
+    "type": "movie"
+  },
+  "percy jackson the olympians the lightning thief": {
+    "id": "tt0814255",
+    "title": "Percy Jackson & the Olympians: The Lightning Thief",
+    "type": "movie"
+  },
+  "ender s game": {
+    "id": "tt1731141",
+    "title": "Ender's Game",
+    "type": "movie"
+  },
+  "alita battle angel": {
+    "id": "tt0437086",
+    "title": "Alita: Battle Angel",
+    "type": "movie"
+  },
+  "ready player one": {
+    "id": "tt1677720",
+    "title": "Ready Player One",
+    "type": "movie"
+  },
+  "edge of tomorrow": {
+    "id": "tt1631867",
+    "title": "Edge of Tomorrow",
+    "type": "movie"
+  },
+  "minority report": {
+    "id": "tt0181689",
+    "title": "Minority Report",
+    "type": "movie"
+  },
+  "the fifth element": {
+    "id": "tt0119116",
+    "title": "The Fifth Element",
+    "type": "movie"
+  },
+  "tenet": {
+    "id": "tt6723592",
+    "title": "Tenet",
+    "type": "movie"
+  },
+  "ex machina": {
+    "id": "tt0470752",
+    "title": "Ex Machina",
+    "type": "movie"
+  },
+  "district 9": {
+    "id": "tt1136608",
+    "title": "District 9",
+    "type": "movie"
+  },
+  "snowpiercer": {
+    "id": "tt1706620",
+    "title": "Snowpiercer",
+    "type": "movie"
+  },
+  "the hunger games": {
+    "id": "tt1392170",
+    "title": "The Hunger Games",
+    "type": "movie"
+  },
+  "the hunger games catching fire": {
+    "id": "tt1951264",
+    "title": "The Hunger Games: Catching Fire",
+    "type": "movie"
+  },
+  "divergent": {
+    "id": "tt1840309",
+    "title": "Divergent",
+    "type": "movie"
+  },
+  "the maze runner": {
+    "id": "tt1790864",
+    "title": "The Maze Runner",
+    "type": "movie"
+  },
+  "oblivion": {
+    "id": "tt1483013",
+    "title": "Oblivion",
+    "type": "movie"
+  },
+  "elysium": {
+    "id": "tt1535108",
+    "title": "Elysium",
+    "type": "movie"
+  },
+  "looper": {
+    "id": "tt1276104",
+    "title": "Looper",
+    "type": "movie"
+  },
+  "the hangover": {
+    "id": "tt1119646",
+    "title": "The Hangover",
+    "type": "movie"
+  },
+  "the hangover part ii": {
+    "id": "tt1411697",
+    "title": "The Hangover Part II",
+    "type": "movie"
+  },
+  "superbad": {
+    "id": "tt0829482",
+    "title": "Superbad",
+    "type": "movie"
+  },
+  "dumb and dumber": {
+    "id": "tt0109686",
+    "title": "Dumb and Dumber",
+    "type": "movie"
+  },
+  "step brothers": {
+    "id": "tt0838283",
+    "title": "Step Brothers",
+    "type": "movie"
+  },
+  "grown ups": {
+    "id": "tt1375670",
+    "title": "Grown Ups",
+    "type": "movie"
+  },
+  "grown ups 2": {
+    "id": "tt2191701",
+    "title": "Grown Ups 2",
+    "type": "movie"
+  },
+  "21 jump street": {
+    "id": "tt1232829",
+    "title": "21 Jump Street",
+    "type": "movie"
+  },
+  "22 jump street": {
+    "id": "tt2294449",
+    "title": "22 Jump Street",
+    "type": "movie"
+  },
+  "anchorman the legend of ron burgundy": {
+    "id": "tt0357413",
+    "title": "Anchorman: The Legend of Ron Burgundy",
+    "type": "movie"
+  },
+  "anchorman 2 the legend continues": {
+    "id": "tt1229340",
+    "title": "Anchorman 2: The Legend Continues",
+    "type": "movie"
+  },
+  "tropic thunder": {
+    "id": "tt0942385",
+    "title": "Tropic Thunder",
+    "type": "movie"
+  },
+  "pineapple express": {
+    "id": "tt0910936",
+    "title": "Pineapple Express",
+    "type": "movie"
+  },
+  "this is the end": {
+    "id": "tt1245492",
+    "title": "This Is the End",
+    "type": "movie"
+  },
+  "we re the millers": {
+    "id": "tt1723121",
+    "title": "We're the Millers",
+    "type": "movie"
+  },
+  "horrible bosses": {
+    "id": "tt1499658",
+    "title": "Horrible Bosses",
+    "type": "movie"
+  },
+  "horrible bosses 2": {
+    "id": "tt2170439",
+    "title": "Horrible Bosses 2",
+    "type": "movie"
+  },
+  "bridesmaids": {
+    "id": "tt1478338",
+    "title": "Bridesmaids",
+    "type": "movie"
+  },
+  "pitch perfect": {
+    "id": "tt1981677",
+    "title": "Pitch Perfect",
+    "type": "movie"
+  },
+  "pitch perfect 2": {
+    "id": "tt2848292",
+    "title": "Pitch Perfect 2",
+    "type": "movie"
+  },
+  "mean girls": {
+    "id": "tt0377092",
+    "title": "Mean Girls",
+    "type": "movie"
+  },
+  "legally blonde": {
+    "id": "tt0250494",
+    "title": "Legally Blonde",
+    "type": "movie"
+  },
+  "zoolander": {
+    "id": "tt0196229",
+    "title": "Zoolander",
+    "type": "movie"
+  },
+  "dodgeball a true underdog story": {
+    "id": "tt0364725",
+    "title": "Dodgeball: A True Underdog Story",
+    "type": "movie"
+  },
+  "wedding crashers": {
+    "id": "tt0396269",
+    "title": "Wedding Crashers",
+    "type": "movie"
+  },
+  "the 40 year old virgin": {
+    "id": "tt0405422",
+    "title": "The 40-Year-Old Virgin",
+    "type": "movie"
+  },
+  "knocked up": {
+    "id": "tt0478311",
+    "title": "Knocked Up",
+    "type": "movie"
+  },
+  "role models": {
+    "id": "tt0430922",
+    "title": "Role Models",
+    "type": "movie"
+  },
+  "forgetting sarah marshall": {
+    "id": "tt0800039",
+    "title": "Forgetting Sarah Marshall",
+    "type": "movie"
+  },
+  "get him to the greek": {
+    "id": "tt1226229",
+    "title": "Get Him to the Greek",
+    "type": "movie"
+  },
+  "due date": {
+    "id": "tt1231583",
+    "title": "Due Date",
+    "type": "movie"
+  },
+  "neighbors": {
+    "id": "tt2004420",
+    "title": "Neighbors",
+    "type": "movie"
+  },
+  "bad moms": {
+    "id": "tt4651520",
+    "title": "Bad Moms",
+    "type": "movie"
+  },
+  "game night": {
+    "id": "tt2704998",
+    "title": "Game Night",
+    "type": "movie"
+  },
+  "good boys": {
+    "id": "tt6977338",
+    "title": "Good Boys",
+    "type": "movie"
+  },
+  "booksmart": {
+    "id": "tt1489887",
+    "title": "Booksmart",
+    "type": "movie"
+  },
+  "shaun of the dead": {
+    "id": "tt0365748",
+    "title": "Shaun of the Dead",
+    "type": "movie"
+  },
+  "hot fuzz": {
+    "id": "tt0425112",
+    "title": "Hot Fuzz",
+    "type": "movie"
+  },
+  "the world s end": {
+    "id": "tt1213663",
+    "title": "The World's End",
+    "type": "movie"
+  },
+  "napoleon dynamite": {
+    "id": "tt0374900",
+    "title": "Napoleon Dynamite",
+    "type": "movie"
+  },
+  "super troopers 3": {
+    "id": "tt8820258",
+    "title": "Super Troopers 3",
+    "type": "movie"
+  },
+  "old school": {
+    "id": "tt0302886",
+    "title": "Old School",
+    "type": "movie"
+  },
+  "elf": {
+    "id": "tt0319343",
+    "title": "Elf",
+    "type": "movie"
+  },
+  "school of rock": {
+    "id": "tt0332379",
+    "title": "School of Rock",
+    "type": "movie"
+  },
+  "talladega nights the ballad of ricky bobby": {
+    "id": "tt0415306",
+    "title": "Talladega Nights: The Ballad of Ricky Bobby",
+    "type": "movie"
+  },
+  "zombieland": {
+    "id": "tt1156398",
+    "title": "Zombieland",
+    "type": "movie"
+  },
+  "deadpool": {
+    "id": "tt1431045",
+    "title": "Deadpool",
+    "type": "movie"
+  },
+  "ted": {
+    "id": "tt1637725",
+    "title": "Ted",
+    "type": "movie"
+  },
+  "ted 2": {
+    "id": "tt2637276",
+    "title": "Ted 2",
+    "type": "movie"
+  },
+  "sausage party": {
+    "id": "tt1700841",
+    "title": "Sausage Party",
+    "type": "movie"
+  },
+  "crazy stupid love": {
+    "id": "tt1570728",
+    "title": "Crazy, Stupid, Love.",
+    "type": "movie"
+  },
+  "bruce almighty": {
+    "id": "tt0315327",
+    "title": "Bruce Almighty",
+    "type": "movie"
+  },
+  "ace ventura pet detective": {
+    "id": "tt0109040",
+    "title": "Ace Ventura: Pet Detective",
+    "type": "movie"
+  },
+  "happy gilmore": {
+    "id": "tt0116483",
+    "title": "Happy Gilmore",
+    "type": "movie"
+  },
+  "billy madison": {
+    "id": "tt0112508",
+    "title": "Billy Madison",
+    "type": "movie"
+  },
+  "tommy boy": {
+    "id": "tt0114694",
+    "title": "Tommy Boy",
+    "type": "movie"
+  },
+  "wayne s world": {
+    "id": "tt0105793",
+    "title": "Wayne's World",
+    "type": "movie"
+  },
+  "austin powers international man of mystery": {
+    "id": "tt0118655",
+    "title": "Austin Powers: International Man of Mystery",
+    "type": "movie"
+  },
+  "meet the parents": {
+    "id": "tt0212338",
+    "title": "Meet the Parents",
+    "type": "movie"
+  },
+  "meet the fockers": {
+    "id": "tt0290002",
+    "title": "Meet the Fockers",
+    "type": "movie"
+  },
+  "there s something about mary": {
+    "id": "tt0129387",
+    "title": "There's Something About Mary",
+    "type": "movie"
+  },
+  "american pie": {
+    "id": "tt0163651",
+    "title": "American Pie",
+    "type": "movie"
+  },
+  "the office": {
+    "id": "tt0386676",
+    "title": "The Office",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "maxEpisodes": {
+      "1": 6,
+      "2": 22,
+      "3": 25,
+      "4": 19,
+      "5": 28,
+      "6": 26,
+      "7": 27,
+      "8": 24,
+      "9": 25
+    }
+  },
+  "friends": {
+    "id": "tt0108778",
+    "title": "Friends",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "maxEpisodes": {
+      "1": 24,
+      "2": 24,
+      "3": 25,
+      "4": 24,
+      "5": 24,
+      "6": 25,
+      "7": 24,
+      "8": 24,
+      "9": 24,
+      "10": 18
+    }
+  },
+  "breaking bad": {
+    "id": "tt0903747",
+    "title": "Breaking Bad",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 7,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 16
+    }
+  },
+  "game of thrones": {
+    "id": "tt0944947",
+    "title": "Game of Thrones",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 10,
+      "5": 10,
+      "6": 10,
+      "7": 7,
+      "8": 6
+    }
+  },
+  "stranger things": {
+    "id": "tt4574334",
+    "title": "Stranger Things",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 9,
+      "3": 8,
+      "4": 9,
+      "5": 8
+    }
+  },
+  "better call saul": {
+    "id": "tt3032476",
+    "title": "Better Call Saul",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 10,
+      "5": 10,
+      "6": 13
+    }
+  },
+  "the boys": {
+    "id": "tt1190634",
+    "title": "The Boys",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 8,
+      "3": 8,
+      "4": 8,
+      "5": 8
+    }
+  },
+  "the wire": {
+    "id": "tt0306414",
+    "title": "The Wire",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 12,
+      "3": 12,
+      "4": 13,
+      "5": 10
+    }
+  },
+  "the sopranos": {
+    "id": "tt0141842",
+    "title": "The Sopranos",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 13,
+      "6": 21
+    }
+  },
+  "succession": {
+    "id": "tt7660850",
+    "title": "Succession",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 9,
+      "4": 10
+    }
+  },
+  "mad men": {
+    "id": "tt0804503",
+    "title": "Mad Men",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 13,
+      "6": 13,
+      "7": 14
+    }
+  },
+  "peaky blinders": {
+    "id": "tt2442560",
+    "title": "Peaky Blinders",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 6,
+      "2": 6,
+      "3": 6,
+      "4": 6,
+      "5": 6,
+      "6": 6
+    }
+  },
+  "chernobyl": {
+    "id": "tt7366338",
+    "title": "Chernobyl",
+    "type": "tv",
+    "seasons": [
+      1
+    ],
+    "maxEpisodes": {
+      "1": 5
+    }
+  },
+  "band of brothers": {
+    "id": "tt0185906",
+    "title": "Band of Brothers",
+    "type": "tv",
+    "seasons": [
+      1
+    ],
+    "maxEpisodes": {
+      "1": 10
+    }
+  },
+  "true detective": {
+    "id": "tt2356777",
+    "title": "True Detective",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 8,
+      "3": 8,
+      "4": 6
+    }
+  },
+  "fargo": {
+    "id": "tt2802850",
+    "title": "Fargo",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 11,
+      "5": 10
+    }
+  },
+  "narcos": {
+    "id": "tt2707408",
+    "title": "Narcos",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10
+    }
+  },
+  "dark": {
+    "id": "tt5753856",
+    "title": "Dark",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 8,
+      "3": 8
+    }
+  },
+  "mindhunter": {
+    "id": "tt5290382",
+    "title": "Mindhunter",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 9
+    }
+  },
+  "black mirror": {
+    "id": "tt2085059",
+    "title": "Black Mirror",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "maxEpisodes": {
+      "1": 3,
+      "2": 3,
+      "3": 6,
+      "4": 6,
+      "5": 3,
+      "6": 5,
+      "7": 6
+    }
+  },
+  "the crown": {
+    "id": "tt4786824",
+    "title": "The Crown",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 10,
+      "5": 10,
+      "6": 10
+    }
+  },
+  "house of cards": {
+    "id": "tt1856010",
+    "title": "House of Cards",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 13,
+      "6": 8
+    }
+  },
+  "ozark": {
+    "id": "tt5071412",
+    "title": "Ozark",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 14
+    }
+  },
+  "the handmaid s tale": {
+    "id": "tt5834204",
+    "title": "The Handmaid's Tale",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 13,
+      "3": 13,
+      "4": 10,
+      "5": 10,
+      "6": 10
+    }
+  },
+  "westworld": {
+    "id": "tt0475784",
+    "title": "Westworld",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 8,
+      "4": 8
+    }
+  },
+  "severance": {
+    "id": "tt11280740",
+    "title": "Severance",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 9,
+      "2": 10
+    }
+  },
+  "the last of us": {
+    "id": "tt3581920",
+    "title": "The Last of Us",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 9,
+      "2": 7
+    }
+  },
+  "lost": {
+    "id": "tt0411008",
+    "title": "Lost",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 25,
+      "2": 24,
+      "3": 23,
+      "4": 14,
+      "5": 17,
+      "6": 18
+    }
+  },
+  "prison break": {
+    "id": "tt0455275",
+    "title": "Prison Break",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 22,
+      "2": 22,
+      "3": 13,
+      "4": 22,
+      "5": 9
+    }
+  },
+  "homeland": {
+    "id": "tt1796960",
+    "title": "Homeland",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12,
+      "3": 12,
+      "4": 12,
+      "5": 12,
+      "6": 12,
+      "7": 12,
+      "8": 12
+    }
+  },
+  "dexter": {
+    "id": "tt0773262",
+    "title": "Dexter",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12,
+      "3": 12,
+      "4": 12,
+      "5": 12,
+      "6": 12,
+      "7": 12,
+      "8": 12
+    }
+  },
+  "the walking dead": {
+    "id": "tt1520211",
+    "title": "The Walking Dead",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "maxEpisodes": {
+      "1": 6,
+      "2": 13,
+      "3": 16,
+      "4": 16,
+      "5": 16,
+      "6": 16,
+      "7": 16,
+      "8": 16,
+      "9": 16,
+      "10": 22,
+      "11": 24
+    }
+  },
+  "yellowstone": {
+    "id": "tt4236770",
+    "title": "Yellowstone",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 9,
+      "2": 10,
+      "3": 10,
+      "4": 10,
+      "5": 14
+    }
+  },
+  "the white lotus": {
+    "id": "tt13406094",
+    "title": "The White Lotus",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 6,
+      "2": 7,
+      "3": 8
+    }
+  },
+  "euphoria": {
+    "id": "tt8772296",
+    "title": "Euphoria",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 8,
+      "3": 8
+    }
+  },
+  "big little lies": {
+    "id": "tt3920596",
+    "title": "Big Little Lies",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 7,
+      "2": 7
+    }
+  },
+  "true blood": {
+    "id": "tt0844441",
+    "title": "True Blood",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12,
+      "3": 12,
+      "4": 12,
+      "5": 12,
+      "6": 10,
+      "7": 10
+    }
+  },
+  "boardwalk empire": {
+    "id": "tt0979432",
+    "title": "Boardwalk Empire",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12,
+      "3": 12,
+      "4": 12,
+      "5": 8
+    }
+  },
+  "rome": {
+    "id": "tt0384766",
+    "title": "Rome",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 10
+    }
+  },
+  "spartacus": {
+    "id": "tt1442449",
+    "title": "Spartacus",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 10,
+      "3": 10
+    }
+  },
+  "the leftovers": {
+    "id": "tt2699128",
+    "title": "The Leftovers",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 8
+    }
+  },
+  "six feet under": {
+    "id": "tt0248654",
+    "title": "Six Feet Under",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 12,
+      "5": 12
+    }
+  },
+  "the shield": {
+    "id": "tt0286486",
+    "title": "The Shield",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 15,
+      "4": 13,
+      "5": 11,
+      "6": 10,
+      "7": 13
+    }
+  },
+  "sons of anarchy": {
+    "id": "tt1124373",
+    "title": "Sons of Anarchy",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 14,
+      "5": 13,
+      "6": 13,
+      "7": 13
+    }
+  },
+  "justified": {
+    "id": "tt1489428",
+    "title": "Justified",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 13,
+      "6": 13
+    }
+  },
+  "deadwood": {
+    "id": "tt0348914",
+    "title": "Deadwood",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12,
+      "3": 12
+    }
+  },
+  "yellowjackets": {
+    "id": "tt11041332",
+    "title": "Yellowjackets",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 9,
+      "3": 10
+    }
+  },
+  "the mandalorian": {
+    "id": "tt8111088",
+    "title": "The Mandalorian",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 8,
+      "3": 8
+    }
+  },
+  "andor": {
+    "id": "tt9253284",
+    "title": "Andor",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12
+    }
+  },
+  "loki": {
+    "id": "tt9140554",
+    "title": "Loki",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 6,
+      "2": 6
+    }
+  },
+  "wandavision": {
+    "id": "tt9140560",
+    "title": "WandaVision",
+    "type": "tv",
+    "seasons": [
+      1
+    ],
+    "maxEpisodes": {
+      "1": 9
+    }
+  },
+  "the conjuring": {
+    "id": "tt1457767",
+    "title": "The Conjuring",
+    "type": "movie"
+  },
+  "the conjuring 2": {
+    "id": "tt3065204",
+    "title": "The Conjuring 2",
+    "type": "movie"
+  },
+  "annabelle": {
+    "id": "tt3322940",
+    "title": "Annabelle",
+    "type": "movie"
+  },
+  "saw": {
+    "id": "tt0387564",
+    "title": "Saw",
+    "type": "movie"
+  },
+  "saw ii": {
+    "id": "tt0432348",
+    "title": "Saw II",
+    "type": "movie"
+  },
+  "halloween": {
+    "id": "tt0077651",
+    "title": "Halloween",
+    "type": "movie"
+  },
+  "scream 7": {
+    "id": "tt27047903",
+    "title": "Scream 7",
+    "type": "movie"
+  },
+  "scream 2": {
+    "id": "tt0120082",
+    "title": "Scream 2",
+    "type": "movie"
+  },
+  "insidious": {
+    "id": "tt1591095",
+    "title": "Insidious",
+    "type": "movie"
+  },
+  "insidious chapter 2": {
+    "id": "tt2226417",
+    "title": "Insidious: Chapter 2",
+    "type": "movie"
+  },
+  "get out": {
+    "id": "tt5052448",
+    "title": "Get Out",
+    "type": "movie"
+  },
+  "us": {
+    "id": "tt6857112",
+    "title": "Us",
+    "type": "movie"
+  },
+  "nope": {
+    "id": "tt10954984",
+    "title": "Nope",
+    "type": "movie"
+  },
+  "a quiet place": {
+    "id": "tt6644200",
+    "title": "A Quiet Place",
+    "type": "movie"
+  },
+  "a quiet place part ii": {
+    "id": "tt8332922",
+    "title": "A Quiet Place Part II",
+    "type": "movie"
+  },
+  "it": {
+    "id": "tt1396484",
+    "title": "It",
+    "type": "movie"
+  },
+  "it chapter two": {
+    "id": "tt7349950",
+    "title": "It: Chapter Two",
+    "type": "movie"
+  },
+  "the exorcist": {
+    "id": "tt0070047",
+    "title": "The Exorcist",
+    "type": "movie"
+  },
+  "the shining": {
+    "id": "tt0081505",
+    "title": "The Shining",
+    "type": "movie"
+  },
+  "psycho": {
+    "id": "tt0054215",
+    "title": "Psycho",
+    "type": "movie"
+  },
+  "hereditary": {
+    "id": "tt7784604",
+    "title": "Hereditary",
+    "type": "movie"
+  },
+  "midsommar": {
+    "id": "tt8772262",
+    "title": "Midsommar",
+    "type": "movie"
+  },
+  "the babadook": {
+    "id": "tt2321549",
+    "title": "The Babadook",
+    "type": "movie"
+  },
+  "the grudge": {
+    "id": "tt0391198",
+    "title": "The Grudge",
+    "type": "movie"
+  },
+  "sinister": {
+    "id": "tt1922777",
+    "title": "Sinister",
+    "type": "movie"
+  },
+  "paranormal activity": {
+    "id": "tt1179904",
+    "title": "Paranormal Activity",
+    "type": "movie"
+  },
+  "the texas chain saw massacre": {
+    "id": "tt0072271",
+    "title": "The Texas Chain Saw Massacre",
+    "type": "movie"
+  },
+  "a nightmare on elm street": {
+    "id": "tt0087800",
+    "title": "A Nightmare on Elm Street",
+    "type": "movie"
+  },
+  "friday the 13th": {
+    "id": "tt0080761",
+    "title": "Friday the 13th",
+    "type": "movie"
+  },
+  "child s play": {
+    "id": "tt0094862",
+    "title": "Child's Play",
+    "type": "movie"
+  },
+  "poltergeist": {
+    "id": "tt0084516",
+    "title": "Poltergeist",
+    "type": "movie"
+  },
+  "the descent": {
+    "id": "tt0435625",
+    "title": "The Descent",
+    "type": "movie"
+  },
+  "28 days later": {
+    "id": "tt0289043",
+    "title": "28 Days Later",
+    "type": "movie"
+  },
+  "dawn of the dead": {
+    "id": "tt0363547",
+    "title": "Dawn of the Dead",
+    "type": "movie"
+  },
+  "train to busan": {
+    "id": "tt5700672",
+    "title": "Train to Busan",
+    "type": "movie"
+  },
+  "the cabin in the woods": {
+    "id": "tt1259521",
+    "title": "The Cabin in the Woods",
+    "type": "movie"
+  },
+  "evil dead ii": {
+    "id": "tt0092991",
+    "title": "Evil Dead II",
+    "type": "movie"
+  },
+  "the evil dead": {
+    "id": "tt0083907",
+    "title": "The Evil Dead",
+    "type": "movie"
+  },
+  "army of darkness": {
+    "id": "tt0106308",
+    "title": "Army of Darkness",
+    "type": "movie"
+  },
+  "the witch": {
+    "id": "tt4263482",
+    "title": "The Witch",
+    "type": "movie"
+  },
+  "the lighthouse": {
+    "id": "tt7984734",
+    "title": "The Lighthouse",
+    "type": "movie"
+  },
+  "pearl": {
+    "id": "tt18925334",
+    "title": "Pearl",
+    "type": "movie"
+  },
+  "x": {
+    "id": "tt13560574",
+    "title": "X",
+    "type": "movie"
+  },
+  "smile": {
+    "id": "tt15474916",
+    "title": "Smile",
+    "type": "movie"
+  },
+  "m3gan": {
+    "id": "tt8760708",
+    "title": "M3GAN",
+    "type": "movie"
+  },
+  "barbarian": {
+    "id": "tt15791034",
+    "title": "Barbarian",
+    "type": "movie"
+  },
+  "the black phone": {
+    "id": "tt7144666",
+    "title": "The Black Phone",
+    "type": "movie"
+  },
+  "it follows": {
+    "id": "tt3235888",
+    "title": "It Follows",
+    "type": "movie"
+  },
+  "don t breathe": {
+    "id": "tt4160708",
+    "title": "Don't Breathe",
+    "type": "movie"
+  },
+  "hush": {
+    "id": "tt5022702",
+    "title": "Hush",
+    "type": "movie"
+  },
+  "oculus": {
+    "id": "tt2388715",
+    "title": "Oculus",
+    "type": "movie"
+  },
+  "bird box": {
+    "id": "tt2737304",
+    "title": "Bird Box",
+    "type": "movie"
+  },
+  "toy story 5": {
+    "id": "tt29355505",
+    "title": "Toy Story 5",
+    "type": "movie"
+  },
+  "toy story 2": {
+    "id": "tt0120363",
+    "title": "Toy Story 2",
+    "type": "movie"
+  },
+  "toy story 3": {
+    "id": "tt0435761",
+    "title": "Toy Story 3",
+    "type": "movie"
+  },
+  "toy story 4": {
+    "id": "tt1979376",
+    "title": "Toy Story 4",
+    "type": "movie"
+  },
+  "shrek": {
+    "id": "tt0126029",
+    "title": "Shrek",
+    "type": "movie"
+  },
+  "shrek 2": {
+    "id": "tt0298148",
+    "title": "Shrek 2",
+    "type": "movie"
+  },
+  "despicable me": {
+    "id": "tt1323594",
+    "title": "Despicable Me",
+    "type": "movie"
+  },
+  "despicable me 2": {
+    "id": "tt1690953",
+    "title": "Despicable Me 2",
+    "type": "movie"
+  },
+  "despicable me 3": {
+    "id": "tt3469046",
+    "title": "Despicable Me 3",
+    "type": "movie"
+  },
+  "minions monsters": {
+    "id": "tt32890033",
+    "title": "Minions & Monsters",
+    "type": "movie"
+  },
+  "frozen": {
+    "id": "tt2294629",
+    "title": "Frozen",
+    "type": "movie"
+  },
+  "frozen ii": {
+    "id": "tt4520988",
+    "title": "Frozen II",
+    "type": "movie"
+  },
+  "finding nemo": {
+    "id": "tt0266543",
+    "title": "Finding Nemo",
+    "type": "movie"
+  },
+  "finding dory": {
+    "id": "tt2277860",
+    "title": "Finding Dory",
+    "type": "movie"
+  },
+  "the incredibles": {
+    "id": "tt0317705",
+    "title": "The Incredibles",
+    "type": "movie"
+  },
+  "incredibles 2": {
+    "id": "tt3606756",
+    "title": "Incredibles 2",
+    "type": "movie"
+  },
+  "monsters inc": {
+    "id": "tt0198781",
+    "title": "Monsters, Inc.",
+    "type": "movie"
+  },
+  "monsters university": {
+    "id": "tt1453405",
+    "title": "Monsters University",
+    "type": "movie"
+  },
+  "up": {
+    "id": "tt1049413",
+    "title": "Up",
+    "type": "movie"
+  },
+  "wall e treasures and trinkets": {
+    "id": "tt14055868",
+    "title": "WALL-E: Treasures and Trinkets",
+    "type": "movie"
+  },
+  "ratatouille": {
+    "id": "tt0382932",
+    "title": "Ratatouille",
+    "type": "movie"
+  },
+  "inside out": {
+    "id": "tt2096673",
+    "title": "Inside Out",
+    "type": "movie"
+  },
+  "coco": {
+    "id": "tt2380307",
+    "title": "Coco",
+    "type": "movie"
+  },
+  "soul": {
+    "id": "tt2948372",
+    "title": "Soul",
+    "type": "movie"
+  },
+  "zootopia 2": {
+    "id": "tt26443597",
+    "title": "Zootopia 2",
+    "type": "movie"
+  },
+  "moana": {
+    "id": "tt27419466",
+    "title": "Moana",
+    "type": "movie"
+  },
+  "tangled": {
+    "id": "tt0398286",
+    "title": "Tangled",
+    "type": "movie"
+  },
+  "wreck it ralph": {
+    "id": "tt1772341",
+    "title": "Wreck-It Ralph",
+    "type": "movie"
+  },
+  "ralph breaks the internet": {
+    "id": "tt5848272",
+    "title": "Ralph Breaks the Internet",
+    "type": "movie"
+  },
+  "big hero 6": {
+    "id": "tt2245084",
+    "title": "Big Hero 6",
+    "type": "movie"
+  },
+  "spider man into the spider verse": {
+    "id": "tt4633694",
+    "title": "Spider-Man: Into the Spider-Verse",
+    "type": "movie"
+  },
+  "spider man across the spider verse": {
+    "id": "tt9362722",
+    "title": "Spider-Man: Across the Spider-Verse",
+    "type": "movie"
+  },
+  "how to train your dragon": {
+    "id": "tt26743210",
+    "title": "How to Train Your Dragon",
+    "type": "movie"
+  },
+  "how to train your dragon 2": {
+    "id": "tt36416299",
+    "title": "How to Train Your Dragon 2",
+    "type": "movie"
+  },
+  "kung fu panda": {
+    "id": "tt0441773",
+    "title": "Kung Fu Panda",
+    "type": "movie"
+  },
+  "kung fu panda 2": {
+    "id": "tt1302011",
+    "title": "Kung Fu Panda 2",
+    "type": "movie"
+  },
+  "kung fu panda 3": {
+    "id": "tt2267968",
+    "title": "Kung Fu Panda 3",
+    "type": "movie"
+  },
+  "madagascar": {
+    "id": "tt0351283",
+    "title": "Madagascar",
+    "type": "movie"
+  },
+  "madagascar escape 2 africa": {
+    "id": "tt0479952",
+    "title": "Madagascar: Escape 2 Africa",
+    "type": "movie"
+  },
+  "ice age": {
+    "id": "tt0268380",
+    "title": "Ice Age",
+    "type": "movie"
+  },
+  "ice age the meltdown": {
+    "id": "tt0438097",
+    "title": "Ice Age: The Meltdown",
+    "type": "movie"
+  },
+  "the lion king": {
+    "id": "tt0110357",
+    "title": "The Lion King",
+    "type": "movie"
+  },
+  "aladdin": {
+    "id": "tt6139732",
+    "title": "Aladdin",
+    "type": "movie"
+  },
+  "beauty and the beast": {
+    "id": "tt2771200",
+    "title": "Beauty and the Beast",
+    "type": "movie"
+  },
+  "the little mermaid": {
+    "id": "tt5971474",
+    "title": "The Little Mermaid",
+    "type": "movie"
+  },
+  "mulan": {
+    "id": "tt0120762",
+    "title": "Mulan",
+    "type": "movie"
+  },
+  "tarzan": {
+    "id": "tt0120855",
+    "title": "Tarzan",
+    "type": "movie"
+  },
+  "hercules": {
+    "id": "tt0119282",
+    "title": "Hercules",
+    "type": "movie"
+  },
+  "the lego movie": {
+    "id": "tt1490017",
+    "title": "The Lego Movie",
+    "type": "movie"
+  },
+  "the super mario bros movie": {
+    "id": "tt6718170",
+    "title": "The Super Mario Bros. Movie",
+    "type": "movie"
+  },
+  "puss in boots the last wish": {
+    "id": "tt3915174",
+    "title": "Puss in Boots: The Last Wish",
+    "type": "movie"
+  },
+  "sing": {
+    "id": "tt3470600",
+    "title": "Sing",
+    "type": "movie"
+  },
+  "the secret life of pets": {
+    "id": "tt2709768",
+    "title": "The Secret Life of Pets",
+    "type": "movie"
+  },
+  "rick and morty": {
+    "id": "tt2861424",
+    "title": "Rick and Morty",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "maxEpisodes": {
+      "1": 11,
+      "2": 10,
+      "3": 10,
+      "4": 10,
+      "5": 10,
+      "6": 10,
+      "7": 10,
+      "8": 10,
+      "9": 10
+    }
+  },
+  "south park": {
+    "id": "tt0121955",
+    "title": "South Park",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 18,
+      "3": 17,
+      "4": 17,
+      "5": 14,
+      "6": 17,
+      "7": 15,
+      "8": 14,
+      "9": 14,
+      "10": 14,
+      "11": 14,
+      "12": 14,
+      "13": 14,
+      "14": 14,
+      "15": 14,
+      "16": 14,
+      "17": 10,
+      "18": 10,
+      "19": 10,
+      "20": 10,
+      "21": 10,
+      "22": 10,
+      "23": 10,
+      "25": 6,
+      "26": 6,
+      "27": 5,
+      "28": 5,
+      "29": 6
+    }
+  },
+  "family guy": {
+    "id": "tt0182576",
+    "title": "Family Guy",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "maxEpisodes": {
+      "1": 7,
+      "2": 21,
+      "3": 22,
+      "4": 30,
+      "5": 18,
+      "6": 12,
+      "7": 16,
+      "8": 21,
+      "9": 18,
+      "10": 23,
+      "11": 22,
+      "12": 21,
+      "13": 18,
+      "14": 20,
+      "15": 20,
+      "16": 20,
+      "17": 20,
+      "18": 20,
+      "19": 20,
+      "20": 20,
+      "21": 20,
+      "22": 15,
+      "23": 18,
+      "24": 15
+    }
+  },
+  "the simpsons": {
+    "id": "tt0096697",
+    "title": "The Simpsons",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 22,
+      "3": 24,
+      "4": 22,
+      "5": 22,
+      "6": 25,
+      "7": 25,
+      "8": 25,
+      "9": 25,
+      "10": 23,
+      "11": 22,
+      "12": 21,
+      "13": 22,
+      "14": 22,
+      "15": 22,
+      "16": 21,
+      "17": 22,
+      "18": 22,
+      "19": 20,
+      "20": 21,
+      "21": 23,
+      "22": 22,
+      "23": 22,
+      "24": 22,
+      "25": 22,
+      "26": 22,
+      "27": 22,
+      "28": 22,
+      "29": 21,
+      "30": 23,
+      "31": 22,
+      "32": 22,
+      "33": 22,
+      "34": 22,
+      "35": 18,
+      "36": 18,
+      "37": 15
+    }
+  },
+  "futurama": {
+    "id": "tt0149460",
+    "title": "Futurama",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      11,
+      12,
+      13,
+      14
+    ],
+    "maxEpisodes": {
+      "1": 9,
+      "2": 20,
+      "3": 15,
+      "4": 12,
+      "5": 16,
+      "6": 26,
+      "7": 26,
+      "11": 10,
+      "12": 10,
+      "13": 10,
+      "14": 1
+    }
+  },
+  "bojack horseman": {
+    "id": "tt3398228",
+    "title": "BoJack Horseman",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12,
+      "3": 12,
+      "4": 12,
+      "5": 12,
+      "6": 16
+    }
+  },
+  "archer": {
+    "id": "tt1486217",
+    "title": "Archer",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 13,
+      "6": 13,
+      "7": 10,
+      "8": 8,
+      "9": 8,
+      "10": 9,
+      "11": 8,
+      "12": 8,
+      "13": 8,
+      "14": 9
+    }
+  },
+  "bob s burgers": {
+    "id": "tt1561755",
+    "title": "Bob's Burgers",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 9,
+      "3": 23,
+      "4": 22,
+      "5": 21,
+      "6": 19,
+      "7": 22,
+      "8": 21,
+      "9": 22,
+      "10": 22,
+      "11": 22,
+      "12": 22,
+      "13": 22,
+      "14": 16,
+      "15": 22,
+      "16": 15
+    }
+  },
+  "american dad": {
+    "id": "tt0397306",
+    "title": "American Dad!",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "maxEpisodes": {
+      "1": 23,
+      "2": 19,
+      "3": 16,
+      "4": 20,
+      "5": 18,
+      "6": 19,
+      "7": 18,
+      "8": 19,
+      "9": 20,
+      "10": 3,
+      "11": 15,
+      "12": 22,
+      "13": 22,
+      "14": 22,
+      "15": 20,
+      "16": 24,
+      "17": 22,
+      "18": 22,
+      "19": 22,
+      "20": 22,
+      "21": 11
+    }
+  },
+  "king of the hill": {
+    "id": "tt0118375",
+    "title": "King of the Hill",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 23,
+      "3": 25,
+      "4": 24,
+      "5": 20,
+      "6": 22,
+      "7": 23,
+      "8": 22,
+      "9": 15,
+      "10": 15,
+      "11": 12,
+      "12": 22,
+      "13": 24,
+      "14": 10,
+      "15": 10
+    }
+  },
+  "big mouth": {
+    "id": "tt6524350",
+    "title": "Big Mouth",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 10,
+      "5": 10,
+      "6": 10,
+      "7": 10,
+      "8": 10
+    }
+  },
+  "f is for family": {
+    "id": "tt4326894",
+    "title": "F Is for Family",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 6,
+      "2": 10,
+      "3": 10,
+      "4": 10,
+      "5": 8
+    }
+  },
+  "disenchantment": {
+    "id": "tt5363918",
+    "title": "Disenchantment",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 20,
+      "2": 20,
+      "3": 10
+    }
+  },
+  "solar opposites": {
+    "id": "tt8910922",
+    "title": "Solar Opposites",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 8,
+      "3": 11,
+      "4": 11,
+      "5": 11,
+      "6": 10
+    }
+  },
+  "invincible": {
+    "id": "tt6741278",
+    "title": "Invincible",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 8,
+      "3": 8,
+      "4": 8
+    }
+  },
+  "cyberpunk edgerunners": {
+    "id": "tt12590266",
+    "title": "Cyberpunk: Edgerunners",
+    "type": "tv",
+    "seasons": [
+      1
+    ],
+    "maxEpisodes": {
+      "1": 10
+    }
+  },
+  "arcane": {
+    "id": "tt11126994",
+    "title": "Arcane",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 9,
+      "2": 9
+    }
+  },
+  "castlevania": {
+    "id": "tt6517102",
+    "title": "Castlevania",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 4,
+      "2": 8,
+      "3": 10,
+      "4": 10
+    }
+  },
+  "blood of zeus": {
+    "id": "tt10009170",
+    "title": "Blood of Zeus",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 8,
+      "3": 8
+    }
+  },
+  "love death robots": {
+    "id": "tt9561862",
+    "title": "Love, Death & Robots",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 18,
+      "2": 8,
+      "3": 9,
+      "4": 10
+    }
+  },
+  "the venture bros": {
+    "id": "tt0417373",
+    "title": "The Venture Bros.",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 16,
+      "5": 8,
+      "6": 8,
+      "7": 10
+    }
+  },
+  "aqua teen hunger force": {
+    "id": "tt0297494",
+    "title": "Aqua Teen Hunger Force",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "maxEpisodes": {
+      "1": 18,
+      "2": 24,
+      "3": 13,
+      "4": 13,
+      "5": 10,
+      "6": 10,
+      "7": 11,
+      "8": 10,
+      "9": 10,
+      "10": 10,
+      "11": 9,
+      "12": 5
+    }
+  },
+  "robot chicken": {
+    "id": "tt0437745",
+    "title": "Robot Chicken",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "maxEpisodes": {
+      "1": 20,
+      "2": 20,
+      "3": 20,
+      "4": 20,
+      "5": 19,
+      "6": 20,
+      "7": 19,
+      "8": 20,
+      "9": 20,
+      "10": 20,
+      "11": 20
+    }
+  },
+  "metalocalypse": {
+    "id": "tt0839188",
+    "title": "Metalocalypse",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 20,
+      "2": 20,
+      "3": 10,
+      "4": 12
+    }
+  },
+  "harvey birdman attorney at law": {
+    "id": "tt0294097",
+    "title": "Harvey Birdman, Attorney at Law",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 9,
+      "2": 11,
+      "3": 12,
+      "4": 7
+    }
+  },
+  "blue eye samurai": {
+    "id": "tt13309742",
+    "title": "Blue Eye Samurai",
+    "type": "tv",
+    "seasons": [
+      1
+    ],
+    "maxEpisodes": {
+      "1": 8
+    }
+  },
+  "the legend of vox machina": {
+    "id": "tt11247158",
+    "title": "The Legend of Vox Machina",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 12,
+      "3": 12,
+      "4": 12
+    }
+  },
+  "primal": {
+    "id": "tt10332508",
+    "title": "Primal",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 10,
+      "2": 10,
+      "3": 10
+    }
+  },
+  "samurai jack": {
+    "id": "tt0278238",
+    "title": "Samurai Jack",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 10
+    }
+  },
+  "the boondocks": {
+    "id": "tt0373732",
+    "title": "The Boondocks",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 15,
+      "2": 15,
+      "3": 15,
+      "4": 10
+    }
+  },
+  "spongebob squarepants": {
+    "id": "tt0206512",
+    "title": "SpongeBob SquarePants",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "maxEpisodes": {
+      "1": 41,
+      "2": 36,
+      "3": 37,
+      "4": 33,
+      "5": 39,
+      "6": 34,
+      "7": 35,
+      "8": 26,
+      "9": 42,
+      "10": 71,
+      "11": 55,
+      "12": 34,
+      "13": 61,
+      "14": 20,
+      "15": 27,
+      "16": 21,
+      "17": 16
+    }
+  },
+  "adventure time": {
+    "id": "tt1305826",
+    "title": "Adventure Time",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "maxEpisodes": {
+      "1": 26,
+      "2": 26,
+      "3": 26,
+      "4": 26,
+      "5": 52,
+      "6": 43,
+      "7": 38,
+      "8": 14,
+      "9": 14,
+      "10": 13
+    }
+  },
+  "regular show": {
+    "id": "tt1710308",
+    "title": "Regular Show",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 28,
+      "3": 39,
+      "4": 37,
+      "5": 37,
+      "6": 28,
+      "7": 36,
+      "8": 29
+    }
+  },
+  "the amazing world of gumball": {
+    "id": "tt1942683",
+    "title": "The Amazing World of Gumball",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "maxEpisodes": {
+      "1": 36,
+      "2": 40,
+      "3": 40,
+      "4": 39,
+      "5": 41,
+      "6": 44
+    }
+  },
+  "steven universe": {
+    "id": "tt3061046",
+    "title": "Steven Universe",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 52,
+      "2": 26,
+      "3": 24,
+      "4": 24,
+      "5": 28
+    }
+  },
+  "gravity falls": {
+    "id": "tt1865718",
+    "title": "Gravity Falls",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 20,
+      "2": 20
+    }
+  },
+  "over the garden wall": {
+    "id": "tt3718778",
+    "title": "Over the Garden Wall",
+    "type": "tv",
+    "seasons": [
+      1
+    ],
+    "maxEpisodes": {
+      "1": 10
+    }
+  },
+  "avatar the last airbender": {
+    "id": "tt9018736",
+    "title": "Avatar: The Last Airbender",
+    "type": "tv",
+    "seasons": [
+      1,
+      2
+    ],
+    "maxEpisodes": {
+      "1": 8,
+      "2": 7
+    }
+  },
+  "the legend of korra": {
+    "id": "tt1695360",
+    "title": "The Legend of Korra",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 12,
+      "2": 14,
+      "3": 13,
+      "4": 13
+    }
+  },
+  "batman the animated series": {
+    "id": "tt0103359",
+    "title": "Batman: The Animated Series",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 60,
+      "2": 10,
+      "3": 10,
+      "4": 5
+    }
+  },
+  "justice league unlimited": {
+    "id": "tt6025022",
+    "title": "Justice League Unlimited",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13
+    }
+  },
+  "young justice": {
+    "id": "tt1641384",
+    "title": "Young Justice",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 26,
+      "2": 20,
+      "3": 26,
+      "4": 26
+    }
+  },
+  "teen titans": {
+    "id": "tt0343314",
+    "title": "Teen Titans",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 13,
+      "4": 13,
+      "5": 13
+    }
+  },
+  "x men": {
+    "id": "tt0103584",
+    "title": "X-Men",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maxEpisodes": {
+      "1": 13,
+      "2": 13,
+      "3": 19,
+      "4": 17,
+      "5": 14
+    }
+  },
+  "dragon ball z": {
+    "id": "tt0214341",
+    "title": "Dragon Ball Z",
+    "type": "tv"
+  },
+  "naruto": {
+    "id": "tt0409591",
+    "title": "Naruto",
+    "type": "tv",
+    "seasons": [
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007
+    ],
+    "maxEpisodes": {
+      "2002": 13,
+      "2003": 51,
+      "2004": 51,
+      "2005": 50,
+      "2006": 50,
+      "2007": 5
+    }
+  },
+  "attack on titan": {
+    "id": "tt2560140",
+    "title": "Attack on Titan",
+    "type": "tv",
+    "seasons": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "maxEpisodes": {
+      "1": 25,
+      "2": 12,
+      "3": 22,
+      "4": 30
+    }
+  },
+  "death note": {
+    "id": "tt0877057",
+    "title": "Death Note",
+    "type": "tv",
+    "seasons": [
+      1
+    ],
+    "maxEpisodes": {
+      "1": 37
+    }
+  },
+  "the greatest showman": {
+    "id": "tt1485796",
+    "title": "The Greatest Showman",
+    "type": "movie"
+  },
+  "la la land": {
+    "id": "tt3783958",
+    "title": "La La Land",
+    "type": "movie"
+  },
+  "mamma mia": {
+    "id": "tt0795421",
+    "title": "Mamma Mia!",
+    "type": "movie"
+  },
+  "les mis rables": {
+    "id": "tt1707386",
+    "title": "Les Misérables",
+    "type": "movie"
+  },
+  "high school musical": {
+    "id": "tt0475293",
+    "title": "High School Musical",
+    "type": "movie"
+  },
+  "high school musical 2": {
+    "id": "tt0810900",
+    "title": "High School Musical 2",
+    "type": "movie"
+  },
+  "high school musical 3 senior year": {
+    "id": "tt0962726",
+    "title": "High School Musical 3: Senior Year",
+    "type": "movie"
+  },
+  "grease": {
+    "id": "tt0077631",
+    "title": "Grease",
+    "type": "movie"
+  },
+  "the sound of music": {
+    "id": "tt0059742",
+    "title": "The Sound of Music",
+    "type": "movie"
+  },
+  "west side story": {
+    "id": "tt3581652",
+    "title": "West Side Story",
+    "type": "movie"
+  },
+  "chicago": {
+    "id": "tt0299658",
+    "title": "Chicago",
+    "type": "movie"
+  },
+  "moulin rouge": {
+    "id": "tt0203009",
+    "title": "Moulin Rouge!",
+    "type": "movie"
+  },
+  "hairspray": {
+    "id": "tt0427327",
+    "title": "Hairspray",
+    "type": "movie"
+  },
+  "tick tick boom": {
+    "id": "tt8721424",
+    "title": "tick, tick... BOOM!",
+    "type": "movie"
+  },
+  "in the heights": {
+    "id": "tt1321510",
+    "title": "In the Heights",
+    "type": "movie"
+  },
+  "mary poppins": {
+    "id": "tt0058331",
+    "title": "Mary Poppins",
+    "type": "movie"
+  },
+  "mary poppins returns": {
+    "id": "tt5028340",
+    "title": "Mary Poppins Returns",
+    "type": "movie"
+  },
+  "sweeney todd the demon barber of fleet street": {
+    "id": "tt0408236",
+    "title": "Sweeney Todd: The Demon Barber of Fleet Street",
+    "type": "movie"
+  },
+  "into the woods": {
+    "id": "tt2180411",
+    "title": "Into the Woods",
+    "type": "movie"
+  },
+  "annie": {
+    "id": "tt0083564",
+    "title": "Annie",
+    "type": "movie"
+  },
+  "the phantom of the opera": {
+    "id": "tt0293508",
+    "title": "The Phantom of the Opera",
+    "type": "movie"
+  },
+  "dreamgirls": {
+    "id": "tt0443489",
+    "title": "Dreamgirls",
+    "type": "movie"
+  },
+  "singin in the rain": {
+    "id": "tt0045152",
+    "title": "Singin' in the Rain",
+    "type": "movie"
+  },
+  "the wizard of oz": {
+    "id": "tt0032138",
+    "title": "The Wizard of Oz",
+    "type": "movie"
+  },
+  "a star is born": {
+    "id": "tt1517451",
+    "title": "A Star Is Born",
+    "type": "movie"
+  },
+  "rocketman": {
+    "id": "tt2066051",
+    "title": "Rocketman",
+    "type": "movie"
+  },
+  "bohemian rhapsody": {
+    "id": "tt1727824",
+    "title": "Bohemian Rhapsody",
+    "type": "movie"
+  },
+  "elvis": {
+    "id": "tt3704428",
+    "title": "Elvis",
+    "type": "movie"
+  },
+  "hamilton": {
+    "id": "tt8503618",
+    "title": "Hamilton",
+    "type": "movie"
+  },
+  "the rocky horror picture show": {
+    "id": "tt0073629",
+    "title": "The Rocky Horror Picture Show",
+    "type": "movie"
+  },
+  "cabaret": {
+    "id": "tt0068327",
+    "title": "Cabaret",
+    "type": "movie"
+  },
+  "funny girl": {
+    "id": "tt0062994",
+    "title": "Funny Girl",
+    "type": "movie"
+  },
+  "my fair lady": {
+    "id": "tt0058385",
+    "title": "My Fair Lady",
+    "type": "movie"
+  },
+  "rent": {
+    "id": "tt0294870",
+    "title": "Rent",
+    "type": "movie"
+  },
+  "jersey boys": {
+    "id": "tt1742044",
+    "title": "Jersey Boys",
+    "type": "movie"
+  },
+  "rock of ages": {
+    "id": "tt1336608",
+    "title": "Rock of Ages",
+    "type": "movie"
+  },
+  "burlesque": {
+    "id": "tt1126591",
+    "title": "Burlesque",
+    "type": "movie"
+  },
+  "camp rock": {
+    "id": "tt1055366",
+    "title": "Camp Rock",
+    "type": "movie"
+  },
+  "the cheetah girls": {
+    "id": "tt0338852",
+    "title": "The Cheetah Girls",
+    "type": "movie"
+  },
+  "enchanted": {
+    "id": "tt0461770",
+    "title": "Enchanted",
+    "type": "movie"
+  },
+  "willy wonka the chocolate factory": {
+    "id": "tt0067992",
+    "title": "Willy Wonka & the Chocolate Factory",
+    "type": "movie"
+  },
+  "charlie and the chocolate factory": {
+    "id": "tt0367594",
+    "title": "Charlie and the Chocolate Factory",
+    "type": "movie"
+  },
+  "lyle lyle crocodile": {
+    "id": "tt14668630",
+    "title": "Lyle, Lyle, Crocodile",
+    "type": "movie"
+  },
+  "newsies": {
+    "id": "tt0104990",
+    "title": "Newsies",
+    "type": "movie"
+  },
+  "cats": {
+    "id": "tt5697572",
+    "title": "Cats",
+    "type": "movie"
+  },
+  "across the universe": {
+    "id": "tt0445922",
+    "title": "Across the Universe",
+    "type": "movie"
+  },
+  "fiddler on the roof": {
+    "id": "tt0067093",
+    "title": "Fiddler on the Roof",
+    "type": "movie"
+  },
+  "the blues brothers": {
+    "id": "tt0080455",
+    "title": "The Blues Brothers",
+    "type": "movie"
+  },
+  "the batman": {
+    "id": "tt1877830",
+    "title": "The Batman",
+    "type": "movie"
+  },
+  "batman returns": {
+    "id": "tt0103776",
+    "title": "Batman Returns",
+    "type": "movie"
+  },
+  "batman begins": {
+    "id": "tt0372784",
+    "title": "Batman Begins",
+    "type": "movie"
+  },
+  "the dark knight rises": {
+    "id": "tt1345836",
+    "title": "The Dark Knight Rises",
+    "type": "movie"
+  },
+  "spider man brand new day": {
+    "id": "tt22084616",
+    "title": "Spider-Man: Brand New Day",
+    "type": "movie"
+  },
+  "spider man 2": {
+    "id": "tt0316654",
+    "title": "Spider-Man 2",
+    "type": "movie"
+  },
+  "spider man 3": {
+    "id": "tt0413300",
+    "title": "Spider-Man 3",
+    "type": "movie"
+  },
+  "the amazing spider man": {
+    "id": "tt0948470",
+    "title": "The Amazing Spider-Man",
+    "type": "movie"
+  },
+  "spider man homecoming": {
+    "id": "tt2250912",
+    "title": "Spider-Man: Homecoming",
+    "type": "movie"
+  },
+  "spider man far from home": {
+    "id": "tt6320628",
+    "title": "Spider-Man: Far from Home",
+    "type": "movie"
+  },
+  "spider man no way home": {
+    "id": "tt10872600",
+    "title": "Spider-Man: No Way Home",
+    "type": "movie"
+  },
+  "superman": {
+    "id": "tt5950044",
+    "title": "Superman",
+    "type": "movie"
+  },
+  "man of steel": {
+    "id": "tt0770828",
+    "title": "Man of Steel",
+    "type": "movie"
+  },
+  "batman v superman dawn of justice": {
+    "id": "tt2975590",
+    "title": "Batman v Superman: Dawn of Justice",
+    "type": "movie"
+  },
+  "justice league": {
+    "id": "tt0974015",
+    "title": "Justice League",
+    "type": "movie"
+  },
+  "zack snyder s justice league": {
+    "id": "tt12361974",
+    "title": "Zack Snyder's Justice League",
+    "type": "movie"
+  },
+  "wonder woman": {
+    "id": "tt0451279",
+    "title": "Wonder Woman",
+    "type": "movie"
+  },
+  "aquaman": {
+    "id": "tt1477834",
+    "title": "Aquaman",
+    "type": "movie"
+  },
+  "the flash": {
+    "id": "tt0439572",
+    "title": "The Flash",
+    "type": "movie"
+  },
+  "shazam": {
+    "id": "tt0448115",
+    "title": "Shazam!",
+    "type": "movie"
+  },
+  "x2 x men united": {
+    "id": "tt0290334",
+    "title": "X2: X-Men United",
+    "type": "movie"
+  },
+  "x men the last stand": {
+    "id": "tt0376994",
+    "title": "X-Men: The Last Stand",
+    "type": "movie"
+  },
+  "x men first class": {
+    "id": "tt1270798",
+    "title": "X-Men: First Class",
+    "type": "movie"
+  },
+  "x men days of future past": {
+    "id": "tt1877832",
+    "title": "X-Men: Days of Future Past",
+    "type": "movie"
+  },
+  "logan": {
+    "id": "tt3315342",
+    "title": "Logan",
+    "type": "movie"
+  },
+  "deadpool 2": {
+    "id": "tt5463162",
+    "title": "Deadpool 2",
+    "type": "movie"
+  },
+  "iron man": {
+    "id": "tt0371746",
+    "title": "Iron Man",
+    "type": "movie"
+  },
+  "iron man 3": {
+    "id": "tt1300854",
+    "title": "Iron Man 3",
+    "type": "movie"
+  },
+  "captain america the first avenger": {
+    "id": "tt0458339",
+    "title": "Captain America: The First Avenger",
+    "type": "movie"
+  },
+  "captain america the winter soldier": {
+    "id": "tt1843866",
+    "title": "Captain America: The Winter Soldier",
+    "type": "movie"
+  },
+  "captain america civil war": {
+    "id": "tt3498820",
+    "title": "Captain America: Civil War",
+    "type": "movie"
+  },
+  "thor ragnarok": {
+    "id": "tt3501632",
+    "title": "Thor: Ragnarok",
+    "type": "movie"
+  },
+  "black panther": {
+    "id": "tt1825683",
+    "title": "Black Panther",
+    "type": "movie"
+  },
+  "guardians of the galaxy": {
+    "id": "tt2015381",
+    "title": "Guardians of the Galaxy",
+    "type": "movie"
+  },
+  "guardians of the galaxy vol 2": {
+    "id": "tt3896198",
+    "title": "Guardians of the Galaxy: Vol. 2",
+    "type": "movie"
+  },
+  "guardians of the galaxy vol 3": {
+    "id": "tt6791350",
+    "title": "Guardians of the Galaxy Vol. 3",
+    "type": "movie"
+  },
+  "doctor strange": {
+    "id": "tt1211837",
+    "title": "Doctor Strange",
+    "type": "movie"
+  },
+  "ant man": {
+    "id": "tt0478970",
+    "title": "Ant-Man",
+    "type": "movie"
+  },
+  "captain marvel": {
+    "id": "tt4154664",
+    "title": "Captain Marvel",
+    "type": "movie"
+  },
+  "venom": {
+    "id": "tt1270797",
+    "title": "Venom",
+    "type": "movie"
+  },
+  "venom let there be carnage": {
+    "id": "tt7097896",
+    "title": "Venom: Let There Be Carnage",
+    "type": "movie"
+  },
+  "blade": {
+    "id": "tt0120611",
+    "title": "Blade",
+    "type": "movie"
+  },
+  "hellboy": {
+    "id": "tt0167190",
+    "title": "Hellboy",
+    "type": "movie"
+  },
+  "v for vendetta": {
+    "id": "tt0434409",
+    "title": "V for Vendetta",
+    "type": "movie"
+  },
+  "watchmen": {
+    "id": "tt0409459",
+    "title": "Watchmen",
+    "type": "movie"
+  },
+  "sherlock holmes": {
+    "id": "tt0988045",
+    "title": "Sherlock Holmes",
+    "type": "movie"
+  },
+  "sherlock holmes a game of shadows": {
+    "id": "tt1515091",
+    "title": "Sherlock Holmes: A Game of Shadows",
+    "type": "movie"
+  },
+  "knives out": {
+    "id": "tt8946378",
+    "title": "Knives Out",
+    "type": "movie"
+  },
+  "glass onion": {
+    "id": "tt11564570",
+    "title": "Glass Onion",
+    "type": "movie"
+  },
+  "prisoners": {
+    "id": "tt1392214",
+    "title": "Prisoners",
+    "type": "movie"
+  },
+  "zodiac": {
+    "id": "tt0443706",
+    "title": "Zodiac",
+    "type": "movie"
+  },
+  "seven": {
+    "id": "tt0114369",
+    "title": "Seven",
+    "type": "movie"
+  },
+  "the silence of the lambs": {
+    "id": "tt0102926",
+    "title": "The Silence of the Lambs",
+    "type": "movie"
+  },
+  "gone girl": {
+    "id": "tt2267998",
+    "title": "Gone Girl",
+    "type": "movie"
+  },
+  "the girl with the dragon tattoo": {
+    "id": "tt1568346",
+    "title": "The Girl with the Dragon Tattoo",
+    "type": "movie"
+  },
+  "mystic river": {
+    "id": "tt0327056",
+    "title": "Mystic River",
+    "type": "movie"
+  },
+  "memories of murder": {
+    "id": "tt0353969",
+    "title": "Memories of Murder",
+    "type": "movie"
+  },
+  "shutter island": {
+    "id": "tt1130884",
+    "title": "Shutter Island",
+    "type": "movie"
+  },
+  "memento": {
+    "id": "tt0209144",
+    "title": "Memento",
+    "type": "movie"
+  },
+  "the usual suspects": {
+    "id": "tt0114814",
+    "title": "The Usual Suspects",
+    "type": "movie"
+  },
+  "l a confidential": {
+    "id": "tt0119488",
+    "title": "L.A. Confidential",
+    "type": "movie"
+  },
+  "chinatown": {
+    "id": "tt0071315",
+    "title": "Chinatown",
+    "type": "movie"
+  },
+  "no country for old men": {
+    "id": "tt0477348",
+    "title": "No Country for Old Men",
+    "type": "movie"
+  },
+  "the departed": {
+    "id": "tt0407887",
+    "title": "The Departed",
+    "type": "movie"
+  },
+  "goodfellas": {
+    "id": "tt0099685",
+    "title": "GoodFellas",
+    "type": "movie"
+  },
+  "pulp fiction": {
+    "id": "tt0110912",
+    "title": "Pulp Fiction",
+    "type": "movie"
+  },
+  "reservoir dogs": {
+    "id": "tt0105236",
+    "title": "Reservoir Dogs",
+    "type": "movie"
+  },
+  "heat": {
+    "id": "tt0113277",
+    "title": "Heat",
+    "type": "movie"
+  },
+  "casino": {
+    "id": "tt0112641",
+    "title": "Casino",
+    "type": "movie"
+  },
+  "the godfather": {
+    "id": "tt0068646",
+    "title": "The Godfather",
+    "type": "movie"
+  },
+  "the godfather part ii": {
+    "id": "tt0071562",
+    "title": "The Godfather Part II",
+    "type": "movie"
+  },
+  "scarface": {
+    "id": "tt0086250",
+    "title": "Scarface",
+    "type": "movie"
+  },
+  "catch me if you can": {
+    "id": "tt0264464",
+    "title": "Catch Me If You Can",
+    "type": "movie"
+  },
+  "ocean s eleven": {
+    "id": "tt0240772",
+    "title": "Ocean's Eleven",
+    "type": "movie"
+  },
+  "inside man": {
+    "id": "tt0454848",
+    "title": "Inside Man",
+    "type": "movie"
+  },
+  "the fugitive": {
+    "id": "tt0106977",
+    "title": "The Fugitive",
+    "type": "movie"
+  },
+  "primal fear": {
+    "id": "tt0117381",
+    "title": "Primal Fear",
+    "type": "movie"
+  },
+  "a time to kill": {
+    "id": "tt0117913",
+    "title": "A Time to Kill",
+    "type": "movie"
+  },
+  "the lincoln lawyer": {
+    "id": "tt1189340",
+    "title": "The Lincoln Lawyer",
+    "type": "movie"
+  },
+  "basic instinct": {
+    "id": "tt0103772",
+    "title": "Basic Instinct",
+    "type": "movie"
+  },
+  "fatal attraction": {
+    "id": "tt0093010",
+    "title": "Fatal Attraction",
+    "type": "movie"
+  },
+  "the bone collector": {
+    "id": "tt0145681",
+    "title": "The Bone Collector",
+    "type": "movie"
+  },
+  "kiss the girls": {
+    "id": "tt0119468",
+    "title": "Kiss the Girls",
+    "type": "movie"
+  },
+  "along came a spider": {
+    "id": "tt0164334",
+    "title": "Along Came a Spider",
+    "type": "movie"
+  },
+  "murder on the orient express": {
+    "id": "tt3402236",
+    "title": "Murder on the Orient Express",
+    "type": "movie"
+  },
+  "death on the nile": {
+    "id": "tt7657566",
+    "title": "Death on the Nile",
+    "type": "movie"
+  },
+  "a haunting in venice": {
+    "id": "tt22687790",
+    "title": "A Haunting in Venice",
+    "type": "movie"
+  },
+  "nightcrawler": {
+    "id": "tt2872718",
+    "title": "Nightcrawler",
+    "type": "movie"
+  },
+  "drive": {
+    "id": "tt0780504",
+    "title": "Drive",
+    "type": "movie"
+  },
+  "collateral": {
+    "id": "tt0369339",
+    "title": "Collateral",
+    "type": "movie"
+  },
+  "training day": {
+    "id": "tt0139654",
+    "title": "Training Day",
+    "type": "movie"
+  },
+  "sicario": {
+    "id": "tt3397884",
+    "title": "Sicario",
+    "type": "movie"
+  },
+  "wind river": {
+    "id": "tt5362988",
+    "title": "Wind River",
+    "type": "movie"
+  },
+  "hell or high water": {
+    "id": "tt2582782",
+    "title": "Hell or High Water",
+    "type": "movie"
+  },
+  "the lost world jurassic park": {
+    "id": "tt0119567",
+    "title": "The Lost World: Jurassic Park",
+    "type": "movie"
+  },
+  "back to the future": {
+    "id": "tt0088763",
+    "title": "Back to the Future",
+    "type": "movie"
+  },
+  "back to the future part ii": {
+    "id": "tt0096874",
+    "title": "Back to the Future Part II",
+    "type": "movie"
+  },
+  "back to the future part iii": {
+    "id": "tt0099088",
+    "title": "Back to the Future Part III",
+    "type": "movie"
+  },
+  "raiders of the lost ark": {
+    "id": "tt0082971",
+    "title": "Raiders of the Lost Ark",
+    "type": "movie"
+  },
+  "indiana jones and the temple of doom": {
+    "id": "tt0087469",
+    "title": "Indiana Jones and the Temple of Doom",
+    "type": "movie"
+  },
+  "indiana jones and the last crusade": {
+    "id": "tt0097576",
+    "title": "Indiana Jones and the Last Crusade",
+    "type": "movie"
+  },
+  "ghostbusters": {
+    "id": "tt0087332",
+    "title": "Ghostbusters",
+    "type": "movie"
+  },
+  "ghostbusters ii": {
+    "id": "tt0097428",
+    "title": "Ghostbusters II",
+    "type": "movie"
+  },
+  "the terminator": {
+    "id": "tt0088247",
+    "title": "The Terminator",
+    "type": "movie"
+  },
+  "jaws": {
+    "id": "tt0073195",
+    "title": "Jaws",
+    "type": "movie"
+  },
+  "the goonies": {
+    "id": "tt0089218",
+    "title": "The Goonies",
+    "type": "movie"
+  },
+  "gremlins": {
+    "id": "tt0087363",
+    "title": "Gremlins",
+    "type": "movie"
+  },
+  "stand by me": {
+    "id": "tt0092005",
+    "title": "Stand by Me",
+    "type": "movie"
+  },
+  "the karate kid": {
+    "id": "tt0087538",
+    "title": "The Karate Kid",
+    "type": "movie"
+  },
+  "the breakfast club": {
+    "id": "tt0088847",
+    "title": "The Breakfast Club",
+    "type": "movie"
+  },
+  "ferris bueller s day off": {
+    "id": "tt0091042",
+    "title": "Ferris Bueller's Day Off",
+    "type": "movie"
+  },
+  "sixteen candles": {
+    "id": "tt0088128",
+    "title": "Sixteen Candles",
+    "type": "movie"
+  },
+  "weird science": {
+    "id": "tt0090305",
+    "title": "Weird Science",
+    "type": "movie"
+  },
+  "the princess bride": {
+    "id": "tt0093779",
+    "title": "The Princess Bride",
+    "type": "movie"
+  },
+  "the neverending story": {
+    "id": "tt0088323",
+    "title": "The NeverEnding Story",
+    "type": "movie"
+  },
+  "labyrinth": {
+    "id": "tt0091369",
+    "title": "Labyrinth",
+    "type": "movie"
+  },
+  "home alone": {
+    "id": "tt0099785",
+    "title": "Home Alone",
+    "type": "movie"
+  },
+  "home alone 2 lost in new york": {
+    "id": "tt0104431",
+    "title": "Home Alone 2: Lost in New York",
+    "type": "movie"
+  },
+  "mrs doubtfire": {
+    "id": "tt0107614",
+    "title": "Mrs. Doubtfire",
+    "type": "movie"
+  },
+  "jumanji": {
+    "id": "tt0113497",
+    "title": "Jumanji",
+    "type": "movie"
+  },
+  "space jam": {
+    "id": "tt0117705",
+    "title": "Space Jam",
+    "type": "movie"
+  },
+  "free willy": {
+    "id": "tt0106965",
+    "title": "Free Willy",
+    "type": "movie"
+  },
+  "beetlejuice": {
+    "id": "tt0094721",
+    "title": "Beetlejuice",
+    "type": "movie"
+  },
+  "edward scissorhands": {
+    "id": "tt0099487",
+    "title": "Edward Scissorhands",
+    "type": "movie"
+  },
+  "clueless": {
+    "id": "tt0112697",
+    "title": "Clueless",
+    "type": "movie"
+  },
+  "10 things i hate about you": {
+    "id": "tt0147800",
+    "title": "10 Things I Hate About You",
+    "type": "movie"
+  },
+  "fight club": {
+    "id": "tt0137523",
+    "title": "Fight Club",
+    "type": "movie"
+  },
+  "forrest gump": {
+    "id": "tt0109830",
+    "title": "Forrest Gump",
+    "type": "movie"
+  },
+  "the shawshank redemption": {
+    "id": "tt0111161",
+    "title": "The Shawshank Redemption",
+    "type": "movie"
+  },
+  "good will hunting": {
+    "id": "tt0119217",
+    "title": "Good Will Hunting",
+    "type": "movie"
+  },
+  "titanic": {
+    "id": "tt0120338",
+    "title": "Titanic",
+    "type": "movie"
+  },
+  "apollo 13": {
+    "id": "tt0112384",
+    "title": "Apollo 13",
+    "type": "movie"
+  },
+  "men in black": {
+    "id": "tt0119654",
+    "title": "Men in Black",
+    "type": "movie"
+  },
+  "twister": {
+    "id": "tt0117998",
+    "title": "Twister",
+    "type": "movie"
+  },
+  "lee cronin s the mummy": {
+    "id": "tt32612507",
+    "title": "Lee Cronin's The Mummy",
+    "type": "movie"
+  },
+  "dangal": {
+    "id": "tt5074352",
+    "title": "Dangal",
+    "type": "movie"
+  },
+  "baahubali the beginning": {
+    "id": "tt2631186",
+    "title": "Baahubali: The Beginning",
+    "type": "movie"
+  },
+  "baahubali 2 the conclusion": {
+    "id": "tt4849438",
+    "title": "Baahubali 2: The Conclusion",
+    "type": "movie"
+  },
+  "k g f chapter 1": {
+    "id": "tt7838252",
+    "title": "K.G.F: Chapter 1",
+    "type": "movie"
+  },
+  "k g f chapter 2": {
+    "id": "tt10698680",
+    "title": "K.G.F: Chapter 2",
+    "type": "movie"
+  },
+  "pathaan": {
+    "id": "tt12844910",
+    "title": "Pathaan",
+    "type": "movie"
+  },
+  "jawan": {
+    "id": "tt15354916",
+    "title": "Jawan",
+    "type": "movie"
+  },
+  "rrr": {
+    "id": "tt8178634",
+    "title": "RRR",
+    "type": "movie"
+  },
+  "pushpa the rise part 1": {
+    "id": "tt9389998",
+    "title": "Pushpa: The Rise - Part 1",
+    "type": "movie"
+  },
+  "kantara": {
+    "id": "tt15327088",
+    "title": "Kantara",
+    "type": "movie"
+  },
+  "brahmastra part one shiva": {
+    "id": "tt6277462",
+    "title": "Brahmastra Part One: Shiva",
+    "type": "movie"
+  },
+  "war machine": {
+    "id": "tt15940132",
+    "title": "War Machine",
+    "type": "movie"
+  },
+  "tiger zinda hai": {
+    "id": "tt5956100",
+    "title": "Tiger Zinda Hai",
+    "type": "movie"
+  },
+  "ek tha tiger": {
+    "id": "tt2016894",
+    "title": "Ek Tha Tiger",
+    "type": "movie"
+  },
+  "bajrangi bhaijaan": {
+    "id": "tt3863552",
+    "title": "Bajrangi Bhaijaan",
+    "type": "movie"
+  },
+  "sultan": {
+    "id": "tt4832640",
+    "title": "Sultan",
+    "type": "movie"
+  },
+  "pk": {
+    "id": "tt2338151",
+    "title": "PK",
+    "type": "movie"
+  },
+  "3 idiots": {
+    "id": "tt1187043",
+    "title": "3 Idiots",
+    "type": "movie"
+  },
+  "sanju": {
+    "id": "tt6452574",
+    "title": "Sanju",
+    "type": "movie"
+  },
+  "padmaavat": {
+    "id": "tt5935704",
+    "title": "Padmaavat",
+    "type": "movie"
+  },
+  "chennai express": {
+    "id": "tt2112124",
+    "title": "Chennai Express",
+    "type": "movie"
+  },
+  "happy new year": {
+    "id": "tt2461132",
+    "title": "Happy New Year",
+    "type": "movie"
+  },
+  "dhoom 3": {
+    "id": "tt1833673",
+    "title": "Dhoom 3",
+    "type": "movie"
+  },
+  "krrish 3": {
+    "id": "tt1029231",
+    "title": "Krrish 3",
+    "type": "movie"
+  },
+  "kabir singh": {
+    "id": "tt8983202",
+    "title": "Kabir Singh",
+    "type": "movie"
+  },
+  "animal farm": {
+    "id": "tt2467700",
+    "title": "Animal Farm",
+    "type": "movie"
+  },
+  "gadar 2": {
+    "id": "tt15441054",
+    "title": "Gadar 2",
+    "type": "movie"
+  },
+  "thugs of hindostan": {
+    "id": "tt5970844",
+    "title": "Thugs of Hindostan",
+    "type": "movie"
+  },
+  "prem ratan dhan payo": {
+    "id": "tt3595298",
+    "title": "Prem Ratan Dhan Payo",
+    "type": "movie"
+  },
+  "kick ass": {
+    "id": "tt1250777",
+    "title": "Kick-Ass",
+    "type": "movie"
+  },
+  "kiss kiss bang bang": {
+    "id": "tt0373469",
+    "title": "Kiss Kiss Bang Bang",
+    "type": "movie"
+  },
+  "simmba": {
+    "id": "tt7212726",
+    "title": "Simmba",
+    "type": "movie"
+  },
+  "sooryavanshi": {
+    "id": "tt9531772",
+    "title": "Sooryavanshi",
+    "type": "movie"
+  },
+  "singham again": {
+    "id": "tt11976134",
+    "title": "Singham Again",
+    "type": "movie"
+  },
+  "singham returns": {
+    "id": "tt2309764",
+    "title": "Singham Returns",
+    "type": "movie"
+  },
+  "ghajini": {
+    "id": "tt1166100",
+    "title": "Ghajini",
+    "type": "movie"
+  },
+  "the wild robot": {
+    "id": "tt29623480",
+    "title": "The Wild Robot",
+    "type": "movie"
+  },
+  "20 days in mariupol": {
+    "id": "tt24082438",
+    "title": "20 Days in Mariupol",
+    "type": "movie"
+  },
+  "uri the surgical strike": {
+    "id": "tt8291224",
+    "title": "Uri: The Surgical Strike",
+    "type": "movie"
+  },
+  "tanhaji the unsung warrior": {
+    "id": "tt8108274",
+    "title": "Tanhaji: The Unsung Warrior",
+    "type": "movie"
+  },
+  "drishyam 3": {
+    "id": "tt14113634",
+    "title": "Drishyam 3",
+    "type": "movie"
+  },
+  "drishyam 2": {
+    "id": "tt12361178",
+    "title": "Drishyam 2",
+    "type": "movie"
+  },
+  "bhool bhulaiyaa 2": {
+    "id": "tt6455162",
+    "title": "Bhool Bhulaiyaa 2",
+    "type": "movie"
+  },
+  "race 3": {
+    "id": "tt7431594",
+    "title": "Race 3",
+    "type": "movie"
+  },
+  "housefull 4": {
+    "id": "tt7721946",
+    "title": "Housefull 4",
+    "type": "movie"
+  },
+  "bharat bhhagya viddhaata": {
+    "id": "tt33334267",
+    "title": "Bharat Bhhagya Viddhaata",
+    "type": "movie"
+  },
+  "super 30": {
+    "id": "tt7485048",
+    "title": "Super 30",
+    "type": "movie"
+  },
+  "gully boy": {
+    "id": "tt2395469",
+    "title": "Gully Boy",
+    "type": "movie"
+  },
+  "chhichhore": {
+    "id": "tt9052870",
+    "title": "Chhichhore",
+    "type": "movie"
+  },
+  "sholay": {
+    "id": "tt0073707",
+    "title": "Sholay",
+    "type": "movie"
+  },
+  "dilwale dulhania le jayenge": {
+    "id": "tt0112870",
+    "title": "Dilwale Dulhania Le Jayenge",
+    "type": "movie"
+  },
+  "kuch kuch hota hai": {
+    "id": "tt0172684",
+    "title": "Kuch Kuch Hota Hai",
+    "type": "movie"
+  },
+  "kabhi khushi kabhie gham": {
+    "id": "tt0248126",
+    "title": "Kabhi Khushi Kabhie Gham...",
+    "type": "movie"
+  },
+  "lagaan once upon a time in india": {
+    "id": "tt0169102",
+    "title": "Lagaan: Once Upon a Time in India",
+    "type": "movie"
+  },
+  "swades": {
+    "id": "tt0367110",
+    "title": "Swades",
+    "type": "movie"
+  },
+  "chak de india": {
+    "id": "tt0871510",
+    "title": "Chak De! India",
+    "type": "movie"
+  },
+  "my name is khan": {
+    "id": "tt1188996",
+    "title": "My Name Is Khan",
+    "type": "movie"
+  },
+  "zindagi na milegi dobara": {
+    "id": "tt1562872",
+    "title": "Zindagi Na Milegi Dobara",
+    "type": "movie"
+  },
+  "yeh jawaani hai deewani": {
+    "id": "tt2178470",
+    "title": "Yeh Jawaani Hai Deewani",
+    "type": "movie"
+  },
+  "hera pheri": {
+    "id": "tt0242519",
+    "title": "Hera Pheri",
+    "type": "movie"
+  },
+  "phir hera pheri": {
+    "id": "tt0419058",
+    "title": "Phir Hera Pheri",
+    "type": "movie"
+  },
+  "golmaal fun unlimited": {
+    "id": "tt0495034",
+    "title": "Golmaal: Fun Unlimited",
+    "type": "movie"
+  },
+  "golmaal returns": {
+    "id": "tt1092005",
+    "title": "Golmaal Returns",
+    "type": "movie"
+  },
+  "golmaal 3": {
+    "id": "tt1562859",
+    "title": "Golmaal 3",
+    "type": "movie"
+  },
+  "golmaal again": {
+    "id": "tt1806913",
+    "title": "Golmaal Again",
+    "type": "movie"
+  },
+  "dhamaal 4": {
+    "id": "tt27548557",
+    "title": "Dhamaal 4",
+    "type": "movie"
+  },
+  "double dhamaal": {
+    "id": "tt1728239",
+    "title": "Double Dhamaal",
+    "type": "movie"
+  },
+  "total dhamaal": {
+    "id": "tt7639372",
+    "title": "Total Dhamaal",
+    "type": "movie"
+  },
+  "welcome to the jungle": {
+    "id": "tt28540171",
+    "title": "Welcome to the Jungle",
+    "type": "movie"
+  },
+  "welcome back": {
+    "id": "tt3159708",
+    "title": "Welcome Back",
+    "type": "movie"
+  },
+  "munna bhai m b b s": {
+    "id": "tt0374887",
+    "title": "Munna Bhai M.B.B.S.",
+    "type": "movie"
+  },
+  "lage raho munna bhai": {
+    "id": "tt0456144",
+    "title": "Lage Raho Munna Bhai",
+    "type": "movie"
+  },
+  "andaz apna apna": {
+    "id": "tt0109117",
+    "title": "Andaz Apna Apna",
+    "type": "movie"
+  },
+  "bhagam bhag": {
+    "id": "tt0805184",
+    "title": "Bhagam Bhag",
+    "type": "movie"
+  },
+  "chup chup ke": {
+    "id": "tt0464160",
+    "title": "Chup Chup Ke",
+    "type": "movie"
+  },
+  "hungama": {
+    "id": "tt0371735",
+    "title": "Hungama",
+    "type": "movie"
+  },
+  "hulchul": {
+    "id": "tt0437238",
+    "title": "Hulchul",
+    "type": "movie"
+  },
+  "garam masala": {
+    "id": "tt0453671",
+    "title": "Garam Masala",
+    "type": "movie"
+  },
+  "de dana dan": {
+    "id": "tt1255951",
+    "title": "De Dana Dan",
+    "type": "movie"
+  },
+  "malamaal weekly": {
+    "id": "tt0476805",
+    "title": "Malamaal Weekly",
+    "type": "movie"
+  },
+  "dhol": {
+    "id": "tt0995035",
+    "title": "Dhol",
+    "type": "movie"
+  },
+  "no entry": {
+    "id": "tt0451833",
+    "title": "No Entry",
+    "type": "movie"
+  },
+  "masti": {
+    "id": "tt0406977",
+    "title": "Masti",
+    "type": "movie"
+  },
+  "grand masti": {
+    "id": "tt2476154",
+    "title": "Grand Masti",
+    "type": "movie"
+  },
+  "kyaa kool hai hum": {
+    "id": "tt0456500",
+    "title": "Kyaa Kool Hai Hum",
+    "type": "movie"
+  },
+  "kyaa super kool hain hum": {
+    "id": "tt2027138",
+    "title": "Kyaa Super Kool Hain Hum",
+    "type": "movie"
+  },
+  "housefull": {
+    "id": "tt1573072",
+    "title": "Housefull",
+    "type": "movie"
+  },
+  "housefull 2": {
+    "id": "tt1980986",
+    "title": "Housefull 2",
+    "type": "movie"
+  },
+  "housefull 3": {
+    "id": "tt4559046",
+    "title": "Housefull 3",
+    "type": "movie"
+  },
+  "awara paagal deewana": {
+    "id": "tt0319020",
+    "title": "Awara Paagal Deewana",
+    "type": "movie"
+  },
+  "deewane huye paagal": {
+    "id": "tt0444781",
+    "title": "Deewane Huye Paagal",
+    "type": "movie"
+  },
+  "mujhse shaadi karogi": {
+    "id": "tt0418362",
+    "title": "Mujhse Shaadi Karogi",
+    "type": "movie"
+  },
+  "maine pyaar kyun kiya": {
+    "id": "tt0451803",
+    "title": "Maine Pyaar Kyun Kiya",
+    "type": "movie"
+  },
+  "the partner": {
+    "id": "tt1300858",
+    "title": "The Partner",
+    "type": "movie"
+  },
+  "judwaa 2": {
+    "id": "tt5456546",
+    "title": "Judwaa 2",
+    "type": "movie"
+  },
+  "main tera hero": {
+    "id": "tt2762334",
+    "title": "Main Tera Hero",
+    "type": "movie"
+  },
+  "pyaar ka punchnama": {
+    "id": "tt1926313",
+    "title": "Pyaar Ka Punchnama",
+    "type": "movie"
+  },
+  "pyaar ka punchnama 2": {
+    "id": "tt4430136",
+    "title": "Pyaar Ka Punchnama 2",
+    "type": "movie"
+  },
+  "sonu ke titu ki sweety": {
+    "id": "tt7581902",
+    "title": "Sonu Ke Titu Ki Sweety",
+    "type": "movie"
+  },
+  "fukrey": {
+    "id": "tt2806788",
+    "title": "Fukrey",
+    "type": "movie"
+  },
+  "fukrey returns": {
+    "id": "tt6712014",
+    "title": "Fukrey Returns",
+    "type": "movie"
+  },
+  "delhi belly": {
+    "id": "tt1934231",
+    "title": "Delhi Belly",
+    "type": "movie"
+  },
+  "go goa gone": {
+    "id": "tt2436516",
+    "title": "Go Goa Gone",
+    "type": "movie"
+  },
+  "bol bachchan": {
+    "id": "tt1728986",
+    "title": "Bol Bachchan",
+    "type": "movie"
+  },
+  "children s party": {
+    "id": "tt1841542",
+    "title": "Children's Party",
+    "type": "movie"
+  },
+  "bheja fry": {
+    "id": "tt1014672",
+    "title": "Bheja Fry",
+    "type": "movie"
+  },
+  "khosla ka ghosla": {
+    "id": "tt0466460",
+    "title": "Khosla Ka Ghosla!",
+    "type": "movie"
+  },
+  "oye lucky lucky oye": {
+    "id": "tt1292703",
+    "title": "Oye Lucky! Lucky Oye!",
+    "type": "movie"
+  },
+  "vicky donor": {
+    "id": "tt2317337",
+    "title": "Vicky Donor",
+    "type": "movie"
+  },
+  "piku": {
+    "id": "tt3767372",
+    "title": "Piku",
+    "type": "movie"
+  },
+  "badhaai ho": {
+    "id": "tt7725596",
+    "title": "Badhaai Ho",
+    "type": "movie"
+  },
+  "dream girl": {
+    "id": "tt9248940",
+    "title": "Dream Girl",
+    "type": "movie"
+  },
+  "bala": {
+    "id": "tt9420648",
+    "title": "Bala",
+    "type": "movie"
+  },
+  "stree 2": {
+    "id": "tt27510174",
+    "title": "Stree 2",
+    "type": "movie"
+  },
+  "luka chuppi": {
+    "id": "tt8908002",
+    "title": "Luka Chuppi",
+    "type": "movie"
+  },
+  "the notebook": {
+    "id": "tt0332280",
+    "title": "The Notebook",
+    "type": "movie"
+  },
+  "twilight": {
+    "id": "tt1099212",
+    "title": "Twilight",
+    "type": "movie"
+  },
+  "crazy rich asians": {
+    "id": "tt3104988",
+    "title": "Crazy Rich Asians",
+    "type": "movie"
+  },
+  "notting hill": {
+    "id": "tt0125439",
+    "title": "Notting Hill",
+    "type": "movie"
+  },
+  "love actually": {
+    "id": "tt0314331",
+    "title": "Love Actually",
+    "type": "movie"
+  },
+  "a walk to remember": {
+    "id": "tt0281358",
+    "title": "A Walk to Remember",
+    "type": "movie"
+  },
+  "pride prejudice": {
+    "id": "tt0414387",
+    "title": "Pride & Prejudice",
+    "type": "movie"
+  },
+  "about time": {
+    "id": "tt2194499",
+    "title": "About Time",
+    "type": "movie"
+  },
+  "500 days of summer": {
+    "id": "tt1022603",
+    "title": "500 Days of Summer",
+    "type": "movie"
+  },
+  "eternal sunshine of the spotless mind": {
+    "id": "tt0338013",
+    "title": "Eternal Sunshine of the Spotless Mind",
+    "type": "movie"
+  },
+  "before sunrise": {
+    "id": "tt0112471",
+    "title": "Before Sunrise",
+    "type": "movie"
+  },
+  "before sunset": {
+    "id": "tt0381681",
+    "title": "Before Sunset",
+    "type": "movie"
+  },
+  "before midnight": {
+    "id": "tt2209418",
+    "title": "Before Midnight",
+    "type": "movie"
+  },
+  "silver linings playbook": {
+    "id": "tt1045658",
+    "title": "Silver Linings Playbook",
+    "type": "movie"
+  },
+  "the fault in our stars": {
+    "id": "tt2582846",
+    "title": "The Fault in Our Stars",
+    "type": "movie"
+  },
+  "me before you": {
+    "id": "tt2674426",
+    "title": "Me Before You",
+    "type": "movie"
+  },
+  "to all the boys i ve loved before": {
+    "id": "tt3846674",
+    "title": "To All the Boys I've Loved Before",
+    "type": "movie"
+  },
+  "how to lose a guy in 10 days": {
+    "id": "tt0251127",
+    "title": "How to Lose a Guy in 10 Days",
+    "type": "movie"
+  },
+  "the proposal": {
+    "id": "tt1041829",
+    "title": "The Proposal",
+    "type": "movie"
+  },
+  "dirty dancing": {
+    "id": "tt0092890",
+    "title": "Dirty Dancing",
+    "type": "movie"
+  },
+  "pretty woman": {
+    "id": "tt0100405",
+    "title": "Pretty Woman",
+    "type": "movie"
+  },
+  "ghost": {
+    "id": "tt0099653",
+    "title": "Ghost",
+    "type": "movie"
+  },
+  "the bodyguard": {
+    "id": "tt0103855",
+    "title": "The Bodyguard",
+    "type": "movie"
+  },
+  "jerry maguire": {
+    "id": "tt0116695",
+    "title": "Jerry Maguire",
+    "type": "movie"
+  },
+  "when harry met sally": {
+    "id": "tt0098635",
+    "title": "When Harry Met Sally...",
+    "type": "movie"
+  },
+  "sleepless in seattle": {
+    "id": "tt0108160",
+    "title": "Sleepless in Seattle",
+    "type": "movie"
+  },
+  "you ve got mail": {
+    "id": "tt0128853",
+    "title": "You've Got Mail",
+    "type": "movie"
+  },
+  "bridget jones s diary": {
+    "id": "tt0243155",
+    "title": "Bridget Jones's Diary",
+    "type": "movie"
+  },
+  "the holiday": {
+    "id": "tt0457939",
+    "title": "The Holiday",
+    "type": "movie"
+  },
+  "anyone but you": {
+    "id": "tt26047818",
+    "title": "Anyone But You",
+    "type": "movie"
+  },
+  "romeo juliet": {
+    "id": "tt0117509",
+    "title": "Romeo + Juliet",
+    "type": "movie"
+  },
+  "dear john": {
+    "id": "tt0989757",
+    "title": "Dear John",
+    "type": "movie"
+  },
+  "the vow": {
+    "id": "tt1606389",
+    "title": "The Vow",
+    "type": "movie"
+  },
+  "safe haven": {
+    "id": "tt1702439",
+    "title": "Safe Haven",
+    "type": "movie"
+  },
+  "sweet home alabama": {
+    "id": "tt0256415",
+    "title": "Sweet Home Alabama",
+    "type": "movie"
+  },
+  "just go with it": {
+    "id": "tt1564367",
+    "title": "Just Go with It",
+    "type": "movie"
+  },
+  "blended": {
+    "id": "tt1086772",
+    "title": "Blended",
+    "type": "movie"
+  },
+  "50 first dates": {
+    "id": "tt0343660",
+    "title": "50 First Dates",
+    "type": "movie"
+  },
+  "the wedding singer": {
+    "id": "tt0120888",
+    "title": "The Wedding Singer",
+    "type": "movie"
+  },
+  "hitch": {
+    "id": "tt0386588",
+    "title": "Hitch",
+    "type": "movie"
+  },
+  "my best friend s wedding": {
+    "id": "tt0119738",
+    "title": "My Best Friend's Wedding",
+    "type": "movie"
+  },
+  "my big fat greek wedding": {
+    "id": "tt0259446",
+    "title": "My Big Fat Greek Wedding",
+    "type": "movie"
+  },
+  "easy a": {
+    "id": "tt1282140",
+    "title": "Easy A",
+    "type": "movie"
+  },
+  "spider man": {
+    "id": "tt0145487",
+    "title": "Spider-Man",
+    "type": "movie",
+    "duration": 7260
+  },
+  "the amazing spider man 2": {
+    "id": "tt1872181",
+    "title": "The Amazing Spider-Man 2",
+    "type": "movie",
+    "duration": 8520
+  },
+  "venom the last dance": {
+    "id": "tt16366836",
+    "title": "Venom: The Last Dance",
+    "type": "movie",
+    "duration": 6540
+  },
+  "morbius": {
+    "id": "tt5108870",
+    "title": "Morbius",
+    "type": "movie",
+    "duration": 6240
+  },
+  "madame web": {
+    "id": "tt11057302",
+    "title": "Madame Web",
+    "type": "movie",
+    "duration": 6960
+  },
+  "kraven the hunter": {
+    "id": "tt8790086",
+    "title": "Kraven the Hunter",
+    "type": "movie",
+    "duration": 7620
+  },
+  "ghost rider": {
+    "id": "tt0259324",
+    "title": "Ghost Rider",
+    "type": "movie",
+    "duration": 6600
+  },
+  "ghost rider spirit of vengeance": {
+    "id": "tt1071875",
+    "title": "Ghost Rider: Spirit of Vengeance",
+    "type": "movie",
+    "duration": 5760
+  },
+  "hancock": {
+    "id": "tt0448157",
+    "title": "Hancock",
+    "type": "movie",
+    "duration": 5520
+  }
+}
