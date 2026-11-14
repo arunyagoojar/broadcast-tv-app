@@ -263,5 +263,11 @@
     "id": "tt2709768",
     "title": "The Secret Life of Pets",
     "type": "movie"
+  },
+  {
+    "id": "tt0432283",
+    "title": "Fantastic Mr. Fox",
+    "type": "movie",
+    "duration": 5220
   }
 ]

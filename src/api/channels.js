@@ -367,7 +367,7 @@ async function resolveTitle(title, localChannelData, { signal } = {}) {
   const activeItem = resolvedItem;
 
   if (activeItem) {
-    if (activeItem.type === 'tv' && !signal?.aborted) {
+    if (activeItem.type === 'tv' && !activeItem.episodeDurations && !signal?.aborted) {
       const tvData = await fetchTvMazeData(activeItem.id, { signal });
       if (tvData) {
         activeItem.seasons = tvData.seasons;

@@ -308,5 +308,71 @@
     "id": "tt0163651",
     "title": "American Pie",
     "type": "movie"
+  },
+  {
+    "id": "tt0120382",
+    "title": "The Truman Show",
+    "type": "movie",
+    "duration": 6180
+  },
+  {
+    "id": "tt0107048",
+    "title": "Groundhog Day",
+    "type": "movie",
+    "duration": 6060
+  },
+  {
+    "id": "tt2278388",
+    "title": "The Grand Budapest Hotel",
+    "type": "movie",
+    "duration": 6000
+  },
+  {
+    "id": "tt3799694",
+    "title": "The Nice Guys",
+    "type": "movie",
+    "duration": 6960
+  },
+  {
+    "id": "tt0151804",
+    "title": "Office Space",
+    "type": "movie",
+    "duration": 5400
+  },
+  {
+    "id": "tt0359950",
+    "title": "The Secret Life of Walter Mitty",
+    "type": "movie",
+    "duration": 6840
+  },
+  {
+    "id": "tt0177789",
+    "title": "Galaxy Quest",
+    "type": "movie",
+    "duration": 6120
+  },
+  {
+    "id": "tt0104952",
+    "title": "My Cousin Vinny",
+    "type": "movie",
+    "duration": 7140
+  },
+  {
+    "id": "tt0093748",
+    "title": "Planes, Trains and Automobiles",
+    "type": "movie",
+    "duration": 5520
+  },
+  {
+    "id": "tt2883512",
+    "title": "Chef",
+    "type": "movie",
+    "duration": 6840
+  },
+  {
+    "id": "tt4698684",
+    "title": "Hunt for the Wilderpeople",
+    "type": "movie",
+    "duration": 6060
   }
 ]

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import ChannelIcon from './ChannelIcon';
+import { NEW_SHOW_CHANNELS } from '../constants/catalogAdditions';
 
 // Category icon SVGs (premium, themed icons)
 const CATEGORY_ICONS = {
@@ -182,6 +183,8 @@ const CATEGORIES = [
     ]
   }
 ];
+
+CATEGORIES.find((category) => category.name === 'TV Shows').channels.push(...NEW_SHOW_CHANNELS.map((channel) => channel.name));
 
 export default function LeftMenu({
   isOpen,

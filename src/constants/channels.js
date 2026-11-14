@@ -1,3 +1,5 @@
+import { NEW_SHOW_CHANNELS, MOVIE_ADDITIONS } from './catalogAdditions.js';
+
 export const CHANNELS = [
   { id: 0, name: 'Recents', group: 'CORE' },
 
@@ -974,6 +976,16 @@ export const CHANNELS = [
     ],
   },
 ];
+
+CHANNELS.push(...NEW_SHOW_CHANNELS);
+for (const addition of MOVIE_ADDITIONS) {
+  for (const channelId of addition.channelIds) {
+    const channel = CHANNELS.find((entry) => entry.id === channelId);
+    if (channel?.curatedTitles && !channel.curatedTitles.includes(addition.title)) {
+      channel.curatedTitles.push(addition.title);
+    }
+  }
+}
 
 export function getChannelById(id) {
   return CHANNELS.find(ch => ch.id === id);

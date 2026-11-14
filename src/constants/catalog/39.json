@@ -1,0 +1,20 @@
+[
+  {
+    "id": "tt2278388",
+    "title": "The Grand Budapest Hotel",
+    "type": "movie",
+    "duration": 6000
+  },
+  {
+    "id": "tt0359950",
+    "title": "The Secret Life of Walter Mitty",
+    "type": "movie",
+    "duration": 6840
+  },
+  {
+    "id": "tt4698684",
+    "title": "Hunt for the Wilderpeople",
+    "type": "movie",
+    "duration": 6060
+  }
+]

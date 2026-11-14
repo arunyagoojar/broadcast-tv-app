@@ -248,5 +248,16 @@
     "id": "tt2582782",
     "title": "Hell or High Water",
     "type": "movie"
+  },
+  {
+    "id": "tt3799694",
+    "title": "The Nice Guys",
+    "type": "movie",
+    "duration": 6960
+  },
+  {
+    "id": "tt0111161",
+    "title": "The Shawshank Redemption",
+    "type": "movie"
   }
 ]
