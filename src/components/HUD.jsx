@@ -101,14 +101,13 @@ export default function HUD({
           {epTitle && (
             <span
               key={epTitle}
-              className="channel-name"
+              className="channel-name hud-episode-title"
               style={{
                 textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 2px rgba(0,0,0,1)',
                 textOverflow: 'clip',
                 overflow: 'visible',
                 opacity: 0.75,
                 fontSize: '0.9em',
-                fontWeight: 300,
               }}
             >
               {epTitle.replace(/^-\s*/, '')}

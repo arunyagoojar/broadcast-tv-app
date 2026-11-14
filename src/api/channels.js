@@ -1,8 +1,12 @@
+import { buildPlayableItem, generateConsecutiveEpisodes } from '../utils/scheduler.js';
+import logoCatalog from '../constants/logos.json';
+
 const TITLE_CACHE_KEY = 'broadcastTV_titleSearchCache';
 const METADATA_CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 const BATCH_SIZE = 20;
 const MAX_CONCURRENT_RESOLUTIONS = 4;
 const FAILED_REQUEST_COOLDOWN = 30 * 1000;
+const METADATA_BUDGET_MS = 4000;
 // Per-channel played title tracking for exhausted-pool reset
 const channelPlayedSets = {};
 const requestCooldowns = new Map();
@@ -10,22 +14,17 @@ let cacheSnapshot = null;
 
 const catalogLoaders = import.meta.glob('../constants/catalog/*.json', { import: 'default' });
 const catalogPromises = new Map();
-let logoCatalogPromise = null;
 let catalogIndexPromise = null;
 
 function loadChannelCatalog(channelId) {
   const key = `../constants/catalog/${channelId}.json`;
   const loader = catalogLoaders[key];
   if (!loader) return Promise.resolve([]);
-  if (!catalogPromises.has(key)) catalogPromises.set(key, loader());
+  if (!catalogPromises.has(key)) catalogPromises.set(key, loader().catch((error) => {
+    catalogPromises.delete(key);
+    throw error;
+  }));
   return catalogPromises.get(key);
-}
-
-function loadLogoCatalog() {
-  if (!logoCatalogPromise) {
-    logoCatalogPromise = import('../constants/logos.json').then((module) => module.default);
-  }
-  return logoCatalogPromise;
 }
 
 function loadCatalogIndex() {
@@ -36,10 +35,10 @@ function loadCatalogIndex() {
 }
 const KNOWN_TITLES = {
   'everybody loves raymond': { id: 'tt0115167', title: 'Everybody Loves Raymond', type: 'tv' },
-  'the big bang theory': { id: 'tt0898266', title: 'The Big Bang Theory', type: 'tv' },
-  'the vampire diaries': { id: 'tt1405406', title: 'The Vampire Diaries', type: 'tv' },
+  'big bang theory': { id: 'tt0898266', title: 'The Big Bang Theory', type: 'tv' },
+  'vampire diaries': { id: 'tt1405406', title: 'The Vampire Diaries', type: 'tv' },
   'family guy': { id: 'tt0182576', title: 'Family Guy', type: 'tv' },
-  'the simpsons': { id: 'tt0096697', title: 'The Simpsons', type: 'tv' },
+  'simpsons': { id: 'tt0096697', title: 'The Simpsons', type: 'tv' },
   'impractical jokers': { id: 'tt2100976', title: 'Impractical Jokers', type: 'tv' },
   'louie': { id: 'tt1492966', title: 'Louie', type: 'tv' },
   'lucky louie': { id: 'tt0462128', title: 'Lucky Louie', type: 'tv' },
@@ -208,6 +207,7 @@ function findLocalTitle(title, localChannelData) {
 
 function abortableDelay(ms, signal) {
   return new Promise((resolve, reject) => {
+    if (signal?.aborted) { reject(signal.reason); return; }
     const handleAbort = () => {
       clearTimeout(timer);
       reject(new DOMException('Request aborted', 'AbortError'));
@@ -221,12 +221,14 @@ function abortableDelay(ms, signal) {
 }
 
 async function fetchWithRetry(url, { signal } = {}) {
+  signal?.throwIfAborted();
   if ((requestCooldowns.get(url) || 0) > Date.now()) {
     throw new Error('Request temporarily paused after repeated provider failures');
   }
 
   let response;
   for (let attempt = 0; attempt < 3; attempt++) {
+    signal?.throwIfAborted();
     response = await fetch(url, { signal });
     if (![429, 502, 503, 504].includes(response.status)) {
       requestCooldowns.delete(url);
@@ -273,11 +275,6 @@ async function fetchTvMazeData(imdbId, { signal } = {}) {
     if (!epRes.ok) return null;
     const episodes = await epRes.json();
 
-    let logoUrl = null;
-    if (showData.name === "The Office") {
-      logoUrl = 'https://static.tvmaze.com/uploads/images/original_untouched/624/1562240.jpg';
-    }
-    
     const maxEpisodes = {};
     const episodeTitles = {};
     const episodeDurations = {};
@@ -295,7 +292,7 @@ async function fetchTvMazeData(imdbId, { signal } = {}) {
     const validSeasons = Object.keys(maxEpisodes).map(Number).sort((a,b) => a - b);
     if (validSeasons.length === 0) return null;
     
-    const result = { seasons: validSeasons, maxEpisodes, episodeTitles, episodeDurations, logoUrl };
+    const result = { seasons: validSeasons, maxEpisodes, episodeTitles, episodeDurations };
     
     tvmazeCache[imdbId] = { savedAt: Date.now(), data: result };
     cache.tvmaze = tvmazeCache;
@@ -303,7 +300,7 @@ async function fetchTvMazeData(imdbId, { signal } = {}) {
 
     return result;
   } catch (err) {
-    if (import.meta.env.DEV) console.warn(`[TV] TVMaze fetch failed for ${imdbId}`, err);
+    if (import.meta.env.DEV && !signal?.aborted) console.warn(`[TV] TVMaze fetch failed for ${imdbId}`, err);
     return null;
   }
 }
@@ -334,27 +331,13 @@ async function fetchTmdbMetadata(imdbId, { signal } = {}) {
     
     if (!tmdbId) return null;
     
-    const [imgRes, detailsRes] = await Promise.all([
-      fetchWithRetry(`https://api.themoviedb.org/3/${type}/${tmdbId}/images?api_key=${TMDB_API_KEY}&include_image_language=en,null`, { signal }),
-      fetchWithRetry(`https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${TMDB_API_KEY}`, { signal }),
-    ]);
-    const imgData = imgRes.ok ? await imgRes.json() : {};
+    const detailsRes = await fetchWithRetry(`https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${TMDB_API_KEY}`, { signal });
     const details = detailsRes.ok ? await detailsRes.json() : {};
-    let logoUrl = null;
-    
-    if (imgData.logos && imgData.logos.length > 0) {
-      imgData.logos.sort((a, b) => b.vote_average - a.vote_average);
-      const bestLogo = imgData.logos.find(l => l.iso_639_1 === 'en') || imgData.logos[0];
-      if (bestLogo && bestLogo.file_path) {
-        logoUrl = `https://image.tmdb.org/t/p/w300${bestLogo.file_path}`;
-      }
-    }
 
     const runtimeMinutes = type === 'movie'
       ? Number(details.runtime)
       : Number(details.episode_run_time?.[0]);
     const result = {
-      logoUrl,
       duration: Number.isFinite(runtimeMinutes) && runtimeMinutes > 0
         ? runtimeMinutes * 60
         : null,
@@ -364,7 +347,7 @@ async function fetchTmdbMetadata(imdbId, { signal } = {}) {
     writeCache(cache);
     return result;
   } catch (err) {
-    if (import.meta.env.DEV) console.warn(`[TV] TMDB metadata fetch failed for ${imdbId}`, err);
+    if (import.meta.env.DEV && !signal?.aborted) console.warn(`[TV] TMDB metadata fetch failed for ${imdbId}`, err);
   }
   return null;
 }
@@ -384,25 +367,23 @@ async function resolveTitle(title, localChannelData, { signal } = {}) {
   const activeItem = resolvedItem;
 
   if (activeItem) {
-    if (activeItem.type === 'tv') {
+    if (activeItem.type === 'tv' && !signal?.aborted) {
       const tvData = await fetchTvMazeData(activeItem.id, { signal });
       if (tvData) {
         activeItem.seasons = tvData.seasons;
         activeItem.maxEpisodes = tvData.maxEpisodes;
         activeItem.episodeTitles = tvData.episodeTitles;
         activeItem.episodeDurations = tvData.episodeDurations;
-        activeItem.logoUrl = tvData.logoUrl;
       }
     }
 
-    // Use pre-fetched TMDB logos and fetch runtime metadata when needed.
-    const logos = await loadLogoCatalog();
+    // Artwork is bundled locally. Runtime lookups never fetch logo images.
+    const logos = logoCatalog;
     if (logos[activeItem.id]) {
       activeItem.logoUrl = logos[activeItem.id];
     }
-    if (!activeItem.duration || !activeItem.logoUrl) {
+    if (!activeItem.duration && !signal?.aborted) {
       const metadata = await fetchTmdbMetadata(activeItem.id, { signal });
-      if (metadata?.logoUrl && !activeItem.logoUrl) activeItem.logoUrl = metadata.logoUrl;
       if (metadata?.duration) activeItem.duration = metadata.duration;
     }
     
@@ -418,87 +399,8 @@ async function resolveTitle(title, localChannelData, { signal } = {}) {
   return null;
 }
 
-function buildPlayableItem(item, forcedSeason = null, forcedEpisode = null) {
-  const isTv = item.type === 'tv';
-  let season = forcedSeason;
-  let episode = forcedEpisode;
-
-  if (isTv && (season === null || episode === null)) {
-    if (item.seasons && item.seasons.length > 0 && item.maxEpisodes) {
-      season = item.seasons[Math.floor(Math.random() * item.seasons.length)];
-      const maxEp = item.maxEpisodes[season] || 1;
-      episode = Math.floor(Math.random() * maxEp) + 1;
-    } else {
-      season = Math.floor(Math.random() * 3) + 1;
-      episode = Math.floor(Math.random() * 10) + 1;
-    }
-  }
-
-  const base = isTv
-    ? `https://vaplayer.ru/embed/tv/${item.id}/${season}/${episode}`
-    : `https://vaplayer.ru/embed/movie/${item.id}`;
-
-  const epKey = `${season}-${episode}`;
-  const epTitle = item.episodeTitles && item.episodeTitles[epKey] 
-    ? item.episodeTitles[epKey]
-    : `(S${season}E${episode})`;
-
-  return {
-    id: isTv ? `${item.id}-s${season}e${episode}` : `${item.id}-movie`,
-    seriesId: isTv ? item.id : null,
-    season: isTv ? season : null,
-    episode: isTv ? episode : null,
-    title: item.title,
-    epTitle: isTv ? epTitle : '',
-    logoUrl: item.logoUrl || null,
-    embedUrl: `${base}?autoplay=1&hd=1&quality=1080p`,
-    dur: isTv
-      ? Number(item.episodeDurations?.[epKey]) || 0
-      : Number(item.duration) || 0,
-    durationTrusted: isTv
-      ? Number(item.episodeDurations?.[epKey]) > 0
-      : Number(item.duration) > 0,
-  };
-}
-
-function generateConsecutiveEpisodes(tvShow, { count = 3, afterItem = null } = {}) {
-  const episodes = [];
-  const hasSeasonData = Boolean(tvShow.seasons?.length && tvShow.maxEpisodes);
-  const initialSeason = hasSeasonData
-    ? tvShow.seasons[Math.floor(Math.random() * tvShow.seasons.length)]
-    : Math.floor(Math.random() * 3) + 1;
-  const maxEp = hasSeasonData ? (tvShow.maxEpisodes[initialSeason] || 1) : 10;
-  
-  const continuing = afterItem?.seriesId === tvShow.id && Number(afterItem.season) > 0 && Number(afterItem.episode) > 0;
-  let currentEp = continuing ? Number(afterItem.episode) + 1 : Math.floor(Math.random() * maxEp) + 1;
-  let currentSeason = continuing ? Number(afterItem.season) : initialSeason;
-  
-  for (let i = 0; i < count; i++) {
-    const currentSeasonMax = tvShow.maxEpisodes ? (tvShow.maxEpisodes[currentSeason] || 1) : 10;
-    
-    if (currentEp > currentSeasonMax) {
-      if (tvShow.seasons) {
-        const idx = tvShow.seasons.indexOf(currentSeason);
-        if (idx !== -1 && idx < tvShow.seasons.length - 1) {
-          currentSeason = tvShow.seasons[idx + 1];
-          currentEp = 1;
-        } else {
-          break; // No more seasons available
-        }
-      } else {
-        currentSeason++;
-        currentEp = 1;
-        if (currentSeason > 3) break; // fallback boundary
-      }
-    }
-    
-    episodes.push(buildPlayableItem(tvShow, currentSeason, currentEp));
-    currentEp++;
-  }
-  return episodes;
-}
-
 export async function fetchChannelContent(channel, { afterItem = null, signal } = {}) {
+  signal?.throwIfAborted();
   const localChannelData = await loadChannelCatalog(channel.id);
   const allTitles = channel.curatedTitles || shuffle(localChannelData).map((item) => item.title);
 
@@ -507,21 +409,31 @@ export async function fetchChannelContent(channel, { afterItem = null, signal } 
   const played = channelPlayedSets[channel.id];
 
   let pool = allTitles.filter(t => !played.has(t));
-  // If the pool is exhausted (or nearly so), reset and reshuffle the whole catalog
-  if (pool.length < BATCH_SIZE) {
-    channelPlayedSets[channel.id] = new Set();
+  // Consume the remaining unseen titles before resetting the pool.
+  if (pool.length === 0) {
+    played.clear();
     pool = [...allTitles];
   }
 
   const selectedTitles = shuffle(pool).slice(0, BATCH_SIZE);
-  // Mark selected titles as played
-  selectedTitles.forEach(t => channelPlayedSets[channel.id].add(t));
-
-  const resolved = await mapWithConcurrency(
-    selectedTitles,
-    MAX_CONCURRENT_RESOLUTIONS,
-    (title) => resolveTitle(title, localChannelData, { signal }),
-  );
+  const metadataController = new AbortController();
+  const cancelMetadata = () => metadataController.abort(signal.reason);
+  signal?.addEventListener('abort', cancelMetadata, { once: true });
+  if (signal?.aborted) cancelMetadata();
+  const timeout = setTimeout(() => metadataController.abort(), METADATA_BUDGET_MS);
+  let resolved;
+  try {
+    resolved = await mapWithConcurrency(
+      selectedTitles,
+      MAX_CONCURRENT_RESOLUTIONS,
+      (title) => resolveTitle(title, localChannelData, { signal: metadataController.signal }),
+    );
+    signal?.throwIfAborted();
+    selectedTitles.forEach((title, index) => { if (resolved[index]) played.add(title); });
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener('abort', cancelMetadata);
+  }
   
   const validResolved = resolved.filter(Boolean);
   

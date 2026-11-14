@@ -1,4 +1,13 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Medium.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
 :root {
+  --font-broadcast: 'Roboto', var(--font-ui);
   --border: rgba(255, 255, 255, 0.12);
   --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)), rgba(14, 14, 14, 0.5);
@@ -181,7 +190,7 @@ body.ar-stretch #player-container {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: #000;
+  background: transparent;
   opacity: 1;
   transition: opacity 180ms ease;
   pointer-events: none;
@@ -240,14 +249,14 @@ body.ar-stretch #player-container {
   height: 100%;
   pointer-events: none;
   z-index: 2;
-  opacity: 0.82;
-  image-rendering: pixelated;
+  opacity: 1;
+  image-rendering: auto;
   contain: strict;
 }
 
 .noise-canvas.hidden {
   opacity: 0;
-  transition: opacity 500ms ease;
+  transition: opacity 180ms ease;
 }
 
 /* ── SCANLINES ── */
@@ -477,6 +486,7 @@ body.ar-stretch #player-container {
 }
 
 .left-menu {
+  position: relative;
   width: 300px;
   height: 100%;
   max-height: 100dvh;
@@ -497,6 +507,36 @@ body.ar-stretch #player-container {
 .left-menu-container.open .left-menu {
   transform: rotateY(12deg) translateX(0);
   opacity: 1;
+}
+
+.menu-panel-page {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(14px);
+  transition: opacity 160ms ease, transform 200ms ease, visibility 0s linear 200ms;
+}
+
+.menu-panel-page.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+  transition-delay: 0s;
+}
+
+.menu-content-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel-page { transition: none; transform: none; }
 }
 
 .left-menu-header {
@@ -1033,9 +1073,16 @@ body.ar-stretch #player-container {
   gap: 2px;
 }
 
+.hud-episode-title,
+.hud-next-up span,
+.hud-next-up strong {
+  font-family: var(--font-broadcast);
+  font-weight: 500;
+}
+
 .hud-next-up span {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.12em;
 }
 
@@ -1044,7 +1091,7 @@ body.ar-stretch #player-container {
   max-width: 100%;
   color: #fff;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

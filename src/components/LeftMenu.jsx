@@ -1,69 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import logos from '../constants/channelLogos.json';
-import channelPosters from '../constants/channelPosters.json';
-import { optimizeImageUrl } from '../utils/imageUrl';
-
-// IMDb IDs for specific TV shows so we can use their TMDB clearlogos
-const CHANNEL_LOGO_IMDB = {
-  'The Office (24/7)': 'tt0386676',
-  'Friends (24/7)': 'tt0108778',
-  'Everybody Loves Raymond': 'tt0115167',
-  'The Big Bang Theory': 'tt0898266',
-  'Impractical Jokers': 'tt2100976',
-  'Family Guy': 'tt0182576',
-  'The Simpsons': 'tt0096697',
-  'Mr. Bean': 'tt0096657',
-  'Brooklyn Nine-Nine': 'tt2467372',
-  'Parks and Recreation': 'tt1266020',
-  'Modern Family': 'tt1442437',
-  'How I Met Your Mother': 'tt0460649',
-  'Seinfeld': 'tt0098904',
-  'Malcolm in the Middle': 'tt0212671',
-  'Community': 'tt1439629',
-  'Two and a Half Men': 'tt0369179',
-  'Fresh Prince of Bel-Air': 'tt0098800',
-  'Louie': 'tt1492966',
-  'Key & Peele': 'tt1981558',
-  'Saturday Night Live': 'tt0072562',
-  'Whose Line Is It Anyway?': 'tt2919910',
-  "Monty Python's Flying Circus": 'tt0063929',
-  "Chappelle's Show": 'tt0353049',
-  'I Think You Should Leave with Tim Robinson': 'tt10050772',
-  'Tom & Jerry': 'tt3559124',
-  'Looney Tunes': 'tt1726839',
-  'Scooby-Doo': 'tt0063950',
-  'Popeye': 'tt0145628',
-  'Futurama': 'tt0149460',
-  "Bob's Burgers": 'tt1561755',
-  'King of the Hill': 'tt0118375',
-  'Adventure Time': 'tt1305826',
-  'Courage the Cowardly Dog': 'tt0220880',
-  'Pokemon': 'tt0168366',
-  'Dragon Ball': 'tt0121220',
-  'Invincible': 'tt6741278',
-  'The Boys': 'tt1190634',
-  'Watchmen': 'tt7049682',
-  'Planet Earth': 'tt0795176',
-  'Blue Planet': 'tt0296310',
-  'Prehistoric Planet': 'tt10324164',
-  'Frozen Planet': 'tt2092588',
-  'Cosmos': 'tt2395695',
-  'NOVA': 'tt0206501',
-  'Modern Marvels': 'tt0199248',
-  'Universe': 'tt1051155',
-  'MythBusters': 'tt0383126',
-  'Kitchen Nightmares': 'tt0983514',
-  "Hell's Kitchen": 'tt0437005',
-  'Top Gear': 'tt1628033',
-};
-
-// Map channel name → horizontal logo image url (for franchise channels)
-const FRANCHISE_LOGOS = {
-  'Marvel (Live Action)': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Marvel_Logo.svg/1200px-Marvel_Logo.svg.png',
-  'Marvel Animation': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Marvel_Logo.svg/1200px-Marvel_Logo.svg.png',
-  'DC (Live Action)': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/DC_Comics_logo.svg/1200px-DC_Comics_logo.svg.png',
-  'DC Animation': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/DC_Comics_logo.svg/1200px-DC_Comics_logo.svg.png',
-};
+import ChannelIcon from './ChannelIcon';
 
 // Category icon SVGs (premium, themed icons)
 const CATEGORY_ICONS = {
@@ -121,18 +57,6 @@ const CATEGORY_ICONS = {
       <circle cx="12" cy="20" r="1" fill="currentColor"/>
     </svg>
   ),
-};
-
-// Streaming service logos (horizontal)
-const STREAMING_LOGOS = {
-  'Netflix': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/800px-Netflix_2015_logo.svg.png',
-  'HBO': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HBO_logo.svg/800px-HBO_logo.svg.png',
-  'Disney+': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Disney%2B_logo.svg/800px-Disney%2B_logo.svg.png',
-  'Prime Video': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/800px-Amazon_Prime_Video_logo.svg.png',
-  'Apple TV+': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Apple_TV_Plus_Logo.svg/800px-Apple_TV_Plus_Logo.svg.png',
-  'Hulu': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Hulu_Logo.svg/800px-Hulu_Logo.svg.png',
-  'Paramount+': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Paramount_Plus_logo.svg/800px-Paramount_Plus_logo.svg.png',
-  'Peacock': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/NBCUniversal_Peacock_Logo.svg/800px-NBCUniversal_Peacock_Logo.svg.png',
 };
 
 const CATEGORIES = [
@@ -259,40 +183,8 @@ const CATEGORIES = [
   }
 ];
 
-function getChannelLogoUrl(channelName) {
-  // Check franchise logos first (Marvel, DC)
-  if (FRANCHISE_LOGOS[channelName]) return optimizeImageUrl(FRANCHISE_LOGOS[channelName], 320);
-  // Check streaming logos
-  if (STREAMING_LOGOS[channelName]) return STREAMING_LOGOS[channelName];
-  // Check TV show TMDB logos
-  const imdbId = CHANNEL_LOGO_IMDB[channelName];
-  if (imdbId && logos[imdbId]) return optimizeImageUrl(logos[imdbId], 300);
-  return null;
-}
-
-function ChannelFallbackIcon({ group }) {
-  const common = {
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.8,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    'aria-hidden': true,
-  };
-
-  if (group === 'MOVIES') return <svg {...common}><path d="M4 7h16v12H4zM4 11h16M8 7l2-3M13 7l2-3M18 7l2-3" /></svg>;
-  if (group === 'SKETCH & STAND') return <svg {...common}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" /></svg>;
-  if (group === 'ANIMATION') return <svg {...common}><path d="m12 3 2.2 5.2L20 9l-4.2 3.8L17 18l-5-2.8L7 18l1.2-5.2L4 9l5.8-.8z" /></svg>;
-  if (group === 'HEROES') return <svg {...common}><path d="M12 3 5 6v5c0 4.6 2.8 7.8 7 10 4.2-2.2 7-5.4 7-10V6z" /><path d="m9 12 2 2 4-5" /></svg>;
-  if (group === 'DOCUMENTARIES') return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" /></svg>;
-  if (group === 'CORE') return <svg {...common}><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6M12 7v5l3 2" /></svg>;
-  return <svg {...common}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m9 2 3 3 3-3M8 16h8" /></svg>;
-}
-
 export default function LeftMenu({
   isOpen,
-  onClose,
   channels,
   activeChannelId,
   onSelect,
@@ -303,10 +195,11 @@ export default function LeftMenu({
   onSetSleepTimer,
   onCancelSleepTimer,
 }) {
-  const menuRef = useRef(null);
+  const categoryResetTimer = useRef(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const [displayCategory, setDisplayCategory] = useState(null);
   const [sleepMenuOpen, setSleepMenuOpen] = useState(false);
+  const [visitedCategories, setVisitedCategories] = useState([]);
 
   const recentChannels = (recentChannelIds || [])
     .map((id) => channels.find((channel) => channel.id === id))
@@ -318,35 +211,26 @@ export default function LeftMenu({
   // Reset category view when menu closes
   useEffect(() => {
     if (!isOpen) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setActiveCategory(null);
         setDisplayCategory(null);
         setSleepMenuOpen(false);
       }, 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
-  // Close when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (isOpen && menuRef.current && !menuRef.current.contains(event.target)) {
-        if (!event.target.closest('.hud-btn-menu-toggle')) {
-          onClose();
-        }
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
-
   const handleShuffle = () => {
     if (channels && channels.length > 0) {
-      const randomIndex = Math.floor(Math.random() * channels.length);
-      onSelect(channels[randomIndex].id);
+      const playable = channels.filter((channel) => channel.id !== 0);
+      const randomIndex = Math.floor(Math.random() * playable.length);
+      if (playable.length) onSelect(playable[randomIndex].id);
     }
   };
 
   const handleCategoryClick = (category) => {
+    clearTimeout(categoryResetTimer.current);
+    setVisitedCategories((current) => current.includes(category.name) ? current : [...current, category.name]);
     setDisplayCategory(category);
     requestAnimationFrame(() => {
       setActiveCategory(category);
@@ -355,25 +239,19 @@ export default function LeftMenu({
 
   const handleBackClick = () => {
     setActiveCategory(null);
-    setTimeout(() => {
+    categoryResetTimer.current = setTimeout(() => {
       setDisplayCategory(null);
     }, 300);
   };
+
+  useEffect(() => () => clearTimeout(categoryResetTimer.current), []);
 
   const getChannelByName = (name) => {
     return channels.find(c => c.name === name) || channels.find(c => c.name.startsWith(name));
   };
 
   return (
-    <div
-      className={`left-menu-container ${isOpen ? 'open' : ''}`}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Channel browser"
-      aria-hidden={!isOpen}
-    >
-      <div className="left-menu-perspective">
-        <div className="left-menu" ref={menuRef}>
+    <div className="menu-content-page">
           <div className="left-menu-header">
             <button className="left-menu-item shuffle-btn" onClick={handleShuffle} style={{ width: '100%', justifyContent: 'center', background: 'rgba(255, 255, 255, 0.1)', marginTop: '8px' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px', marginRight: '8px' }}>
@@ -432,8 +310,8 @@ export default function LeftMenu({
                 pointerEvents: activeCategory ? 'auto' : 'none'
               }}
             >
-              {displayCategory && (
-                <>
+              {menuCategories.filter((category) => visitedCategories.includes(category.name)).map((category) => (
+                <div key={category.name} hidden={displayCategory?.name !== category.name}>
                   <button 
                     onClick={handleBackClick}
                     className="left-menu-item"
@@ -446,18 +324,15 @@ export default function LeftMenu({
                   </button>
                   
                   <div className="left-menu-group-label" style={{ paddingLeft: '8px', marginBottom: '12px', color: '#fff' }}>
-                    {displayCategory.name}
+                    {category.name}
                   </div>
                   
                   <div className="left-menu-list">
-                    {displayCategory.channels.map(channelName => {
+                    {category.channels.map(channelName => {
                       const channel = getChannelByName(channelName);
                       if (!channel) return null;
                       
                       const isActive = channel.id === activeChannelId;
-                      const logoUrl = getChannelLogoUrl(channelName);
-                      const posterUrl = optimizeImageUrl(channelPosters[channelName], 185);
-                      const artworkUrl = logoUrl || posterUrl;
 
                       return (
                         <button
@@ -466,33 +341,15 @@ export default function LeftMenu({
                           onClick={() => onSelect(channel.id)}
                         >
                           <div className="channel-icon channel-icon-art" style={{ flexShrink: 0 }}>
-                            <ChannelFallbackIcon group={channel.group} />
-                            {artworkUrl && (
-                              <img
-                                src={artworkUrl}
-                                alt={channelName}
-                                loading="lazy"
-                                decoding="async"
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: logoUrl ? 'contain' : 'cover',
-                                  filter: logoUrl ? (isActive ? 'brightness(0)' : 'brightness(0) invert(1)') : 'none',
-                                  opacity: isActive ? 1 : 0.85,
-                                }}
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
-                            )}
+                            <ChannelIcon channel={channel} />
                           </div>
                           <span className="channel-name">{channel.name.replace(' (24/7)', '')}</span>
                         </button>
                       );
                     })}
                   </div>
-                </>
-              )}
+                </div>
+              ))}
             </div>
 
           </div>
@@ -552,8 +409,6 @@ export default function LeftMenu({
               )}
             </div>
           </div>
-        </div>
-      </div>
     </div>
   );
 }

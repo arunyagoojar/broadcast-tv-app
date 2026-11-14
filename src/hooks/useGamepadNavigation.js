@@ -69,7 +69,8 @@ function getVisibleMenuButtons(root = document) {
 function getNavigableMenuButtons() {
   const openMenu = document.querySelector('.left-menu-container.open');
   if (!openMenu) return [];
-  const activePage = openMenu.querySelector('[data-menu-page="active"]');
+  const currentPanel = openMenu.querySelector('[data-panel-page="active"]') || openMenu;
+  const activePage = currentPanel.querySelector('[data-menu-page="active"]');
   const menuLevel = activePage?.getAttribute('data-menu-level');
   let buttons;
 
@@ -85,7 +86,7 @@ function getNavigableMenuButtons() {
       ...getVisibleMenuButtons(openMenu.querySelector('.left-menu-footer')),
     ];
   } else {
-    buttons = getVisibleMenuButtons(openMenu);
+    buttons = getVisibleMenuButtons(currentPanel);
   }
 
   return buttons.filter((button) => {

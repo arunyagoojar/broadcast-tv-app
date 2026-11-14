@@ -30,8 +30,22 @@ Modern web browsers enforce strict **Autoplay Policies**, meaning video cannot a
 
 To create a seamless "turn on the TV" experience without the browser blocking playback:
 1. **Muted Autoplay:** The player starts in an autoplay-compatible muted state.
-2. **First-Click Interception:** The app listens for the user's very first click anywhere on the interface (such as opening the Explore menu or clicking the screen). 
-3. **Seamless Unmute:** Upon that first interaction, the app requests unmuted playback while keeping the player shield in place so the experience continues to behave like live television.
+2. **Explicit audio request:** Clicking the video shield requests sound while preserving autoplay for subsequent channel changes.
+3. **Provider fallback:** The current provider wrapper does not expose a documented parent-to-player audio-control interface. The app retains the existing iframe reload fallback, resuming at the last reported position or the channel timeline when progress is not yet available. In-place unmuting requires provider support.
+
+## Local artwork and menu assets
+
+Menu icons are inline SVGs, so they need no image requests. Show logos are served from `public/artwork`, and the broadcast caption font is served from `public/fonts`; the app never fetches artwork or fonts from an external CDN.
+
+`npm run artwork:cache` refreshes the bundled artwork from `scripts/artwork-sources.json`. This is a maintenance command, not a browser runtime operation. Keep the source manifest and font license with the assets.
+
+## Playback reliability
+
+- A new channel schedule or refresh starts at a random point between **8% and 56%** of a known runtime. Unknown runtimes use conservative random offsets (30–180 seconds for movies, 30–90 seconds for episodes). Returning to a channel follows its continuing timeline.
+- Metadata enrichment has a four-second budget. If a service is unavailable, local records still tune with an explicitly estimated runtime.
+- Fine, dark loading grain remains until the provider reports advancing playback progress. A startup watchdog recovers stalled embeds.
+- Series channels loop after the final episode. Schedule occurrences are tracked separately when a movie repeats.
+- Channel browsing and Settings share one persistent overlay panel.
 
 ## 📡 Creating the Channels
 

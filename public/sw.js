@@ -1,4 +1,4 @@
-const CACHE_NAME = 'broadcast-tv-shell-v7';
+const CACHE_NAME = 'broadcast-tv-shell-v8';
 const RUNTIME_CACHE = 'broadcast-tv-runtime-v1';
 const IMAGE_CACHE = 'broadcast-tv-images-v3';
 const SHELL_ASSETS = [
@@ -20,9 +20,13 @@ async function trimCache(cacheName, maxEntries) {
 
 async function cacheResponse(cacheName, request, response, maxEntries) {
   if (!response || (!response.ok && response.type !== 'opaque')) return;
-  const cache = await caches.open(cacheName);
-  await cache.put(request, response.clone());
-  await trimCache(cacheName, maxEntries);
+  try {
+    const cache = await caches.open(cacheName);
+    await cache.put(request, response.clone());
+    await trimCache(cacheName, maxEntries);
+  } catch {
+    // A full or unavailable cache must never discard a successful response.
+  }
 }
 
 self.addEventListener('install', (event) => {
@@ -40,7 +44,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((key) => ![CACHE_NAME, RUNTIME_CACHE, IMAGE_CACHE].includes(key))
+          .filter((key) => key.startsWith('broadcast-tv-') && ![CACHE_NAME, RUNTIME_CACHE, IMAGE_CACHE].includes(key))
           .map((key) => caches.delete(key))
       )
     )
@@ -87,6 +91,19 @@ self.addEventListener('fetch', (event) => {
         .catch(async () => (
           await caches.match(event.request) || await caches.match('/') || Response.error()
         ))
+    );
+    return;
+  }
+
+  if (url.pathname.startsWith('/artwork/') || url.pathname.startsWith('/fonts/')) {
+    event.respondWith(
+      caches.open(IMAGE_CACHE).then(async (cache) => {
+        const cached = await cache.match(event.request);
+        if (cached) return cached;
+        const response = await fetch(event.request);
+        await cacheResponse(IMAGE_CACHE, event.request, response, 950);
+        return response;
+      }).catch(() => fetch(event.request))
     );
     return;
   }

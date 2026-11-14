@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 const SHORTCUTS = [
   ['ARROWS', 'CHANNELS'],
@@ -49,29 +49,14 @@ function themeLabel(theme) {
 }
 
 export default function SettingsMenu({
-  isOpen,
   onClose,
   onBackToMenu,
   settings,
   updateSetting,
   themes,
 }) {
-  const menuRef = useRef(null);
   const [settingsPage, setSettingsPage] = useState('main');
   const currentThemeIndex = Math.max(0, themes.indexOf(settings.theme));
-
-  // Close when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (isOpen && menuRef.current && !menuRef.current.contains(event.target)) {
-        if (!event.target.closest('.left-menu-item')) {
-          onClose();
-        }
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
 
   const cycleTheme = () => {
     updateSetting('theme', themes[(currentThemeIndex + 1) % themes.length]);
@@ -80,16 +65,7 @@ export default function SettingsMenu({
   const logoMode = settings.logoMode !== false; // default true = show logo
 
   return (
-    <div
-      className={`left-menu-container ${isOpen ? 'open' : ''}`}
-      role="dialog"
-      aria-modal="true"
-      aria-label="TV settings"
-      aria-hidden={!isOpen}
-    >
-      <div className="left-menu-perspective">
-        <div className="left-menu" ref={menuRef}>
-          
+    <div className="menu-content-page">
           <div className="left-menu-header settings-header">
             <div className="settings-title-group">
               <button
@@ -282,8 +258,6 @@ export default function SettingsMenu({
             )}
 
           </div>
-        </div>
-      </div>
     </div>
   );
 }

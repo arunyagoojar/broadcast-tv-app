@@ -45,10 +45,10 @@ test('Sony Superheroes uses an exact precompiled catalog', () => {
   assert.ok(records.every((item) => item.duration > 0));
 });
 
-test('all menu channels have a built-in artwork fallback', () => {
+test('menu channels use native icons without image downloads', () => {
   const menuSource = readFileSync(new URL('../src/components/LeftMenu.jsx', import.meta.url), 'utf8');
-  assert.match(menuSource, /function ChannelFallbackIcon/);
-  assert.match(menuSource, /<ChannelFallbackIcon group=\{channel\.group\}/);
+  assert.match(menuSource, /<ChannelIcon channel=\{channel\}/);
+  assert.doesNotMatch(menuSource, /<img/);
 });
 
 test('runtime title selection never calls an external title-search API', () => {
