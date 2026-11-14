@@ -184,7 +184,10 @@ const CATEGORIES = [
   }
 ];
 
-CATEGORIES.find((category) => category.name === 'TV Shows').channels.push(...NEW_SHOW_CHANNELS.map((channel) => channel.name));
+for (const channel of NEW_SHOW_CHANNELS) {
+  const category = CATEGORIES.find((entry) => entry.name === (channel.group === 'ANIMATION' ? 'Animation' : 'TV Shows'));
+  if (!category.channels.includes(channel.name)) category.channels.push(channel.name);
+}
 
 export default function LeftMenu({
   isOpen,

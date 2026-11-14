@@ -1,0 +1,38 @@
+[
+  {
+    "id": "tt0185906",
+    "title": "Band of Brothers",
+    "type": "tv",
+    "duration": 3540,
+    "maxEpisodes": {
+      "1": 10
+    },
+    "episodeDurations": {
+      "1-1": 4200,
+      "1-2": 2940,
+      "1-3": 3720,
+      "1-4": 3420,
+      "1-5": 3180,
+      "1-6": 3600,
+      "1-7": 3600,
+      "1-8": 3600,
+      "1-9": 3600,
+      "1-10": 3600
+    },
+    "episodeTitles": {
+      "1-1": "Currahee",
+      "1-2": "Day of Days",
+      "1-3": "Carentan",
+      "1-4": "Replacements",
+      "1-5": "Crossroads",
+      "1-6": "Bastogne",
+      "1-7": "The Breaking Point",
+      "1-8": "The Last Patrol",
+      "1-9": "Why We Fight",
+      "1-10": "Points"
+    },
+    "seasons": [
+      1
+    ]
+  }
+]

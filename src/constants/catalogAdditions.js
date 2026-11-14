@@ -158,6 +158,54 @@ export const NEW_SHOW_CHANNELS = [
     "curatedTitles": [
       "Friday Night Dinner"
     ]
+  },
+  {
+    "id": 120,
+    "name": "Band of Brothers",
+    "group": "TV SHOWS",
+    "curatedTitles": [
+      "Band of Brothers"
+    ]
+  },
+  {
+    "id": 121,
+    "name": "The Pacific",
+    "group": "TV SHOWS",
+    "curatedTitles": [
+      "The Pacific"
+    ]
+  },
+  {
+    "id": 122,
+    "name": "Masters of the Air",
+    "group": "TV SHOWS",
+    "curatedTitles": [
+      "Masters of the Air"
+    ]
+  },
+  {
+    "id": 123,
+    "name": "Chernobyl",
+    "group": "TV SHOWS",
+    "curatedTitles": [
+      "Chernobyl"
+    ]
+  },
+  {
+    "id": 124,
+    "name": "The X-Files",
+    "group": "TV SHOWS",
+    "curatedTitles": [
+      "The X-Files"
+    ]
+  },
+  {
+    "id": 125,
+    "name": "Inside Job",
+    "group": "ANIMATION",
+    "curatedTitles": [
+      "Inside Job"
+    ]
   }
 ];
 
